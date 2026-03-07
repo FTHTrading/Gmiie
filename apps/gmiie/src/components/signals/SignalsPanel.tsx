@@ -55,9 +55,9 @@ export function SignalsPanel({
   ];
 
   const defaultAlerts = [
-    { text: "SEC proposed rule on tokenized securities — comment period closes March 15", severity: "high" as const },
-    { text: "ECB digital euro pilot Phase 2 begins", severity: "medium" as const },
-    { text: "DTCC tokenized repo platform goes live Q2", severity: "medium" as const },
+    { text: "SEC expected to release comprehensive framework for tokenized securities classification", severity: "high" as const },
+    { text: "ECB digital euro pilot advancing through preparatory phase", severity: "medium" as const },
+    { text: "DTCC advancing T+0 settlement testing for tokenized assets", severity: "medium" as const },
   ];
 
   const displayTopics = trendingTopics || defaultTopics;
@@ -96,9 +96,13 @@ export function SignalsPanel({
           <h3 className="text-label font-mono font-semibold tracking-[0.15em] text-text-muted uppercase">
             GMIIE Market Infrastructure Index
           </h3>
-          <span className="text-caption text-text-muted/60 cursor-help" title="Weighted composite of regulatory clarity, institutional adoption, settlement infrastructure, token standards, custody readiness, cross-border capability, market liquidity, DeFi integration, and CBDC development">
+          <Link
+            href="/methodology"
+            className="text-caption text-text-muted/60 hover:text-gold transition-colors"
+            title="Weighted composite of regulatory clarity, institutional adoption, settlement infrastructure, token standards, custody readiness, cross-border capability, market liquidity, DeFi integration, and CBDC development"
+          >
             Methodology ↗
-          </span>
+          </Link>
         </div>
         <div className="bg-surface rounded-xl border border-border-subtle p-5">
           <div className="flex items-baseline gap-2 mb-1">
@@ -245,9 +249,17 @@ export function SignalsPanel({
         <p className="text-caption font-mono text-text-muted">
           Updated every 30 min · Model-generated scores
         </p>
-        <p className="text-caption font-mono text-text-muted/50 mt-1">
-          GMIIE v2.0 · Not investment advice
-        </p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-caption font-mono text-text-muted/50">
+            GMIIE v2.0 · Not investment advice
+          </p>
+          <Link
+            href="/methodology"
+            className="text-caption font-mono text-text-muted/50 hover:text-gold transition-colors"
+          >
+            Methodology
+          </Link>
+        </div>
       </div>
     </aside>
   );

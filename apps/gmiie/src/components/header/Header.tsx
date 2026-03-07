@@ -30,7 +30,7 @@ export function PlatformHeader() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse-slow" />
-              <span className="text-text-muted uppercase">Live</span>
+              <span className="text-text-muted uppercase">Monitored</span>
             </div>
             <span className="text-text-muted hidden md:inline">
               {new Date().toLocaleDateString("en-US", {

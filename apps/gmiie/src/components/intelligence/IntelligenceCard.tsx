@@ -38,31 +38,40 @@ const TYPE_LABELS: Record<string, string> = {
 
 /* ── Design Doctrine: Trust instrumentation ── */
 
+/** Verification state tooltip explanations */
+const VERIFICATION_TOOLTIPS: Record<string, string> = {
+  "Verified": "Confirmed by primary official source with high confidence. Treat as established fact.",
+  "Verified with caveat": "Reported by credible source, but some details may be incomplete or evolving.",
+  "Developing": "Actively evolving story. Key facts reported but may change materially.",
+  "Historical context": "Background information from industry sources. Not independently verified.",
+};
+
 /** Verification status derived from confidence score + source tier */
 function getVerificationState(article: ArticleListItem): {
   label: string;
   className: string;
+  tooltip: string;
 } {
   const tier = article.source?.credibilityTier;
   const confidence = article.confidenceScore ?? 0;
 
   // Tier 1 sources with decent confidence → Verified
   if (tier === "TIER_1" && confidence >= 50) {
-    return { label: "Verified", className: "status-verified" };
+    return { label: "Verified", className: "status-verified", tooltip: VERIFICATION_TOOLTIPS["Verified"] };
   }
   // Tier 1 with low confidence or Tier 2 with good confidence → Verified with caveat
   if (tier === "TIER_1" || (tier === "TIER_2" && confidence >= 60)) {
-    return { label: "Verified with caveat", className: "status-caveat" };
+    return { label: "Verified with caveat", className: "status-caveat", tooltip: VERIFICATION_TOOLTIPS["Verified with caveat"] };
   }
   // Tier 2 or recent articles → Developing
   if (tier === "TIER_2" || confidence >= 40) {
-    return { label: "Developing", className: "status-developing" };
+    return { label: "Developing", className: "status-developing", tooltip: VERIFICATION_TOOLTIPS["Developing"] };
   }
   // Tier 3+ or low confidence → Historical context
   if (tier === "TIER_3" || tier === "TIER_4") {
-    return { label: "Historical context", className: "status-historical" };
+    return { label: "Historical context", className: "status-historical", tooltip: VERIFICATION_TOOLTIPS["Historical context"] };
   }
-  return { label: "Developing", className: "status-developing" };
+  return { label: "Developing", className: "status-developing", tooltip: VERIFICATION_TOOLTIPS["Developing"] };
 }
 
 /** Source basis label from credibility tier */
@@ -104,7 +113,7 @@ function HeroCard({ article }: { article: ArticleListItem }) {
       <div className="meta-line flex items-center gap-1.5 mb-2 flex-wrap">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
-        <span className={verification.className}>{verification.label}</span>
+        <span className={verification.className} title={verification.tooltip}>{verification.label}</span>
         <span className="opacity-40">·</span>
         <span>{sourceBasis}</span>
         <span className="opacity-40">·</span>
@@ -187,7 +196,7 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
       <div className="meta-line flex items-center gap-1.5 mb-1.5">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
-        <span className={verification.className}>{verification.label}</span>
+        <span className={verification.className} title={verification.tooltip}>{verification.label}</span>
         <span className="opacity-40">·</span>
         <span>{formatDate(article.publishedAt)}</span>
       </div>
@@ -249,7 +258,7 @@ export function IntelligenceCardCompact({ article, variant = "default" }: Intell
       <div className="meta-line flex items-center gap-1.5 mb-2 flex-wrap">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
-        <span className={verification.className}>{verification.label}</span>
+        <span className={verification.className} title={verification.tooltip}>{verification.label}</span>
         <span className="opacity-40">·</span>
         <span>{sourceBasis}</span>
         <span className="opacity-40">·</span>

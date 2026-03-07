@@ -47,6 +47,22 @@ function randomFloat(min: number, max: number): number {
 async function main() {
   console.log('🌱 Seeding XXXIII.IO database...\n');
 
+  // ─── CLEAN SLATE — delete all data for idempotent re-seeding ──
+  console.log('  Cleaning existing data...');
+  await prisma.articleTag.deleteMany();
+  await prisma.articleTopic.deleteMany();
+  await prisma.articleEntity.deleteMany();
+  await prisma.signal.deleteMany();
+  await prisma.timelineEvent.deleteMany();
+  await prisma.article.deleteMany();
+  await prisma.entityTopic.deleteMany();
+  await prisma.tag.deleteMany();
+  await prisma.entity.deleteMany();
+  await prisma.topic.deleteMany();
+  await prisma.topicCluster.deleteMany();
+  await prisma.source.deleteMany();
+  await prisma.author.deleteMany();
+
   // ─── AUTHOR ──────────────────────────────────────────
   console.log('  Creating AI author...');
   const author = await prisma.author.upsert({
@@ -1405,8 +1421,8 @@ async function main() {
     date: Date;
   }> = [
     { entityName: 'BlackRock', title: 'BUIDL tokenized fund crosses $2B AUM', description: 'BlackRock BUIDL fund reaches $2 billion in tokenized assets under management.', date: daysAgo(1) },
-    { entityName: 'US Securities and Exchange Commission', title: 'SEC publishes tokenized securities framework', description: 'SEC issues comprehensive guidance on classification of tokenized financial instruments.', date: daysAgo(2) },
-    { entityName: 'DTCC', title: 'DTCC completes T+0 settlement pilot', description: 'DTCC tests same-day settlement with JPM, Citi, BNY in pilot program.', date: daysAgo(3) },
+    { entityName: 'US Securities and Exchange Commission', title: 'SEC expected to issue tokenized securities framework', description: 'SEC reportedly finalizing comprehensive guidance on classification of tokenized financial instruments under existing federal law.', date: daysAgo(2) },
+    { entityName: 'DTCC', title: 'DTCC advances T+0 settlement testing', description: 'DTCC expands Project Ion testing of same-day settlement with major financial institutions.', date: daysAgo(3) },
     { entityName: 'European Central Bank', title: 'ECB advances digital euro pilot phase', description: 'ECB selects five technology partners for expanded digital euro testing.', date: daysAgo(3) },
     { entityName: 'MUFG', title: 'MUFG launches $500M tokenized real estate security', description: 'Largest tokenized real estate issuance in Asia-Pacific on Progmat platform.', date: daysAgo(4) },
     { entityName: 'Kraken', title: 'Kraken launches xStocks tokenized equity platform', description: 'Crypto exchange debuts tokenized trading of 50+ US-listed equities.', date: daysAgo(4) },

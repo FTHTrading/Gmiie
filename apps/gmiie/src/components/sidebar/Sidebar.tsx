@@ -22,6 +22,12 @@ const SIDEBAR_SECTIONS = [
       { label: "Regulators", href: "/regulators", icon: "⬡" },
     ],
   },
+  {
+    title: "About",
+    items: [
+      { label: "Methodology", href: "/methodology", icon: "◆" },
+    ],
+  },
 ] as const;
 
 export function Sidebar() {

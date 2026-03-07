@@ -60,15 +60,17 @@ export default async function GmiieHomePage() {
   return (
     <div>
       {/* ═══ Utility bar: Dashboard stats ═══ */}
-      <div className="flex items-center gap-6 mb-6 pb-4 border-b border-border-subtle">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-6 pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-blue" />
           <span className="meta-line">Monitored</span>
         </div>
-        <StatPill label="Articles" value={counts.articles} />
-        <StatPill label="Entities" value={counts.entities} />
-        <StatPill label="Topics" value={counts.topics} />
-        <StatPill label="Sources" value={counts.sources} />
+        <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
+          <StatPill label="Articles" value={counts.articles} />
+          <StatPill label="Entities" value={counts.entities} />
+          <StatPill label="Topics" value={counts.topics} />
+          <StatPill label="Sources" value={counts.sources} />
+        </div>
         <span className="meta-line ml-auto hidden md:block">
           {new Date().toLocaleDateString("en-US", {
             weekday: "long",
