@@ -237,3 +237,67 @@ export interface DashboardCounts {
   topics: number;
   sources: number;
 }
+
+// ─── State Stablecoin Tracker ───────────────────────────────
+
+export interface BillUpdateItem {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string | null;
+  date: string; // ISO
+  sourceUrl: string | null;
+}
+
+export interface BillListItem {
+  id: string;
+  billNumber: string;
+  title: string;
+  summary: string | null;
+  whatChanged: string | null;
+  whyItMatters: string | null;
+  status: string;
+  chamber: string | null;
+  sponsorName: string | null;
+  sourceUrl: string | null;
+  confidenceScore: number | null;
+  credibilityTier: string;
+  introducedDate: string | null;
+  lastActionDate: string | null;
+  updates: BillUpdateItem[];
+}
+
+export interface StateTrackerListItem {
+  slug: string;
+  name: string;
+  abbreviation: string;
+  status: string;
+  summary: string | null;
+  whyItMatters: string | null;
+  nextExpectedStep: string | null;
+  lastActionDate: string | null;
+  billCount: number;
+  latestBillStatus: string | null;
+}
+
+export interface StateTrackerDetail {
+  slug: string;
+  name: string;
+  abbreviation: string;
+  status: string;
+  summary: string | null;
+  whyItMatters: string | null;
+  nextExpectedStep: string | null;
+  lastActionDate: string | null;
+  bills: BillListItem[];
+  updates: StateUpdateItem[];
+}
+
+export interface StateUpdateItem {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  date: string; // ISO
+  sourceUrl: string | null;
+}

@@ -325,3 +325,65 @@ export const DashboardCountsSchema = z.object({
   topics: count,
   sources: count,
 });
+
+// ─── State Stablecoin Tracker Schemas ───────────────────────
+
+export const BillUpdateItemSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().nullable(),
+  status: z.string().nullable(),
+  date: z.string().datetime({ offset: true }),
+  sourceUrl: z.string().nullable(),
+});
+
+export const BillListItemSchema = z.object({
+  id: z.string().min(1),
+  billNumber: z.string().min(1),
+  title: z.string().min(1),
+  summary: z.string().nullable(),
+  whatChanged: z.string().nullable(),
+  whyItMatters: z.string().nullable(),
+  status: z.string().min(1),
+  chamber: z.string().nullable(),
+  sponsorName: z.string().nullable(),
+  sourceUrl: z.string().nullable(),
+  confidenceScore: z.number().nullable(),
+  credibilityTier: z.string().min(1),
+  introducedDate: z.string().nullable(),
+  lastActionDate: z.string().nullable(),
+  updates: z.array(BillUpdateItemSchema),
+});
+
+export const StateTrackerListItemSchema = z.object({
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  abbreviation: z.string().min(1),
+  status: z.string().min(1),
+  summary: z.string().nullable(),
+  whyItMatters: z.string().nullable(),
+  nextExpectedStep: z.string().nullable(),
+  lastActionDate: z.string().nullable(),
+  billCount: count,
+  latestBillStatus: z.string().nullable(),
+});
+
+export const StateTrackerDetailSchema = z.object({
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  abbreviation: z.string().min(1),
+  status: z.string().min(1),
+  summary: z.string().nullable(),
+  whyItMatters: z.string().nullable(),
+  nextExpectedStep: z.string().nullable(),
+  lastActionDate: z.string().nullable(),
+  bills: z.array(BillListItemSchema),
+  updates: z.array(z.object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    description: z.string().nullable(),
+    category: z.string().nullable(),
+    date: z.string().datetime({ offset: true }),
+    sourceUrl: z.string().nullable(),
+  })),
+});

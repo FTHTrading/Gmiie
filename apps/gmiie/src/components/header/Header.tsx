@@ -15,6 +15,7 @@ import { ThemeToggle } from "@xxxiii/ui/src/components/ThemeProvider";
 
 const NAV_ITEMS = [
   { label: "Intelligence", href: "/intelligence" },
+  { label: "Tracker", href: "/tracker" },
   { label: "Topics", href: "/topics" },
   { label: "Entities", href: "/entities" },
   { label: "Signals", href: "/signals" },

@@ -20,6 +20,8 @@ import type {
   TrendingTopicItem,
   TrendingEntityItem,
   DashboardCounts,
+  StateTrackerListItem,
+  StateTrackerDetail,
 } from "./models";
 import {
   ArticleListItemSchema,
@@ -36,6 +38,8 @@ import {
   TrendingTopicItemSchema,
   TrendingEntityItemSchema,
   DashboardCountsSchema,
+  StateTrackerListItemSchema,
+  StateTrackerDetailSchema,
 } from "./schemas";
 import { validateOne, validateMany } from "./validate";
 
@@ -58,6 +62,7 @@ export async function getLatestArticles(limit = 20, type?: string): Promise<Arti
       importanceScore: true,
       publishedAt: true,
       confidenceScore: true,
+      eventFamily: true,
       source: { select: { name: true, credibilityTier: true } },
       topics: {
         select: { topic: { select: { name: true, slug: true } } },
@@ -77,9 +82,12 @@ export async function getLatestArticles(limit = 20, type?: string): Promise<Arti
         take: 1,
       },
     },
-    orderBy: { publishedAt: "desc" },
-    take: limit,
+    orderBy: [{ publishedAt: "desc" }],
+    take: limit * 2, // over-fetch to compensate for event-family dedup
   });
+
+  // Build lookup for event-family access during dedup
+  const rawBySlug = new Map(raw.map((a) => [a.slug, a]));
 
   const mapped = raw.map((a): ArticleListItem => ({
     slug: a.slug,
@@ -95,7 +103,21 @@ export async function getLatestArticles(limit = 20, type?: string): Promise<Arti
     entities: a.entities.map((e) => e.entity),
     signal: a.signals[0] ?? null,
   }));
-  return validateMany(ArticleListItemSchema, mapped, "getLatestArticles");
+
+  // ── Event-family deduplication ──
+  // When multiple articles share the same eventFamily tag, keep only
+  // the highest-importance one. Articles without an eventFamily pass through.
+  const seenFamilies = new Set<string>();
+  const deduped = mapped.filter((a) => {
+    const raw = rawBySlug.get(a.slug);
+    const family = raw?.eventFamily;
+    if (!family) return true;
+    if (seenFamilies.has(family)) return false;
+    seenFamilies.add(family);
+    return true;
+  });
+
+  return validateMany(ArticleListItemSchema, deduped, "getLatestArticles");
 }
 
 export async function getArticleBySlug(slug: string): Promise<ArticleDetail | null> {
@@ -786,4 +808,102 @@ export async function getDashboardCounts(): Promise<DashboardCounts> {
   ]);
 
   return validateOne(DashboardCountsSchema, { articles, entities, topics, sources }, "getDashboardCounts");
+}
+
+// ─── State Stablecoin Tracker ────────────────────────────────
+
+export async function getTrackedStates(): Promise<StateTrackerListItem[]> {
+  const raw = await prisma.trackedState.findMany({
+    include: {
+      bills: {
+        select: { status: true, lastActionDate: true },
+        orderBy: { lastActionDate: "desc" },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+
+  const mapped = raw.map((s): StateTrackerListItem => {
+    const latestBill = s.bills[0] ?? null;
+    return {
+      slug: s.slug,
+      name: s.name,
+      abbreviation: s.abbreviation,
+      status: s.status,
+      summary: s.summary,
+      whyItMatters: s.whyItMatters,
+      nextExpectedStep: s.nextExpectedStep,
+      lastActionDate: isoDate(s.lastActionDate),
+      billCount: s.bills.length,
+      latestBillStatus: latestBill?.status ?? null,
+    };
+  });
+
+  return validateMany(StateTrackerListItemSchema, mapped, "getTrackedStates");
+}
+
+export async function getTrackedStateBySlug(slug: string): Promise<StateTrackerDetail | null> {
+  const raw = await prisma.trackedState.findUnique({
+    where: { slug },
+    include: {
+      bills: {
+        include: {
+          updates: {
+            orderBy: { date: "desc" },
+          },
+        },
+        orderBy: { lastActionDate: "desc" },
+      },
+      updates: {
+        orderBy: { date: "desc" },
+      },
+    },
+  });
+
+  if (!raw) return null;
+
+  const detail: StateTrackerDetail = {
+    slug: raw.slug,
+    name: raw.name,
+    abbreviation: raw.abbreviation,
+    status: raw.status,
+    summary: raw.summary,
+    whyItMatters: raw.whyItMatters,
+    nextExpectedStep: raw.nextExpectedStep,
+    lastActionDate: isoDate(raw.lastActionDate),
+    bills: raw.bills.map((b) => ({
+      id: b.id,
+      billNumber: b.billNumber,
+      title: b.title,
+      summary: b.summary,
+      whatChanged: b.whatChanged,
+      whyItMatters: b.whyItMatters,
+      status: b.status,
+      chamber: b.chamber,
+      sponsorName: b.sponsorName,
+      sourceUrl: b.sourceUrl,
+      confidenceScore: b.confidenceScore,
+      credibilityTier: b.credibilityTier,
+      introducedDate: isoDate(b.introducedDate),
+      lastActionDate: isoDate(b.lastActionDate),
+      updates: b.updates.map((u) => ({
+        id: u.id,
+        title: u.title,
+        description: u.description,
+        status: u.status,
+        date: u.date.toISOString(),
+        sourceUrl: u.sourceUrl,
+      })),
+    })),
+    updates: raw.updates.map((u) => ({
+      id: u.id,
+      title: u.title,
+      description: u.description,
+      category: u.category,
+      date: u.date.toISOString(),
+      sourceUrl: u.sourceUrl,
+    })),
+  };
+
+  return validateOne(StateTrackerDetailSchema, detail, "getTrackedStateBySlug");
 }

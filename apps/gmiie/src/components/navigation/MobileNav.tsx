@@ -12,8 +12,8 @@ import { usePathname } from "next/navigation";
 const MOBILE_NAV_ITEMS = [
   { label: "Feed", href: "/", icon: "◉" },
   { label: "Signals", href: "/signals", icon: "◈" },
+  { label: "Tracker", href: "/tracker", icon: "⬡" },
   { label: "Reports", href: "/reports", icon: "◇" },
-  { label: "Topics", href: "/topics", icon: "▣" },
   { label: "More", href: "/methodology", icon: "◆" },
 ] as const;
 

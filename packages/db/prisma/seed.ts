@@ -49,6 +49,10 @@ async function main() {
 
   // ─── CLEAN SLATE — delete all data for idempotent re-seeding ──
   console.log('  Cleaning existing data...');
+  await prisma.billUpdate.deleteMany();
+  await prisma.stateUpdate.deleteMany();
+  await prisma.bill.deleteMany();
+  await prisma.trackedState.deleteMany();
   await prisma.articleTag.deleteMany();
   await prisma.articleTopic.deleteMany();
   await prisma.articleEntity.deleteMany();
@@ -388,6 +392,7 @@ async function main() {
     entityNames: string[];
     tagSlugs: string[];
     signal: number[];
+    eventFamily?: string;
   }> = [
     // ═══════════════════════════════════════════════════════════
     // 1. KRAKEN / FED — BREAKING NEWS (Hero story)
@@ -413,6 +418,7 @@ async function main() {
       entityNames: ['Kraken', 'Federal Reserve System', 'Coinbase', 'Circle', 'JPMorgan Chase'],
       tagSlugs: ['institutional', 'regulation', 'payment-rails', 'infrastructure', 'policy'],
       signal: [9.5, 9.0, 9.5, 9.5, 9.0, 8.0, 7.5, 8.5, 9.5],
+      eventFamily: 'kraken-crypto-banking',
     },
     // ═══════════════════════════════════════════════════════════
     // 2. BLACKROCK BUIDL $2B — Full rewrite
@@ -437,6 +443,7 @@ async function main() {
       entityNames: ['BlackRock', 'Securitize', 'Ethereum Foundation', 'BNY Mellon', 'Circle'],
       tagSlugs: ['tokenization', 'funds', 'treasuries', 'institutional'],
       signal: [8.5, 7.0, 9.0, 8.0, 7.5, 6.0, 5.0, 8.5, 9.0],
+      eventFamily: 'tokenized-treasury-funds',
     },
     // ═══════════════════════════════════════════════════════════
     // 3. SEC FRAMEWORK — Full rewrite
@@ -460,6 +467,7 @@ async function main() {
       entityNames: ['US Securities and Exchange Commission', 'DTCC', 'Goldman Sachs', 'Securitize', 'BNY Mellon'],
       tagSlugs: ['regulation', 'securities', 'compliance', 'tokenization', 'policy'],
       signal: [9.5, 9.5, 8.0, 8.5, 9.0, 8.0, 7.0, 6.5, 9.5],
+      eventFamily: 'sec-tokenized-framework',
     },
     {
       title: 'DTCC Advances Digital Settlement Pilot — T+0 Testing Underway for Tokenized Securities',
@@ -480,6 +488,7 @@ async function main() {
       entityNames: ['DTCC', 'JPMorgan Chase', 'Citigroup', 'BNY Mellon'],
       tagSlugs: ['settlement', 'infrastructure', 'institutional', 'tokenization'],
       signal: [7.5, 9.0, 9.5, 9.5, 7.0, 6.0, 8.5, 5.0, 8.0],
+      eventFamily: 'digital-settlement-infra',
     },
     // ═══════════════════════════════════════════════════════════
     // 4. ECB DIGITAL EURO — Full rewrite
@@ -528,6 +537,7 @@ async function main() {
       entityNames: ['Circle', 'JPMorgan Chase', 'Federal Reserve System', 'Office of the Comptroller of the Currency'],
       tagSlugs: ['stablecoin', 'regulation', 'policy', 'payment-rails', 'compliance'],
       signal: [9.0, 9.5, 9.0, 7.5, 8.0, 9.0, 8.5, 8.0, 9.5],
+      eventFamily: 'us-stablecoin-legislation',
     },
     // ═══════════════════════════════════════════════════════════
     // 6. BITCOIN STRATEGIC RESERVE — New major article
@@ -589,6 +599,7 @@ async function main() {
       entityNames: ['Kraken', 'Nasdaq'],
       tagSlugs: ['equities', 'tokenization', 'blockchain'],
       signal: [7.0, 8.0, 6.0, 8.0, 9.0, 5.0, 7.0, 6.0, 7.0],
+      eventFamily: 'kraken-crypto-banking',
     },
     {
       title: 'Northern Trust Tokenizes Money Market Fund on Polygon',
@@ -607,6 +618,7 @@ async function main() {
       entityNames: ['Northern Trust', 'Polygon Labs'],
       tagSlugs: ['tokenization', 'funds', 'custody', 'institutional'],
       signal: [6.5, 7.5, 8.0, 7.5, 6.5, 5.0, 7.0, 5.0, 6.5],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'BIS Innovation Hub Completes Project Agor Cross-Border CBDC Test',
@@ -645,6 +657,7 @@ async function main() {
       entityNames: ['Franklin Templeton', 'Stellar Development Foundation', 'Avalanche', 'Polygon Labs'],
       tagSlugs: ['tokenization', 'funds', 'blockchain', 'interoperability'],
       signal: [6.0, 7.5, 8.0, 8.0, 7.0, 6.0, 8.0, 4.5, 6.0],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'MAS Launches Framework for Institutional DeFi Access',
@@ -715,6 +728,7 @@ async function main() {
       entityNames: ['Broadridge Financial Solutions', 'UBS', 'Goldman Sachs', 'Societe Generale'],
       tagSlugs: ['infrastructure', 'settlement', 'institutional', 'derivatives'],
       signal: [5.5, 8.5, 9.0, 9.0, 6.0, 5.5, 7.0, 4.0, 6.0],
+      eventFamily: 'digital-settlement-infra',
     },
     {
       title: 'FCA Publishes Digital Securities Sandbox Rules',
@@ -780,6 +794,7 @@ async function main() {
       entityNames: ['Ondo Finance'],
       tagSlugs: ['treasuries', 'tokenization', 'stablecoin'],
       signal: [5.5, 7.0, 6.5, 7.0, 7.5, 5.0, 7.0, 5.5, 6.5],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'Circle USDC Stablecoin Reaches $45 Billion Market Capitalization',
@@ -798,6 +813,7 @@ async function main() {
       entityNames: ['Circle', 'JPMorgan Chase', 'BNY Mellon'],
       tagSlugs: ['stablecoin', 'payment-rails', 'institutional'],
       signal: [7.5, 8.0, 8.5, 7.0, 7.5, 7.0, 6.0, 5.0, 6.5],
+      eventFamily: 'us-stablecoin-legislation',
     },
     {
       title: 'Fnality Processes First Live Wholesale Digital Payment',
@@ -888,6 +904,7 @@ async function main() {
       entityNames: ['Securitize', 'US Securities and Exchange Commission', 'BlackRock', 'Hamilton Lane', 'KKR'],
       tagSlugs: ['regulation', 'tokenization', 'funds'],
       signal: [8.0, 7.5, 8.0, 7.5, 6.0, 4.5, 6.5, 4.5, 6.5],
+      eventFamily: 'sec-tokenized-framework',
     },
     {
       title: 'Fireblocks Adds Support for Tokenized Securities Custody',
@@ -949,6 +966,7 @@ async function main() {
       entityNames: ['Circle', 'Tether'],
       tagSlugs: ['stablecoin', 'regulation', 'policy', 'cross-border'],
       signal: [9.0, 7.5, 6.0, 5.5, 7.0, 8.5, 5.5, 6.0, 6.5],
+      eventFamily: 'us-stablecoin-legislation',
     },
     {
       title: 'Nasdaq Receives Approval for Digital Asset Custody Unit',
@@ -978,6 +996,7 @@ async function main() {
       entityNames: ['Hamilton Lane', 'Securitize', 'Polygon Labs'],
       tagSlugs: ['private-markets', 'tokenization', 'funds', 'institutional'],
       signal: [5.5, 7.5, 8.0, 7.5, 7.0, 4.5, 7.5, 5.0, 6.0],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'Clearstream Launches Digital Post-Trade Platform for Tokenized Bonds',
@@ -1086,6 +1105,7 @@ async function main() {
       entityNames: ['Fidelity Investments', 'Ethereum Foundation'],
       tagSlugs: ['tokenization', 'funds', 'treasuries'],
       signal: [6.0, 8.0, 8.5, 7.5, 7.5, 5.0, 6.5, 4.5, 7.0],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'OCC Clarifies National Banks Can Provide Digital Asset Custody',
@@ -1144,6 +1164,7 @@ async function main() {
       entityNames: ['KKR', 'Securitize', 'Avalanche'],
       tagSlugs: ['private-markets', 'tokenization', 'funds'],
       signal: [5.0, 7.0, 7.5, 7.0, 6.5, 4.0, 7.0, 4.5, 5.5],
+      eventFamily: 'tokenized-treasury-funds',
     },
     {
       title: 'SGX Tests Tokenized Bond Issuance and Settlement Platform',
@@ -1341,6 +1362,7 @@ async function main() {
         importanceScore: a.importance,
         confidenceScore: a.confidence ?? randomFloat(70, 95),
         sentimentScore: randomFloat(4, 8),
+        eventFamily: a.eventFamily || null,
         sourceId: sourceId || null,
         authorId: author.id,
         publishedAt: daysAgo(a.daysAgo),
@@ -1548,6 +1570,318 @@ async function main() {
     }
   }
 
+  // ─── STATE STABLECOIN TRACKER ────────────────────────
+  console.log('  Creating state stablecoin tracker data...');
+
+  // -- Florida --
+  const florida = await prisma.trackedState.create({
+    data: {
+      name: 'Florida',
+      slug: 'florida',
+      abbreviation: 'FL',
+      status: 'PASSED_LEGISLATURE',
+      summary: 'Florida\'s legislature has passed a comprehensive payment stablecoin framework through both chambers. The bills establish licensing requirements, reserve-backing standards, and consumer protection provisions for stablecoin issuers operating in the state.',
+      whyItMatters: 'Florida is the third-largest US state by population and a major financial-services hub. Legislative action here signals growing state-level momentum for stablecoin regulation independent of federal efforts, and creates a potential model for other states.',
+      nextExpectedStep: 'Enrollment and governor action expected within 30 days',
+      lastActionDate: daysAgo(3),
+    },
+  });
+
+  const flBillHB175 = await prisma.bill.create({
+    data: {
+      stateId: florida.id,
+      billNumber: 'HB 175',
+      title: 'Florida Digital Assets Act — Payment Stablecoin Framework',
+      summary: 'Establishes a licensing and regulatory framework for payment stablecoin issuers in Florida, including reserve requirements, consumer disclosure obligations, and examination authority for the Office of Financial Regulation.',
+      whatChanged: 'House and Senate approved payment stablecoin framework with broad bipartisan support. The bill passed the House 98-18 and the Senate 32-7.',
+      whyItMatters: 'Creates one of the most comprehensive state-level stablecoin frameworks in the US, potentially attracting issuers seeking regulatory clarity before federal legislation is finalized.',
+      status: 'PASSED_LEGISLATURE',
+      chamber: 'HOUSE',
+      sponsorName: 'Rep. James Buchanan',
+      sourceUrl: 'https://myfloridahouse.gov/Sections/Bills/billsdetail.aspx?BillId=78901',
+      confidenceScore: 88,
+      credibilityTier: 'TIER_1',
+      introducedDate: daysAgo(120),
+      lastActionDate: daysAgo(3),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: flBillHB175.id, title: 'Bill introduced in Florida House', description: 'HB 175 filed by Rep. James Buchanan, referred to Commerce Committee.', status: 'INTRODUCED', date: daysAgo(120), sourceUrl: 'https://myfloridahouse.gov' },
+      { billId: flBillHB175.id, title: 'Commerce Committee hearing scheduled', description: 'HB 175 placed on Commerce Committee agenda for testimony and vote.', status: 'IN_COMMITTEE', date: daysAgo(90), sourceUrl: 'https://myfloridahouse.gov' },
+      { billId: flBillHB175.id, title: 'Advances from Commerce Committee', description: 'Committee voted 12-3 to advance HB 175 with minor amendments to reserve requirements.', status: 'ADVANCED_FROM_COMMITTEE', date: daysAgo(60), sourceUrl: 'https://myfloridahouse.gov' },
+      { billId: flBillHB175.id, title: 'Passes Florida House 98-18', description: 'Full House approved HB 175 with strong bipartisan support.', status: 'PASSED_CHAMBER', date: daysAgo(30), sourceUrl: 'https://myfloridahouse.gov' },
+      { billId: flBillHB175.id, title: 'Passes Florida Senate 32-7', description: 'Senate companion cleared final vote. Bill now heads to governor for signature.', status: 'PASSED_LEGISLATURE', date: daysAgo(3), sourceUrl: 'https://flsenate.gov' },
+    ],
+  });
+
+  const flBillSB1568 = await prisma.bill.create({
+    data: {
+      stateId: florida.id,
+      billNumber: 'SB 1568',
+      title: 'Senate Companion — Payment Stablecoin Framework',
+      summary: 'Senate companion to HB 175. Mirrors House version with identical licensing standards and reserve requirements for payment stablecoin issuers.',
+      whatChanged: 'Senate companion tracked House bill and passed with conforming amendments.',
+      whyItMatters: 'Ensures legislative alignment between chambers, reducing conference risk and accelerating path to governor\'s desk.',
+      status: 'PASSED_LEGISLATURE',
+      chamber: 'SENATE',
+      sponsorName: 'Sen. Ana Maria Rodriguez',
+      sourceUrl: 'https://flsenate.gov/Session/Bill/2026/1568',
+      confidenceScore: 88,
+      credibilityTier: 'TIER_1',
+      introducedDate: daysAgo(110),
+      lastActionDate: daysAgo(3),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: flBillSB1568.id, title: 'Senate companion filed', description: 'SB 1568 filed as Senate companion to HB 175.', status: 'INTRODUCED', date: daysAgo(110), sourceUrl: 'https://flsenate.gov' },
+      { billId: flBillSB1568.id, title: 'Senate Banking Committee approval', description: 'SB 1568 advanced from Banking & Insurance Committee.', status: 'ADVANCED_FROM_COMMITTEE', date: daysAgo(55), sourceUrl: 'https://flsenate.gov' },
+      { billId: flBillSB1568.id, title: 'Passes Senate 32-7', description: 'Senate approved SB 1568, conforming to House-passed version.', status: 'PASSED_LEGISLATURE', date: daysAgo(3), sourceUrl: 'https://flsenate.gov' },
+    ],
+  });
+
+  await prisma.stateUpdate.createMany({
+    data: [
+      { stateId: florida.id, title: 'Governor\'s office acknowledges receipt', description: 'Florida Governor\'s office confirmed enrolled bill received for review. No public timeline for signing.', category: 'executive', date: daysAgo(2), sourceUrl: 'https://flgov.com' },
+      { stateId: florida.id, title: 'OFR begins implementation planning', description: 'Florida Office of Financial Regulation announced internal working group to prepare licensing infrastructure pending governor signature.', category: 'implementation', date: daysAgo(1), sourceUrl: 'https://flofr.gov' },
+    ],
+  });
+
+  // -- Wyoming --
+  const wyoming = await prisma.trackedState.create({
+    data: {
+      name: 'Wyoming',
+      slug: 'wyoming',
+      abbreviation: 'WY',
+      status: 'SIGNED_INTO_LAW',
+      summary: 'Wyoming signed the Wyoming Stable Token Act into law, creating a state-issued stablecoin backed by US Treasury instruments. The state is now in the implementation phase, with the Wyoming Stable Token Commission overseeing deployment.',
+      whyItMatters: 'Wyoming is the first US state to authorize a state-issued stablecoin. The Wyoming Stable Token would be a government-backed digital dollar alternative, raising novel questions about state monetary instruments and federal preemption.',
+      nextExpectedStep: 'Token Commission to publish implementation roadmap and select technology partners',
+      lastActionDate: daysAgo(45),
+    },
+  });
+
+  const wyBillSF0086 = await prisma.bill.create({
+    data: {
+      stateId: wyoming.id,
+      billNumber: 'SF 0086',
+      title: 'Wyoming Stable Token Act',
+      summary: 'Authorizes the Wyoming Stable Token Commission to issue a state-backed stablecoin fully collateralized by US Treasury instruments, with transparency and audit requirements.',
+      whatChanged: 'Governor signed into law. Wyoming becomes first state to authorize a state-issued stablecoin.',
+      whyItMatters: 'Establishes an unprecedented model: a government-issued stablecoin at the state level. Could influence other states and the federal stablecoin debate.',
+      status: 'SIGNED',
+      chamber: 'SENATE',
+      sponsorName: 'Sen. Chris Rothfuss',
+      sourceUrl: 'https://wyoleg.gov/Legislation/2025/SF0086',
+      confidenceScore: 95,
+      credibilityTier: 'TIER_1',
+      introducedDate: daysAgo(200),
+      lastActionDate: daysAgo(45),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: wyBillSF0086.id, title: 'SF 0086 introduced', description: 'Wyoming Stable Token Act introduced in Senate.', status: 'INTRODUCED', date: daysAgo(200), sourceUrl: 'https://wyoleg.gov' },
+      { billId: wyBillSF0086.id, title: 'Senate Minerals Committee approval', description: 'Committee voted 4-1 to advance the bill.', status: 'ADVANCED_FROM_COMMITTEE', date: daysAgo(170), sourceUrl: 'https://wyoleg.gov' },
+      { billId: wyBillSF0086.id, title: 'Passes Wyoming Senate', description: 'Senate approved SF 0086 on third reading.', status: 'PASSED_CHAMBER', date: daysAgo(140), sourceUrl: 'https://wyoleg.gov' },
+      { billId: wyBillSF0086.id, title: 'Passes Wyoming House', description: 'House concurred with Senate version, clearing final legislative hurdle.', status: 'PASSED_LEGISLATURE', date: daysAgo(80), sourceUrl: 'https://wyoleg.gov' },
+      { billId: wyBillSF0086.id, title: 'Governor signs into law', description: 'Governor Mark Gordon signed SF 0086, making Wyoming first state to authorize a state-issued stablecoin.', status: 'SIGNED', date: daysAgo(45), sourceUrl: 'https://governor.wyo.gov' },
+    ],
+  });
+
+  await prisma.stateUpdate.createMany({
+    data: [
+      { stateId: wyoming.id, title: 'Stable Token Commission established', description: 'Governor appointed initial commissioners to the Wyoming Stable Token Commission per the Act\'s requirements.', category: 'executive', date: daysAgo(30), sourceUrl: 'https://governor.wyo.gov' },
+      { stateId: wyoming.id, title: 'Commission holds first public meeting', description: 'Wyoming Stable Token Commission convened for organizational meeting, adopted bylaws, and outlined implementation timeline.', category: 'implementation', date: daysAgo(15), sourceUrl: 'https://wyoleg.gov' },
+    ],
+  });
+
+  // -- Nebraska --
+  const nebraska = await prisma.trackedState.create({
+    data: {
+      name: 'Nebraska',
+      slug: 'nebraska',
+      abbreviation: 'NE',
+      status: 'ACTIVE_LEGISLATION',
+      summary: 'Nebraska has introduced legislation to update its digital asset banking framework with specific provisions for stablecoin custody and issuance by state-chartered digital asset depositories.',
+      whyItMatters: 'Nebraska was an early mover with its 2021 Financial Innovation Act. Updating the framework for stablecoins would build on existing digital asset depository infrastructure and could attract stablecoin issuers seeking a state charter.',
+      nextExpectedStep: 'Banking Committee hearing and markup expected next legislative session',
+      lastActionDate: daysAgo(20),
+    },
+  });
+
+  const neBillLB0649 = await prisma.bill.create({
+    data: {
+      stateId: nebraska.id,
+      billNumber: 'LB 649',
+      title: 'Nebraska Digital Asset Depository Amendment — Stablecoin Provisions',
+      summary: 'Amends the Financial Innovation Act to authorize state-chartered digital asset depositories to issue and custody payment stablecoins, subject to reserve and capital adequacy requirements.',
+      whatChanged: 'Bill introduced with co-sponsorship from banking committee members. Hearing scheduled.',
+      whyItMatters: 'Extends Nebraska\'s existing digital asset depository framework — one of the first in the nation — to explicitly cover stablecoin issuance.',
+      status: 'IN_COMMITTEE',
+      chamber: 'SENATE',
+      sponsorName: 'Sen. Mike Jacobson',
+      sourceUrl: 'https://nebraskalegislature.gov/bills/view_bill.php?DocumentID=56789',
+      confidenceScore: 75,
+      credibilityTier: 'TIER_2',
+      introducedDate: daysAgo(40),
+      lastActionDate: daysAgo(20),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: neBillLB0649.id, title: 'LB 649 introduced', description: 'Bill filed in Nebraska unicameral legislature. Referred to Banking, Commerce & Insurance Committee.', status: 'INTRODUCED', date: daysAgo(40), sourceUrl: 'https://nebraskalegislature.gov' },
+      { billId: neBillLB0649.id, title: 'Committee hearing scheduled', description: 'Banking Committee placed LB 649 on hearing calendar. Industry stakeholders expected to testify.', status: 'IN_COMMITTEE', date: daysAgo(20), sourceUrl: 'https://nebraskalegislature.gov' },
+    ],
+  });
+
+  await prisma.stateUpdate.create({
+    data: {
+      stateId: nebraska.id,
+      title: 'NDBF issues guidance on digital asset depository stablecoin activity',
+      description: 'Nebraska Department of Banking and Finance published interpretive letter clarifying interim compliance expectations for existing depositories engaging in stablecoin-related activity.',
+      category: 'regulatory',
+      date: daysAgo(15),
+      sourceUrl: 'https://ndbf.nebraska.gov',
+    },
+  });
+
+  // -- Texas --
+  const texas = await prisma.trackedState.create({
+    data: {
+      name: 'Texas',
+      slug: 'texas',
+      abbreviation: 'TX',
+      status: 'ACTIVE_LEGISLATION',
+      summary: 'Texas has introduced competing stablecoin bills in both chambers, reflecting strong legislative interest in establishing a state-level framework. The House version focuses on consumer protection while the Senate version emphasizes issuer licensing.',
+      whyItMatters: 'As the second-largest US state by population and GDP, Texas legislative action on stablecoins carries outsized market impact. The state already has a significant crypto mining industry and multiple state-chartered digital asset firms.',
+      nextExpectedStep: 'Committee markup and reconciliation of House and Senate approaches',
+      lastActionDate: daysAgo(10),
+    },
+  });
+
+  const txBillHB4903 = await prisma.bill.create({
+    data: {
+      stateId: texas.id,
+      billNumber: 'HB 4903',
+      title: 'Texas Digital Currency Consumer Protection Act',
+      summary: 'Establishes consumer protection requirements for payment stablecoins including disclosure, redemption guarantees, and reserve transparency.',
+      whatChanged: 'Bill advanced from House Technology & Innovation Committee with amendments strengthening redemption rights.',
+      whyItMatters: 'Consumer-focused approach differs from Senate version, setting up potential conference committee negotiations.',
+      status: 'ADVANCED_FROM_COMMITTEE',
+      chamber: 'HOUSE',
+      sponsorName: 'Rep. Giovanni Capriglione',
+      sourceUrl: 'https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=HB4903',
+      confidenceScore: 72,
+      credibilityTier: 'TIER_2',
+      introducedDate: daysAgo(75),
+      lastActionDate: daysAgo(10),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: txBillHB4903.id, title: 'HB 4903 filed', description: 'Filed by Rep. Capriglione with 8 co-sponsors.', status: 'INTRODUCED', date: daysAgo(75), sourceUrl: 'https://capitol.texas.gov' },
+      { billId: txBillHB4903.id, title: 'Referred to Technology & Innovation', description: 'Speaker assigned bill to House Technology & Innovation Committee.', status: 'IN_COMMITTEE', date: daysAgo(60), sourceUrl: 'https://capitol.texas.gov' },
+      { billId: txBillHB4903.id, title: 'Committee advances bill', description: 'Committee voted 7-2 to advance with amendments adding mandatory redemption windows.', status: 'ADVANCED_FROM_COMMITTEE', date: daysAgo(10), sourceUrl: 'https://capitol.texas.gov' },
+    ],
+  });
+
+  const txBillSB2116 = await prisma.bill.create({
+    data: {
+      stateId: texas.id,
+      billNumber: 'SB 2116',
+      title: 'Texas Stablecoin Issuer Licensing Act',
+      summary: 'Creates a licensing regime for stablecoin issuers under the Texas Department of Banking, with capital requirements and examination authority.',
+      whatChanged: 'Introduced in Senate and referred to Business & Commerce Committee.',
+      whyItMatters: 'Senate approach focuses on issuer licensing rather than consumer protection, creating potential for comprehensive combined legislation.',
+      status: 'IN_COMMITTEE',
+      chamber: 'SENATE',
+      sponsorName: 'Sen. Tan Parker',
+      sourceUrl: 'https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=SB2116',
+      confidenceScore: 68,
+      credibilityTier: 'TIER_2',
+      introducedDate: daysAgo(50),
+      lastActionDate: daysAgo(25),
+    },
+  });
+
+  await prisma.billUpdate.createMany({
+    data: [
+      { billId: txBillSB2116.id, title: 'SB 2116 filed', description: 'Filed by Sen. Parker. Focuses on issuer licensing and prudential standards.', status: 'INTRODUCED', date: daysAgo(50), sourceUrl: 'https://capitol.texas.gov' },
+      { billId: txBillSB2116.id, title: 'Referred to Business & Commerce', description: 'Lt. Governor assigned to Business & Commerce Committee. Hearing not yet scheduled.', status: 'IN_COMMITTEE', date: daysAgo(25), sourceUrl: 'https://capitol.texas.gov' },
+    ],
+  });
+
+  await prisma.stateUpdate.create({
+    data: {
+      stateId: texas.id,
+      title: 'Texas Department of Banking publishes stablecoin industry letter',
+      description: 'TDB issued supervisory guidance letter to state-chartered banks and trust companies regarding stablecoin custody and reserve management expectations.',
+      category: 'regulatory',
+      date: daysAgo(18),
+      sourceUrl: 'https://dob.texas.gov',
+    },
+  });
+
+  // -- New York --
+  const newYork = await prisma.trackedState.create({
+    data: {
+      name: 'New York',
+      slug: 'new-york',
+      abbreviation: 'NY',
+      status: 'ACTIVE_LEGISLATION',
+      summary: 'New York has introduced legislation to codify and expand NYDFS stablecoin guidance into formal statute. The bill would establish reserve composition requirements, audit mandates, and redemption guarantees for stablecoin issuers licensed under the BitLicense regime.',
+      whyItMatters: 'New York\'s NYDFS already regulates major stablecoin issuers including Circle (USDC) and Paxos (USDP/BUSD) through guidance. Codifying these requirements into statute would make New York\'s framework the most prescriptive in the country and could influence federal standards.',
+      nextExpectedStep: 'Assembly Financial Institutions Committee hearing',
+      lastActionDate: daysAgo(14),
+    },
+  });
+
+  const nyBillA7218 = await prisma.bill.create({
+    data: {
+      stateId: newYork.id,
+      billNumber: 'A.7218',
+      title: 'New York Stablecoin Trust Act',
+      summary: 'Codifies NYDFS stablecoin guidance into statute, setting reserve composition limits (minimum 80% US Treasuries), monthly reserve attestation by independent auditors, and next-day redemption guarantees for licensed stablecoin issuers.',
+      whatChanged: 'Introduced by Assemblymember Dinowitz with support from Financial Institutions Committee chair.',
+      whyItMatters: 'Would transform existing regulatory guidance into binding law, removing NYDFS discretion and creating predictable compliance requirements for the largest stablecoin issuers.',
+      status: 'INTRODUCED',
+      chamber: 'HOUSE',
+      sponsorName: 'Assemblymember Daniel Dinowitz',
+      sourceUrl: 'https://nyassembly.gov/leg/?bn=A07218',
+      confidenceScore: 65,
+      credibilityTier: 'TIER_2',
+      introducedDate: daysAgo(14),
+      lastActionDate: daysAgo(14),
+    },
+  });
+
+  await prisma.billUpdate.create({
+    data: {
+      billId: nyBillA7218.id,
+      title: 'A.7218 introduced in Assembly',
+      description: 'Bill filed and referred to Financial Institutions Committee. Sponsor statement cites need to "put stablecoin rules in statute, not just guidance."',
+      status: 'INTRODUCED',
+      date: daysAgo(14),
+      sourceUrl: 'https://nyassembly.gov',
+    },
+  });
+
+  await prisma.stateUpdate.createMany({
+    data: [
+      { stateId: newYork.id, title: 'NYDFS updates stablecoin guidance', description: 'New York Department of Financial Services published updated guidance on reserve composition and redemption timing for licensed stablecoin issuers, signaling alignment with proposed legislation.', category: 'regulatory', date: daysAgo(21), sourceUrl: 'https://dfs.ny.gov' },
+      { stateId: newYork.id, title: 'Industry coalition submits comment letter', description: 'Coalition of stablecoin issuers and fintech firms submitted public comment supporting codification of NYDFS standards with minor modifications.', category: 'industry', date: daysAgo(7), sourceUrl: 'https://dfs.ny.gov' },
+    ],
+  });
+
+  console.log('  ✓ Tracker: 5 states, 7 bills, bill updates, state updates');
+
   // ─── SUMMARY ─────────────────────────────────────────
   const counts = await Promise.all([
     prisma.source.count(),
@@ -1561,6 +1895,10 @@ async function main() {
     prisma.articleTopic.count(),
     prisma.articleEntity.count(),
     prisma.entityTopic.count(),
+    prisma.trackedState.count(),
+    prisma.bill.count(),
+    prisma.billUpdate.count(),
+    prisma.stateUpdate.count(),
   ]);
 
   console.log('\n✅ Seed complete!\n');
@@ -1576,6 +1914,10 @@ async function main() {
   console.log(`  │ Article-Topics   ${String(counts[8]).padStart(10)} │`);
   console.log(`  │ Article-Entities ${String(counts[9]).padStart(10)} │`);
   console.log(`  │ Entity-Topics    ${String(counts[10]).padStart(10)} │`);
+  console.log(`  │ Tracked States   ${String(counts[11]).padStart(10)} │`);
+  console.log(`  │ Bills            ${String(counts[12]).padStart(10)} │`);
+  console.log(`  │ Bill Updates     ${String(counts[13]).padStart(10)} │`);
+  console.log(`  │ State Updates    ${String(counts[14]).padStart(10)} │`);
   console.log('  └──────────────────────────────┘');
 }
 

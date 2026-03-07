@@ -11,6 +11,7 @@ const SIDEBAR_SECTIONS = [
       { label: "Live Feed", href: "/", icon: "◉" },
       { label: "Timeline", href: "/timeline", icon: "◔" },
       { label: "Signals", href: "/signals", icon: "◈" },
+      { label: "State Tracker", href: "/tracker", icon: "⬡" },
       { label: "Reports", href: "/reports", icon: "◇" },
     ],
   },

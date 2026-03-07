@@ -107,6 +107,7 @@ model Article {
   status            ArticleStatus @default(DRAFT)
   assetClass        AssetClass?
   marketSegment     String?
+  eventFamily       String?       // Dedupe key — articles sharing an event family show only the canonical one on the homepage
 
   // Scoring
   importanceScore   Float?        @default(0)
@@ -147,6 +148,7 @@ model Article {
   @@index([sourceId])
   @@index([importanceScore])
   @@index([createdAt])
+  @@index([eventFamily])
 }
 
 enum ArticleType {
@@ -475,4 +477,111 @@ enum JobStatus {
   COMPLETED
   FAILED
   RETRYING
+}
+
+// ─────────────────────────────────────────────────────────────
+// STATE STABLECOIN TRACKER
+// Continuously monitored legislative and policy intelligence
+// ─────────────────────────────────────────────────────────────
+
+model TrackedState {
+  id               String              @id @default(cuid())
+  name             String              // "Florida"
+  slug             String              @unique // "florida"
+  abbreviation     String              @unique // "FL"
+  status           StateTrackerStatus  @default(MONITORING)
+  summary          String?             @db.Text
+  whyItMatters     String?             @db.Text
+  nextExpectedStep String?
+  lastActionDate   DateTime?
+  bills            Bill[]
+  updates          StateUpdate[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([slug])
+  @@index([status])
+}
+
+enum StateTrackerStatus {
+  MONITORING        // Actively monitoring, no current legislation
+  ACTIVE_LEGISLATION
+  PASSED_LEGISLATURE
+  SIGNED_INTO_LAW
+  EFFECTIVE
+  STALLED
+  NO_ACTIVITY
+}
+
+model Bill {
+  id               String          @id @default(cuid())
+  stateId          String
+  state            TrackedState    @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  billNumber       String          // "HB 175"
+  title            String
+  summary          String?         @db.Text
+  whatChanged       String?        @db.Text
+  whyItMatters     String?         @db.Text
+  status           BillStatus      @default(INTRODUCED)
+  chamber          Chamber?
+  sponsorName      String?
+  sourceUrl        String?
+  confidenceScore  Float?          @default(0)
+  credibilityTier  CredibilityTier @default(TIER_2)
+  introducedDate   DateTime?
+  lastActionDate   DateTime?
+  updates          BillUpdate[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([stateId, billNumber])
+  @@index([stateId])
+  @@index([status])
+}
+
+enum BillStatus {
+  INTRODUCED
+  IN_COMMITTEE
+  ADVANCED_FROM_COMMITTEE
+  PASSED_CHAMBER
+  PASSED_LEGISLATURE
+  AWAITING_GOVERNOR
+  SIGNED
+  EFFECTIVE
+  STALLED
+  DEAD
+}
+
+enum Chamber {
+  HOUSE
+  SENATE
+  JOINT
+}
+
+model BillUpdate {
+  id           String      @id @default(cuid())
+  billId       String
+  bill         Bill        @relation(fields: [billId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?     @db.Text
+  status       BillStatus?
+  date         DateTime
+  sourceUrl    String?
+  createdAt    DateTime    @default(now())
+
+  @@index([billId, date])
+}
+
+model StateUpdate {
+  id           String       @id @default(cuid())
+  stateId      String
+  state        TrackedState @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?      @db.Text
+  category     String?      // "legislation", "executive", "implementation", "pilot"
+  date         DateTime
+  sourceUrl    String?
+  createdAt    DateTime     @default(now())
+
+  @@index([stateId, date])
 }
