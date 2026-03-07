@@ -33,7 +33,14 @@ export default async function StateDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const state = await getTrackedStateBySlug(slug);
+
+  let state;
+  try {
+    state = await getTrackedStateBySlug(slug);
+  } catch {
+    // Transient DB / connection error — treat as not-found
+    notFound();
+  }
   if (!state) notFound();
 
   const lastAction = state.lastActionDate

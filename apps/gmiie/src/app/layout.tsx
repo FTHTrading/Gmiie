@@ -36,12 +36,25 @@ export default async function GmiieLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [trendingTopics, trendingEntities, aggregateSignals, compositeIndex] = await Promise.all([
-    getTrendingTopics(),
-    getTrendingEntities(),
-    getAggregateSignals(),
-    getCompositeIndex(),
-  ]);
+  let trendingTopics: Awaited<ReturnType<typeof getTrendingTopics>> = [];
+  let trendingEntities: Awaited<ReturnType<typeof getTrendingEntities>> = [];
+  let aggregateSignals: Awaited<ReturnType<typeof getAggregateSignals>> = [];
+  let compositeIndex: Awaited<ReturnType<typeof getCompositeIndex>> = null;
+
+  try {
+    const [tt, te, as_, ci] = await Promise.all([
+      getTrendingTopics(),
+      getTrendingEntities(),
+      getAggregateSignals(),
+      getCompositeIndex(),
+    ]);
+    trendingTopics = tt;
+    trendingEntities = te;
+    aggregateSignals = as_;
+    compositeIndex = ci;
+  } catch {
+    // Database not connected — render shell with empty data
+  }
 
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
