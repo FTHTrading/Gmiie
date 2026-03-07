@@ -544,7 +544,8 @@ export async function getAggregateSignals(): Promise<SignalDimension[]> {
       .map((s) => s[field] as number | null)
       .filter((v): v is number => v != null && v > 0);
     if (values.length === 0) return 0;
-    return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+    // DB stores 0-100; convert to 0-10 scale (matching DEFAULT_SIGNALS & composite index)
+    return Math.round(values.reduce((a, b) => a + b, 0) / values.length) / 10;
   };
 
   const mapped = [

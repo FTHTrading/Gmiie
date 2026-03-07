@@ -1317,6 +1317,7 @@ async function main() {
     const articleSlug = slug(a.title);
     const canonicalHash = hash(a.title, a.source);
 
+    try {
     // Create article
     const article = await prisma.article.upsert({
       where: { slug: articleSlug },
@@ -1409,6 +1410,10 @@ async function main() {
           create: { articleId: article.id, tagId },
         });
       }
+    }
+    } catch (err) {
+      console.error(`  ⚠ Failed to create article: "${a.title}"`);
+      console.error(`    Error:`, err instanceof Error ? err.message : err);
     }
   }
 

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@xxxiii/ui/src/components/ThemeProvider";
 import { PlatformHeader } from "@/components/header/Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { SignalsPanel } from "@/components/signals/SignalsPanel";
+import { MobileNav } from "@/components/navigation/MobileNav";
 import { getTrendingTopics, getTrendingEntities, getAggregateSignals, getCompositeIndex } from "@/lib/data";
 
 const inter = Inter({
@@ -48,7 +49,8 @@ export default async function GmiieLayout({
         <ThemeProvider defaultTheme="light" storageKey="gmiie-theme">
           <PlatformHeader />
 
-          <div className="pt-[76px] flex">
+          {/* pt-12 on mobile (no utility bar), pt-[76px] on md+ (utility bar + nav bar) */}
+          <div className="pt-12 md:pt-[76px] pb-16 lg:pb-0 flex">
             <Sidebar />
 
             <main className="flex-1 min-w-0 px-4 lg:px-8 py-6">
@@ -62,6 +64,8 @@ export default async function GmiieLayout({
               compositeIndex={compositeIndex}
             />
           </div>
+
+          <MobileNav />
         </ThemeProvider>
       </body>
     </html>

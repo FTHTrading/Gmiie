@@ -1,5 +1,6 @@
-import { getLatestArticles, getDashboardCounts } from "@/lib/data";
+import { getLatestArticles, getDashboardCounts, getAggregateSignals, getCompositeIndex } from "@/lib/data";
 import { IntelligenceCardCompact } from "@/components/intelligence/IntelligenceCard";
+import { MobileSignalsSummary } from "@/components/signals/MobileSignalsSummary";
 import type { ArticleListItem } from "@/lib/models";
 import Link from "next/link";
 
@@ -18,14 +19,20 @@ const SECTION_MAP: Record<string, { title: string; order: number }> = {
 export default async function GmiieHomePage() {
   let articles: ArticleListItem[] = [];
   let counts = { articles: 0, entities: 0, topics: 0, sources: 0 };
+  let aggregateSignals: Awaited<ReturnType<typeof getAggregateSignals>> = [];
+  let compositeIndex: Awaited<ReturnType<typeof getCompositeIndex>> = null;
 
   try {
-    const [rawArticles, rawCounts] = await Promise.all([
+    const [rawArticles, rawCounts, rawSignals, rawIndex] = await Promise.all([
       getLatestArticles(30),
       getDashboardCounts(),
+      getAggregateSignals(),
+      getCompositeIndex(),
     ]);
     articles = rawArticles;
     counts = rawCounts;
+    aggregateSignals = rawSignals;
+    compositeIndex = rawIndex;
   } catch {
     // Database not connected yet — show empty state
   }
@@ -60,12 +67,12 @@ export default async function GmiieHomePage() {
   return (
     <div>
       {/* ═══ Utility bar: Dashboard stats ═══ */}
-      <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-6 pb-4 border-b border-border-subtle">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-6 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-blue" />
           <span className="meta-line">Monitored</span>
         </div>
-        <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-6 flex-wrap">
           <StatPill label="Articles" value={counts.articles} />
           <StatPill label="Entities" value={counts.entities} />
           <StatPill label="Topics" value={counts.topics} />
@@ -81,6 +88,12 @@ export default async function GmiieHomePage() {
         </span>
       </div>
 
+      {/* Mobile signals summary — shown when sidebar signal panel is hidden */}
+      <MobileSignalsSummary
+        signals={aggregateSignals.length > 0 ? aggregateSignals : undefined}
+        compositeIndex={compositeIndex}
+      />
+
       {articles.length === 0 && (
         <div className="text-center py-16">
           <p className="text-body text-text-muted">No intelligence articles yet.</p>
@@ -93,16 +106,16 @@ export default async function GmiieHomePage() {
       {articles.length > 0 && (
         <>
           {/* ═══ HERO ZONE — Lead story + intelligence panel ═══ */}
-          <div className="grid lg:grid-cols-[1fr_380px] gap-8 mb-8 pb-8 border-b border-border-subtle">
+          <div className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border-subtle">
             {/* Lead story */}
             <div>
               {hero && <IntelligenceCardCompact article={hero} variant="hero" />}
             </div>
 
-            {/* Intelligence panel — latest headlines */}
-            <div className="border-l border-border-subtle pl-6 hidden lg:block">
-              <h3 className="meta-line mb-4">Latest Headlines</h3>
-              <div className="space-y-4">
+            {/* Intelligence panel — latest headlines (visible on mobile as compact list) */}
+            <div className="border-t lg:border-t-0 lg:border-l border-border-subtle pt-4 lg:pt-0 lg:pl-6">
+              <h3 className="meta-line mb-3 sm:mb-4">Latest Headlines</h3>
+              <div className="space-y-3 sm:space-y-4">
                 {articles.slice(1, 6).map((article) => (
                   <Link
                     key={article.slug}
@@ -121,9 +134,9 @@ export default async function GmiieHomePage() {
             </div>
           </div>
 
-          {/* ═══ SECONDARY STORIES — 2-up grid ═══ */}
+          {/* ═══ SECONDARY STORIES — stack on mobile, 2-up on md+ ═══ */}
           {secondary.length > 0 && (
-            <div className="grid md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-border-subtle">
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border-subtle">
               {secondary.map((article) => (
                 <IntelligenceCardCompact key={article.slug} article={article} variant="secondary" />
               ))}
@@ -133,11 +146,11 @@ export default async function GmiieHomePage() {
           {/* ═══ SECTIONED FEED — Doctrine: organized by coverage area ═══ */}
           {sortedSections.map(([title, sectionArticles]) => (
             <div key={title} className="section-rule">
-              <h2 className="text-heading-sm font-bold text-text-primary mb-1 flex items-center gap-3">
-                <span className="w-6 h-0.5 bg-gold" />
+              <h2 className="text-heading-sm font-bold text-text-primary mb-1 flex items-center gap-2 sm:gap-3">
+                <span className="w-4 sm:w-6 h-0.5 bg-gold" />
                 {title}
               </h2>
-              <div className="space-y-3 mt-4">
+              <div className="space-y-2 sm:space-y-3 mt-3 sm:mt-4">
                 {sectionArticles.slice(0, 5).map((article) => (
                   <IntelligenceCardCompact key={article.slug} article={article} />
                 ))}
@@ -148,11 +161,11 @@ export default async function GmiieHomePage() {
           {/* ═══ REMAINING — Top Developments (unsectioned) ═══ */}
           {unsectioned.length > 0 && (
             <div className="section-rule">
-              <h2 className="text-heading-sm font-bold text-text-primary mb-1 flex items-center gap-3">
-                <span className="w-6 h-0.5 bg-gold" />
+              <h2 className="text-heading-sm font-bold text-text-primary mb-1 flex items-center gap-2 sm:gap-3">
+                <span className="w-4 sm:w-6 h-0.5 bg-gold" />
                 Top Developments
               </h2>
-              <div className="space-y-3 mt-4">
+              <div className="space-y-2 sm:space-y-3 mt-3 sm:mt-4">
                 {unsectioned.slice(0, 10).map((article) => (
                   <IntelligenceCardCompact key={article.slug} article={article} />
                 ))}

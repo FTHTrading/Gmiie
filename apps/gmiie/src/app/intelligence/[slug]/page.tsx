@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { generateMetadata as genMeta } from "@xxxiii/seo";
 import { getArticleBySlug } from "@/lib/data";
 import { SignalGauge } from "@/components/signals/SignalGauge";
+import { ArticleListenPlayer } from "@/components/audio/ArticleListenPlayer";
 import type { ArticleDetail } from "@/lib/models";
 
 export const revalidate = 60;
@@ -82,7 +83,7 @@ export default async function IntelligenceArticlePage({
       </nav>
 
       {/* ── Doctrine: Meta line — Type · Source basis · Date ── */}
-      <div className="meta-line flex items-center gap-1.5 mb-3">
+      <div className="meta-line flex items-center gap-1.5 mb-3 flex-wrap">
         <span className={`px-2 py-0.5 border rounded text-[11px] ${typeColor}`}>
           {article.articleType.replace(/_/g, " ")}
         </span>
@@ -95,7 +96,7 @@ export default async function IntelligenceArticlePage({
         {signal && signal.overallScore && (
           <>
             <span className="opacity-40">·</span>
-            <span className="text-gold font-semibold">Score {signal.overallScore.toFixed(0)}</span>
+            <span className="text-gold font-semibold">Score {(signal.overallScore / 10).toFixed(1)}</span>
           </>
         )}
         {article.importanceScore && article.importanceScore >= 80 && (
@@ -119,7 +120,7 @@ export default async function IntelligenceArticlePage({
       )}
 
       {/* ── Byline + publication info ── */}
-      <div className="flex flex-wrap items-center gap-3 text-body-sm text-text-muted mb-6 pb-6 border-b-2 border-border">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-body-sm text-text-muted mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-border">
         <span className="font-mono">
           {article.publishedAt
             ? new Date(article.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
@@ -147,6 +148,9 @@ export default async function IntelligenceArticlePage({
           </>
         )}
       </div>
+
+      {/* ── Listen: Full article audio player ── */}
+      <ArticleListenPlayer article={article} />
 
       {/* ── Two-column: content + signal sidebar ── */}
       <div className="grid lg:grid-cols-[1fr_280px] gap-8">
@@ -295,9 +299,9 @@ export default async function IntelligenceArticlePage({
           {signal && (
             <>
               {/* Overall score — prominent */}
-              <div className="p-5 rounded-xl bg-surface border border-border-subtle text-center">
+              <div className="p-4 sm:p-5 rounded-xl bg-surface border border-border-subtle text-center">
                 <div className="text-display font-bold text-gold mb-1">
-                  {signal.overallScore?.toFixed(0) ?? "—"}
+                  {signal.overallScore ? (signal.overallScore / 10).toFixed(1) : "—"}
                 </div>
                 <div className="meta-line">
                   Overall Score
@@ -305,7 +309,7 @@ export default async function IntelligenceArticlePage({
               </div>
 
               {/* Individual signals */}
-              <div className="p-5 rounded-xl bg-surface border border-border-subtle space-y-3">
+              <div className="p-4 sm:p-5 rounded-xl bg-surface border border-border-subtle space-y-3">
                 <h3 className="meta-line text-gold mb-2">
                   Signal Dimensions
                 </h3>
@@ -341,7 +345,7 @@ export default async function IntelligenceArticlePage({
           )}
 
           {/* Metadata block */}
-          <div className="p-5 rounded-xl bg-surface border border-border-subtle">
+          <div className="p-4 sm:p-5 rounded-xl bg-surface border border-border-subtle">
             <h3 className="meta-line mb-3">Article Metadata</h3>
             <dl className="space-y-2.5 text-body-sm">
               <div className="flex justify-between">

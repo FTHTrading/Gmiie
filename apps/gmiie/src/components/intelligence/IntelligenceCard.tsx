@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ArticleListItem } from "@/lib/models";
+import { ListenButton } from "@/components/audio/AudioPlayer";
 
 /** @deprecated Use ArticleListItem from @/lib/models directly */
 export type IntelligenceCardData = ArticleListItem;
@@ -55,19 +56,15 @@ function getVerificationState(article: ArticleListItem): {
   const tier = article.source?.credibilityTier;
   const confidence = article.confidenceScore ?? 0;
 
-  // Tier 1 sources with decent confidence → Verified
   if (tier === "TIER_1" && confidence >= 50) {
     return { label: "Verified", className: "status-verified", tooltip: VERIFICATION_TOOLTIPS["Verified"] };
   }
-  // Tier 1 with low confidence or Tier 2 with good confidence → Verified with caveat
   if (tier === "TIER_1" || (tier === "TIER_2" && confidence >= 60)) {
     return { label: "Verified with caveat", className: "status-caveat", tooltip: VERIFICATION_TOOLTIPS["Verified with caveat"] };
   }
-  // Tier 2 or recent articles → Developing
   if (tier === "TIER_2" || confidence >= 40) {
     return { label: "Developing", className: "status-developing", tooltip: VERIFICATION_TOOLTIPS["Developing"] };
   }
-  // Tier 3+ or low confidence → Historical context
   if (tier === "TIER_3" || tier === "TIER_4") {
     return { label: "Historical context", className: "status-historical", tooltip: VERIFICATION_TOOLTIPS["Historical context"] };
   }
@@ -96,7 +93,8 @@ function formatDate(dateStr: string | null): string {
 
 /* ═══════════════════════════════════════════════════════════════
    HERO CARD — Lead story, WSJ front-page style
-   Large headline, full summary, prominent signal scores
+   Mobile: Simplified — type, verification, headline, summary
+   Desktop: Full layout with signals and entities
    ═══════════════════════════════════════════════════════════════ */
 function HeroCard({ article }: { article: ArticleListItem }) {
   const typeLabel = TYPE_LABELS[article.articleType] || article.articleType.replace(/_/g, " ");
@@ -114,31 +112,31 @@ function HeroCard({ article }: { article: ArticleListItem }) {
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
         <span className={verification.className} title={verification.tooltip}>{verification.label}</span>
-        <span className="opacity-40">·</span>
-        <span>{sourceBasis}</span>
+        <span className="opacity-40 hidden sm:inline">·</span>
+        <span className="hidden sm:inline">{sourceBasis}</span>
         <span className="opacity-40">·</span>
         <span>{formatDate(article.publishedAt)}</span>
       </div>
 
-      {/* Hero headline */}
-      <h2 className="headline-hero text-text-primary group-hover:text-gold transition-colors duration-150 mb-3">
+      {/* Hero headline — slightly smaller on mobile */}
+      <h2 className="headline-hero text-text-primary group-hover:text-gold transition-colors duration-150 mb-2 sm:mb-3">
         {article.title}
       </h2>
 
-      {/* Executive summary — full display */}
+      {/* Executive summary — 2 lines on mobile, 4 on desktop */}
       {article.executiveSummary && (
-        <p className="text-body-lg text-text-secondary leading-relaxed mb-4 line-clamp-4">
+        <p className="text-body sm:text-body-lg text-text-secondary leading-relaxed mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-4">
           {article.executiveSummary}
         </p>
       )}
 
-      {/* Signal score — single overall, not cluttered */}
+      {/* Signal score — hidden on mobile, shown on desktop */}
       {signal && signal.overallScore && (
-        <div className="flex items-center gap-5 mb-3 py-3 border-t border-b border-border-subtle">
+        <div className="hidden sm:flex items-center gap-5 mb-3 py-3 border-t border-b border-border-subtle">
           <div className="flex items-center gap-1.5">
             <span className="meta-line">Score</span>
             <span className="font-mono font-bold text-body text-gold">
-              {signal.overallScore.toFixed(0)}
+              {(signal.overallScore / 10).toFixed(1)}
             </span>
           </div>
           {signal.institutionalAdoption != null && (
@@ -150,8 +148,29 @@ function HeroCard({ article }: { article: ArticleListItem }) {
         </div>
       )}
 
-      {/* Entities max 2 + overflow, Topics max 2 */}
-      <div className="flex items-center gap-2 flex-wrap">
+      {/* Mobile: Minimal score badge + listen */}
+      {signal && signal.overallScore && (
+        <div className="flex sm:hidden items-center gap-2 mb-2">
+          <span className="font-mono text-caption font-bold text-gold">
+            Score {(signal.overallScore / 10).toFixed(1)}
+          </span>
+          <span className="text-caption text-text-muted">·</span>
+          <span className="text-caption text-text-muted">{verification.label}</span>
+        </div>
+      )}
+
+      {/* Listen button — prominent on mobile */}
+      {article.executiveSummary && (
+        <div className="mt-2 sm:mt-0">
+          <ListenButton
+            text={article.executiveSummary}
+            title={article.title}
+          />
+        </div>
+      )}
+
+      {/* Entities — hidden on mobile */}
+      <div className="hidden sm:flex items-center gap-2 flex-wrap">
         {article.entities.slice(0, 2).map((ae) => (
           <span
             key={ae.slug}
@@ -180,7 +199,7 @@ function HeroCard({ article }: { article: ArticleListItem }) {
 
 /* ═══════════════════════════════════════════════════════════════
    SECONDARY CARD — Used in 2-up grids below hero
-   Medium headline, 2-line summary
+   Mobile: Stacks vertically, simplified
    ═══════════════════════════════════════════════════════════════ */
 function SecondaryCard({ article }: { article: ArticleListItem }) {
   const typeColor = TYPE_COLORS[article.articleType] || "border-l-border";
@@ -190,7 +209,7 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
   return (
     <Link
       href={`/intelligence/${article.slug}`}
-      className={`block p-4 border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group rounded-lg`}
+      className={`block p-3 sm:p-4 border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group rounded-lg`}
     >
       {/* Meta line: Type · Verification · Date */}
       <div className="meta-line flex items-center gap-1.5 mb-1.5">
@@ -206,16 +225,16 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
         {article.title}
       </h3>
 
-      {/* Summary */}
+      {/* Summary — 1 line on mobile, 2 on desktop */}
       {article.executiveSummary && (
-        <p className="text-body-sm text-text-secondary leading-relaxed line-clamp-2 mb-2">
+        <p className="text-body-sm text-text-secondary leading-relaxed line-clamp-1 sm:line-clamp-2 mb-2">
           {article.executiveSummary}
         </p>
       )}
 
-      {/* Entities — max 2 */}
+      {/* Entities — hidden on mobile */}
       {article.entities.length > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="hidden sm:flex items-center gap-1.5 flex-wrap">
           {article.entities.slice(0, 2).map((ae) => (
             <span
               key={ae.slug}
@@ -237,7 +256,8 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
 
 /* ═══════════════════════════════════════════════════════════════
    COMPACT CARD — Feed items, the standard doctrine card
-   Type · Verification · Source basis · Date → headline → summary
+   Mobile: Type · Verification · Date → headline → 1-line summary
+   Desktop: Full with score, entities, topics
    ═══════════════════════════════════════════════════════════════ */
 export function IntelligenceCardCompact({ article, variant = "default" }: IntelligenceCardCompactProps) {
   if (variant === "hero") return <HeroCard article={article} />;
@@ -252,36 +272,54 @@ export function IntelligenceCardCompact({ article, variant = "default" }: Intell
   return (
     <Link
       href={`/intelligence/${article.slug}`}
-      className={`block p-5 rounded-xl border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group`}
+      className={`block p-3 sm:p-5 rounded-xl border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group`}
     >
       {/* ── Doctrine: Type · Verification · Source basis · Date ── */}
-      <div className="meta-line flex items-center gap-1.5 mb-2 flex-wrap">
+      <div className="meta-line flex items-center gap-1.5 mb-1.5 sm:mb-2 flex-wrap">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
         <span className={verification.className} title={verification.tooltip}>{verification.label}</span>
-        <span className="opacity-40">·</span>
-        <span>{sourceBasis}</span>
+        <span className="opacity-40 hidden sm:inline">·</span>
+        <span className="hidden sm:inline">{sourceBasis}</span>
         <span className="opacity-40">·</span>
         <span>{formatDate(article.publishedAt)}</span>
       </div>
 
       {/* ── Doctrine: Headline ── */}
-      <h3 className="text-body font-semibold text-text-primary group-hover:text-gold transition-colors duration-150 leading-snug mb-2 line-clamp-2">
+      <h3 className="text-body-sm sm:text-body font-semibold text-text-primary group-hover:text-gold transition-colors duration-150 leading-snug mb-1.5 sm:mb-2 line-clamp-2">
         {article.title}
       </h3>
 
-      {/* ── Doctrine: Executive summary ── */}
+      {/* ── Doctrine: Executive summary — 1 line mobile, 2 desktop ── */}
       {article.executiveSummary && (
-        <p className="text-body-sm text-text-secondary leading-relaxed mb-3 line-clamp-2">
+        <p className="text-caption sm:text-body-sm text-text-secondary leading-relaxed mb-2 sm:mb-3 line-clamp-1 sm:line-clamp-2">
           {article.executiveSummary}
         </p>
       )}
 
-      {/* ── Doctrine: Compact footer — score + max 2 entities + max 2 topics ── */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* ── Mobile: Minimal footer — just score ── */}
+      <div className="flex sm:hidden items-center gap-2">
         {signal && signal.overallScore && (
           <span className="font-mono text-caption font-bold text-gold">
-            Score {signal.overallScore.toFixed(0)}
+            {(signal.overallScore / 10).toFixed(1)}
+          </span>
+        )}
+        {article.entities.length > 0 && (
+          <span className="text-caption text-text-muted truncate">
+            {article.entities[0].name}
+            {article.entities.length > 1 && ` +${article.entities.length - 1}`}
+          </span>
+        )}        {article.executiveSummary && (
+          <div className="ml-auto">
+            <ListenButton text={article.executiveSummary} title={article.title} />
+          </div>
+        )}      </div>
+
+      {/* ── Desktop: Full footer — score + entities + topics ── */}
+      <div className="hidden sm:flex items-center gap-3 flex-wrap">
+        {signal && signal.overallScore && (
+          <span className="font-mono text-caption font-bold text-gold">
+            Score {(signal.overallScore / 10).toFixed(1)}
           </span>
         )}
         {article.entities.slice(0, 2).map((ae) => (
