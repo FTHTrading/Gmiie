@@ -160,4 +160,79 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Design Doctrine: Border widths ── */
+  .border-l-3 {
+    border-left-width: 3px;
+  }
+  .border-l-4 {
+    border-left-width: 4px;
+  }
+
+  /* ── Design Doctrine: Verification status colors ── */
+  .status-verified {
+    color: var(--color-green);
+  }
+  .status-developing {
+    color: var(--color-blue);
+  }
+  .status-caveat {
+    color: var(--color-gold);
+  }
+  .status-historical {
+    color: var(--color-text-muted);
+  }
+
+  .bg-status-verified {
+    background-color: rgba(var(--status-green-rgb, 26, 143, 110), 0.1);
+  }
+  .bg-status-developing {
+    background-color: rgba(var(--status-blue-rgb, 43, 91, 174), 0.1);
+  }
+  .bg-status-caveat {
+    background-color: rgba(var(--status-gold-rgb, 154, 123, 44), 0.1);
+  }
+
+  /* ── Design Doctrine: Section dividers ── */
+  .section-rule {
+    border-top: 1px solid var(--color-border-subtle);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .section-rule-heavy {
+    border-top: 2px solid var(--color-border);
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  /* ── Design Doctrine: Typography refinements ── */
+  .headline-hero {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+
+  .headline-secondary {
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+
+  .meta-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
 }

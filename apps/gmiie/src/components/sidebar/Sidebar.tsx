@@ -28,7 +28,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[260px] h-[calc(100vh-56px)] sticky top-14 overflow-y-auto border-r border-border-subtle bg-background px-3 py-5 hidden lg:block">
+    <aside className="w-[260px] h-[calc(100vh-76px)] sticky top-[76px] overflow-y-auto border-r border-border-subtle bg-background px-3 py-5 hidden lg:block">
       {/* Navigation sections */}
       {SIDEBAR_SECTIONS.map((section) => (
         <div key={section.title} className="mb-7">

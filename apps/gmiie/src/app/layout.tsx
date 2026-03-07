@@ -48,7 +48,7 @@ export default async function GmiieLayout({
         <ThemeProvider defaultTheme="light" storageKey="gmiie-theme">
           <PlatformHeader />
 
-          <div className="pt-14 flex">
+          <div className="pt-[76px] flex">
             <Sidebar />
 
             <main className="flex-1 min-w-0 px-4 lg:px-8 py-6">

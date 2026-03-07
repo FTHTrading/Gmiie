@@ -45,84 +45,109 @@ export default async function TopicPage({
   const entities = topic.entities;
 
   return (
-    <div>
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-caption text-text-muted mb-4 font-mono">
+    <article>
+      {/* ── Breadcrumb ── */}
+      <nav className="flex items-center gap-2 text-caption text-text-muted mb-5 font-mono">
         <Link href="/" className="hover:text-gold transition-colors">GMIIE</Link>
-        <span>/</span>
+        <span className="opacity-40">/</span>
         <Link href="/topics" className="hover:text-gold transition-colors">Topics</Link>
-        <span>/</span>
+        <span className="opacity-40">/</span>
         <span className="text-text-secondary">{topic.name}</span>
       </nav>
 
-      {topic.cluster && (
-        <span className="inline-block px-2.5 py-1 text-label font-mono uppercase tracking-wider border border-border-subtle rounded-lg text-text-muted mb-3">
-          {topic.cluster.name}
-        </span>
-      )}
+      {/* ── Doctrine: Meta line — cluster + stats ── */}
+      <div className="meta-line flex items-center gap-1.5 mb-3">
+        {topic.cluster && (
+          <>
+            <span className="px-2 py-0.5 border border-border-subtle rounded text-[11px] text-text-muted">
+              {topic.cluster.name}
+            </span>
+            <span className="opacity-40">·</span>
+          </>
+        )}
+        <span>{articles.length} article{articles.length !== 1 ? "s" : ""}</span>
+        <span className="opacity-40">·</span>
+        <span>{entities.length} entit{entities.length !== 1 ? "ies" : "y"}</span>
+      </div>
 
-      <h1 className="text-heading font-bold text-text-primary mb-2">
+      {/* ── Doctrine: Headline ── */}
+      <h1 className="headline-hero text-text-primary mb-3">
         {topic.name}
       </h1>
 
       {topic.description && (
-        <p className="text-body text-text-secondary leading-relaxed mb-4 max-w-3xl">
+        <p className="text-body-lg text-text-secondary leading-relaxed mb-6 pb-6 border-b-2 border-border max-w-3xl">
           {topic.description}
         </p>
       )}
 
-      <div className="flex items-center gap-4 text-body-sm text-text-muted mb-6 pb-6 border-b border-border-subtle">
-        <span className="font-mono">{articles.length} articles</span>
-        <span className="w-1 h-1 rounded-full bg-border-subtle" />
-        <span>{entities.length} entities</span>
+      {/* ── Two-column: intelligence + entities sidebar ── */}
+      <div className="grid lg:grid-cols-[1fr_280px] gap-8">
+        {/* ═══ Main: Latest Intelligence ═══ */}
+        <div>
+          {articles.length > 0 ? (
+            <>
+              <h2 className="meta-line text-gold mb-4">Latest Intelligence</h2>
+              <div className="space-y-3">
+                {articles.slice(0, 15).map((article) => (
+                  <IntelligenceCardCompact key={article.slug} article={article} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-16 text-text-muted">
+              <p className="text-body">No intelligence coverage yet for this topic.</p>
+              <p className="text-body-sm mt-2">Articles will appear here as they are published.</p>
+            </div>
+          )}
+        </div>
+
+        {/* ═══ Sidebar: Key Entities ═══ */}
+        <aside className="space-y-4">
+          {entities.length > 0 && (
+            <div className="p-5 rounded-xl bg-surface border border-border-subtle">
+              <h3 className="meta-line mb-3">Key Entities</h3>
+              <div className="space-y-2">
+                {entities.map((entity) => (
+                  <Link
+                    key={entity.slug}
+                    href={`/entities/${entity.slug}`}
+                    className="block p-3 rounded-lg bg-background hover:bg-surface-elevated border border-transparent hover:border-gold/20 transition-colors group"
+                  >
+                    <div className="text-body-sm font-semibold text-text-primary group-hover:text-gold transition-colors">
+                      {entity.name}
+                    </div>
+                    <div className="text-label text-text-muted">
+                      {entity.entityType.replace(/_/g, " ").toLowerCase()}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Topic metadata */}
+          <div className="p-5 rounded-xl bg-surface border border-border-subtle">
+            <h3 className="meta-line mb-3">Topic Profile</h3>
+            <dl className="space-y-2.5 text-body-sm">
+              {topic.cluster && (
+                <div className="flex justify-between">
+                  <dt className="text-text-muted">Cluster</dt>
+                  <dd className="text-text-secondary">{topic.cluster.name}</dd>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <dt className="text-text-muted">Articles</dt>
+                <dd className="text-text-secondary font-mono">{articles.length}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-text-muted">Entities</dt>
+                <dd className="text-text-secondary font-mono">{entities.length}</dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
       </div>
-
-      {/* Latest Articles */}
-      {articles.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-body font-mono tracking-[0.15em] text-text-muted uppercase mb-4">
-            Latest Intelligence
-          </h2>
-          <div className="space-y-3">
-            {articles.slice(0, 10).map((article) => (
-              <IntelligenceCardCompact key={article.slug} article={article} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Key Entities */}
-      {entities.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-body font-mono tracking-[0.15em] text-text-muted uppercase mb-4">
-            Key Entities
-          </h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {entities.map((entity) => (
-              <Link
-                key={entity.slug}
-                href={`/entities/${entity.slug}`}
-                className="p-3.5 rounded-xl bg-surface border border-border-subtle hover:border-gold/20 transition-colors group"
-              >
-                <div className="text-body font-semibold text-text-primary group-hover:text-gold transition-colors">
-                  {entity.name}
-                </div>
-                <div className="text-label text-text-muted">
-                  {entity.entityType.replace(/_/g, " ").toLowerCase()}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {articles.length === 0 && entities.length === 0 && (
-        <div className="text-center py-16 text-text-muted">
-          <p className="text-body">No intelligence coverage yet for this topic.</p>
-          <p className="text-body-sm mt-2">Articles will appear here as they are published.</p>
-        </div>
-      )}
-    </div>
+    </article>
   );
 }

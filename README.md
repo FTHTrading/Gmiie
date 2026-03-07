@@ -1,406 +1,705 @@
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║  XXXIII.IO — Global Financial Infrastructure Intelligence  ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div align="center">
+
 # XXXIII.IO
 
-**The intelligence infrastructure for the tokenized capital markets era.**
+**Global Financial Infrastructure Intelligence**
 
-XXXIII.IO is a modular platform that ingests, analyzes, and publishes
-global intelligence on tokenized securities, digital asset regulation,
-and financial market infrastructure.
+[![Production](https://img.shields.io/badge/Production-xxxiii.io-C9A84C?style=flat-square&logo=vercel&logoColor=white)](https://xxxiii.io)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![Prisma](https://img.shields.io/badge/Prisma-6.19-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://prisma.io)
+[![Turborepo](https://img.shields.io/badge/Turborepo-Monorepo-EF4444?style=flat-square&logo=turborepo&logoColor=white)](https://turbo.build)
+[![License](https://img.shields.io/badge/License-Proprietary-1a1a2e?style=flat-square)](LICENSE)
 
-The platform powers three integrated systems:
+<br />
 
-- **GMIIE** — Global Monetary Infrastructure Intelligence Engine
-- **LPS-1** — Deterministic publishing protocol for verifiable digital provenance
-- **XXXIII Studio** — AI editorial and intelligence operations platform
+*AI-powered intelligence platform tracking tokenized assets, financial infrastructure, regulation, and institutional blockchain adoption across global capital markets.*
 
-Together they form an automated knowledge infrastructure for the
-emerging on-chain financial system.
+</div>
 
 ---
 
-## Ecosystem Overview
+## Table of Contents
 
+- [Architecture Overview](#architecture-overview)
+- [System Flow](#system-flow)
+- [Monorepo Structure](#monorepo-structure)
+- [Intelligence Pipeline](#intelligence-pipeline)
+- [Signal Scoring System](#signal-scoring-system)
+- [Database Design](#database-design)
+- [AI Engine](#ai-engine)
+- [Source Credibility Tiers](#source-credibility-tiers)
+- [Deployment Architecture](#deployment-architecture)
+- [Local Development](#local-development)
+- [Environment Variables](#environment-variables)
+- [Security Model](#security-model)
+- [Design System](#design-system)
+- [Roadmap](#roadmap)
+
+---
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    subgraph Sources["🌐 External Sources"]
+        RSS["RSS Feeds"]
+        Web["Web Scraping"]
+        SEC["SEC EDGAR"]
+        FRED["FRED API"]
+        SM["Sitemaps"]
+    end
+
+    subgraph Ingestion["⚡ Ingestion Layer"]
+        PY["Python Pipeline<br/><i>feedparser · Playwright · httpx</i>"]
+        DD["Deduplication<br/><i>URL norm · Content hash · Title similarity</i>"]
+    end
+
+    subgraph Queue["📨 Job Orchestration"]
+        RD["Redis"]
+        BQ["BullMQ<br/><i>11 Queues</i>"]
+    end
+
+    subgraph AI["🧠 AI Engine"]
+        CL["Classify<br/><i>GPT-4o · t=0.1</i>"]
+        SC["Score<br/><i>GPT-4o · t=0.2</i>"]
+        DR["Draft<br/><i>GPT-4o · t=0.4</i>"]
+        SE["SEO Optimize<br/><i>GPT-4o-mini</i>"]
+    end
+
+    subgraph Storage["💾 Data Layer"]
+        PG["PostgreSQL<br/><i>Neon (Production)</i>"]
+        PR["Prisma ORM<br/><i>478-line schema · 15+ models</i>"]
+    end
+
+    subgraph Apps["🖥️ Applications"]
+        GMIIE["GMIIE<br/><i>Intelligence Dashboard</i>"]
+        HUB["Hub<br/><i>Ecosystem Portal</i>"]
+        LPS["LPS<br/><i>Protocol Spec</i>"]
+        STU["Studio<br/><i>Admin CMS</i>"]
+    end
+
+    subgraph Delivery["🚀 Delivery"]
+        VER["Vercel Edge<br/><i>ISR + Serverless</i>"]
+        CDN["CDN Cache"]
+    end
+
+    Sources --> PY --> DD --> RD
+    RD --> BQ
+    BQ --> CL --> SC --> DR --> SE
+    SE --> PR --> PG
+    PG --> Apps
+    Apps --> VER --> CDN
+
+    style Sources fill:#1a1a2e,stroke:#C9A84C,color:#e0e0e0
+    style Ingestion fill:#1a1a2e,stroke:#3B82F6,color:#e0e0e0
+    style Queue fill:#1a1a2e,stroke:#EF4444,color:#e0e0e0
+    style AI fill:#1a1a2e,stroke:#8B5CF6,color:#e0e0e0
+    style Storage fill:#1a1a2e,stroke:#10B981,color:#e0e0e0
+    style Apps fill:#1a1a2e,stroke:#C9A84C,color:#e0e0e0
+    style Delivery fill:#1a1a2e,stroke:#06B6D4,color:#e0e0e0
 ```
-Global Sources
-(Regulators, Banks, Media, Protocols)
-        │
-        ▼
-Ingestion Pipeline
-(RSS, APIs, Scraping)
-        │
-        ▼
-AI Intelligence Engine
-(Classification, Scoring, Analysis)
-        │
-        ▼
-Publisher Service
-(Validation → SEO → Publication)
-        │
-        ▼
-GMIIE Platform
-(Intelligence Feed, Topics, Entities, Signals)
-        │
-        ├── Research Reports
-        ├── Weekly Intelligence Brief
-        └── Market Infrastructure Analysis
+
+---
+
+## System Flow
+
+```mermaid
+sequenceDiagram
+    participant S as Sources (20+)
+    participant I as Ingestion (Python)
+    participant Q as Redis/BullMQ
+    participant AI as AI Engine (GPT-4o)
+    participant DB as PostgreSQL
+    participant APP as Next.js App
+    participant U as User
+
+    S->>I: RSS/scrape/API fetch
+    I->>I: Deduplicate (URL + hash + similarity)
+    I->>Q: Enqueue with priority (tier-based)
+    
+    Q->>AI: classify job
+    AI->>DB: Save classification
+    
+    Q->>AI: score job (9 dimensions)
+    AI->>DB: Save signal scores
+    
+    Q->>AI: draft job (brief/analysis/deep-dive)
+    AI->>DB: Save article content
+    
+    Q->>AI: seo job (title/meta/FAQ)
+    AI->>DB: Update SEO metadata
+    
+    Q->>DB: review queue → PUBLISHED
+    
+    U->>APP: Request page
+    APP->>DB: Prisma query
+    DB-->>APP: Data
+    APP-->>U: ISR-cached response (60-300s)
 ```
 
 ---
 
-## Intelligence Model
-
-XXXIII.IO transforms raw financial news into structured intelligence.
-
-Each development is processed through the GMIIE pipeline and converted
-into a standardized intelligence artifact containing:
-
-- Structured entities (regulators, banks, exchanges, protocols)
-- Topic classification across 20 categories and 8 clusters
-- Infrastructure impact analysis
-- Regulatory implications
-- Market significance scoring (9 dimensions, 1–10 scale)
-- AI-generated analysis (briefs, deep dives, weekly digests)
-- Machine-readable metadata (JSON-LD, Open Graph, sitemaps)
-
----
-
-## Core Intelligence Topics
-
-GMIIE focuses on the infrastructure transformation of global finance.
-
-Primary coverage areas include:
-
-- Tokenized securities and real-world assets
-- Digital asset regulation and compliance
-- Stablecoins and payment rails
-- Central bank digital currency (CBDC) development
-- Custody and digital asset infrastructure
-- Market settlement modernization
-- Institutional blockchain adoption
-- Cross-border financial infrastructure
-- Sovereign digital financial systems
-
----
-
-## Architecture
+## Monorepo Structure
 
 ```
 xxxiii-io/
 ├── apps/
-│   ├── hub/          → xxxiii.io         (Ecosystem landing hub)
-│   ├── gmiie/        → gmiie.xxxiii.io   (Intelligence platform)
-│   ├── lps/          → lps.xxxiii.io     (LPS-1 protocol standard)
-│   └── studio/       → studio.xxxiii.io  (Admin dashboard)
+│   ├── gmiie/          ← Intelligence dashboard (Next.js 15)
+│   ├── hub/            ← Ecosystem landing portal
+│   ├── lps/            ← Protocol specification
+│   └── studio/         ← Admin CMS & editorial
+│
 ├── packages/
-│   ├── db/           → Prisma ORM + PostgreSQL schema
-│   ├── types/        → Shared TypeScript types
-│   ├── config/       → Brand, domains, taxonomy, navigation
-│   ├── seo/          → Metadata, JSON-LD, sitemaps
-│   └── ui/           → Design system components
+│   ├── db/             ← Prisma schema, client singleton, migrations
+│   ├── types/          ← Shared TypeScript interfaces
+│   ├── config/         ← Brand, taxonomy, navigation constants
+│   ├── seo/            ← Metadata generation, JSON-LD, sitemaps
+│   └── ui/             ← React component library + Tailwind design system
+│
 ├── services/
-│   ├── ingestion/    → Python async pipeline (RSS, scraping, APIs)
-│   ├── ai-engine/    → OpenAI/Anthropic classification, scoring, writing
-│   │   └── prompts/  → Modular prompt templates (classify, score, write, seo, digest)
-│   ├── queue/        → BullMQ job orchestration
-│   └── publisher/    → Content validation & publication workflow
-├── data/
-│   ├── sources/      → Structured source registries by category
-│   ├── taxonomy/     → Topic clusters & classification trees
-│   ├── entity-seeds/ → Seed data for known entities
-│   └── topic-clusters/ → SEO topic cluster maps
-└── infra/
-    ├── docker/       → Docker Compose + Dockerfiles
-    ├── dns/          → DNS record configuration
-    └── scripts/      → Setup & deployment scripts
+│   ├── ingestion/      ← Python async data pipeline
+│   ├── ai-engine/      ← AI classification, scoring, generation
+│   ├── queue/          ← BullMQ job orchestration (11 queues)
+│   └── publisher/      ← Content validation & publication workflow
+│
+├── docs/
+│   ├── architecture.md ← System design & diagrams
+│   ├── api.md          ← API reference
+│   └── strategy.md     ← Product strategy
+│
+├── turbo.json          ← Turborepo pipeline config
+├── pnpm-workspace.yaml ← pnpm workspace definition
+└── package.json        ← Root scripts & tooling
 ```
 
-## Products
+### Applications
 
-### GMIIE — Global Monetary Infrastructure Intelligence Engine
-AI-powered intelligence platform covering tokenized securities, CBDC development, stablecoin regulation, digital asset compliance, and institutional DeFi. Ingests from 20+ tier-1 sources including the Federal Reserve, SEC, BIS, IMF, and ECB.
+| App | Port | Domain | Stack | Purpose |
+|:----|:----:|:-------|:------|:--------|
+| **GMIIE** | `3001` | `xxxiii.io` | Next.js 15, React 19 | Intelligence feed, entities, topics, signals, timeline |
+| **Hub** | `3000` | `hub.xxxiii.io` | Next.js 15 | Ecosystem landing & product discovery |
+| **LPS** | `3002` | `lps.xxxiii.io` | Next.js 15 | Ledger Protocol Specification |
+| **Studio** | `3003` | `studio.xxxiii.io` | Next.js 15 | Editorial CMS, admin dashboard |
 
-### LPS-1 — Literary Publishing Standard
-Protocol specification for on-chain literary asset verification. Defines the 5-layer stack (L0 Content Hash → L4 Marketplace) for tokenized literary works.
+### Packages
 
----
+| Package | Purpose | Key Exports |
+|:--------|:--------|:------------|
+| `@xxxiii/db` | Database layer | `prisma` client singleton, Prisma schema |
+| `@xxxiii/types` | Type system | Shared interfaces, enums, utility types |
+| `@xxxiii/config` | Constants | Brand values, taxonomy maps, navigation trees |
+| `@xxxiii/seo` | SEO utilities | `generateMetadata()`, JSON-LD builders, sitemap helpers |
+| `@xxxiii/ui` | Component library | React components, Tailwind theme, design tokens |
 
-## Tech Stack
+### Services
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | Next.js 15, React 19, Tailwind CSS |
-| **Backend** | Node.js, TypeScript, Prisma ORM |
-| **Database** | PostgreSQL 16, Redis 7 |
-| **Search** | Meilisearch |
-| **AI** | OpenAI GPT-4o, Anthropic Claude |
-| **Queue** | BullMQ |
-| **Ingestion** | Python 3.12, Playwright, feedparser |
-| **Storage** | S3 (MinIO for dev) |
-| **Monorepo** | Turborepo, pnpm workspaces |
-
----
-
-## Quick Start
-
-### Prerequisites
-- Node.js 20+
-- pnpm 9+
-- Docker & Docker Compose
-- Python 3.12+ (for ingestion service)
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/xxxiii/xxxiii-io.git
-cd xxxiii-io
-
-# Run the setup script
-chmod +x infra/scripts/setup.sh
-./infra/scripts/setup.sh
-
-# Or manually:
-pnpm install
-cp .env.example .env     # Edit with your API keys
-docker compose -f infra/docker/docker-compose.yml up -d postgres redis meilisearch
-pnpm --filter @xxxiii/db exec prisma generate
-pnpm --filter @xxxiii/db exec prisma db push
-pnpm run build --filter='./packages/*'
-```
-
-### Development
-
-```bash
-# Start all apps
-pnpm dev
-
-# Start individual apps
-pnpm dev:hub       # localhost:3000  — xxxiii.io
-pnpm dev:gmiie     # localhost:3001  — gmiie.xxxiii.io
-pnpm dev:lps       # localhost:3002  — lps.xxxiii.io
-pnpm dev:studio    # localhost:3003  — studio.xxxiii.io
-
-# Start queue workers
-pnpm --filter @xxxiii/queue dev
-
-# Start ingestion service
-cd services/ingestion && python -m src.pipeline
-```
-
-### Infrastructure
-
-```bash
-# Start all infra services
-docker compose -f infra/docker/docker-compose.yml up -d
-
-# Access points
-# PostgreSQL  → localhost:5432
-# Redis       → localhost:6379
-# Meilisearch → localhost:7700
-# Adminer     → localhost:8080  (DB admin UI)
-# MinIO       → localhost:9001  (S3 console)
-```
+| Service | Language | Runtime | Purpose |
+|:--------|:---------|:--------|:--------|
+| `ingestion` | Python 3.12 | async/await | RSS polling, web scraping, API ingestion |
+| `ai-engine` | TypeScript | Node.js | GPT-4o classification, scoring, content generation |
+| `queue` | TypeScript | Node.js | BullMQ orchestration across 11 job queues |
+| `publisher` | TypeScript | Node.js | Content validation, sanitization, status transitions |
 
 ---
 
 ## Intelligence Pipeline
 
-The core data flow from source to publication:
+```mermaid
+graph LR
+    subgraph Ingest["1. Ingest"]
+        A1["Poll RSS"]
+        A2["Scrape pages"]
+        A3["Fetch APIs"]
+    end
 
+    subgraph Dedup["2. Deduplicate"]
+        B1["URL normalize"]
+        B2["Content hash<br/><i>xxhash</i>"]
+        B3["Title similarity"]
+    end
+
+    subgraph Classify["3. Classify"]
+        C1["Topic assignment"]
+        C2["Entity extraction"]
+        C3["Article type"]
+        C4["Urgency level"]
+    end
+
+    subgraph Score["4. Score"]
+        D1["9 signal<br/>dimensions"]
+        D2["Weighted<br/>composite"]
+    end
+
+    subgraph Generate["5. Generate"]
+        E1["Brief / Analysis /<br/>Deep Dive"]
+        E2["SEO optimization"]
+        E3["FAQ generation"]
+    end
+
+    subgraph Publish["6. Publish"]
+        F1["Review queue"]
+        F2["Validation"]
+        F3["Status → PUBLISHED"]
+    end
+
+    Ingest --> Dedup --> Classify --> Score --> Generate --> Publish
+
+    style Ingest fill:#1e3a5f,stroke:#3B82F6,color:#e0e0e0
+    style Dedup fill:#1e3a5f,stroke:#3B82F6,color:#e0e0e0
+    style Classify fill:#2d1b4e,stroke:#8B5CF6,color:#e0e0e0
+    style Score fill:#2d1b4e,stroke:#8B5CF6,color:#e0e0e0
+    style Generate fill:#1b3d2e,stroke:#10B981,color:#e0e0e0
+    style Publish fill:#3d1b1b,stroke:#C9A84C,color:#e0e0e0
 ```
-Source → Ingest → Deduplicate → Classify → Score → Draft → SEO → Review → Publish
-         (Python)                (AI)       (AI)    (AI)    (AI)
+
+### Article Status Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> INGESTED
+    INGESTED --> PROCESSING : classify job
+    PROCESSING --> DRAFT : AI generation
+    DRAFT --> REVIEW : auto/manual
+    REVIEW --> APPROVED : editor pass
+    REVIEW --> REJECTED : quality fail
+    APPROVED --> PUBLISHED : publish job
+    PUBLISHED --> ARCHIVED : lifecycle
+    REJECTED --> DRAFT : revision
 ```
 
-1. **Ingestion** — Python service polls RSS feeds, scrapes web pages, and fetches API data from 20+ sources
-2. **Deduplication** — URL normalization, content hashing (xxhash), title similarity matching
-3. **Classification** — AI determines topic, entities, article type, and urgency
-4. **Scoring** — 9-dimension signal scoring (regulatory impact, market significance, institutional relevance, etc.)
-5. **Drafting** — AI generates briefs, analyses, or deep dives based on signal scores
-6. **SEO + GEO Optimization** — Title optimization, meta descriptions, FAQ schema, AI knowledge system optimization
-7. **Review** — Human review queue for quality assurance
-8. **Publishing** — Content validation, sanitization, slug generation, status transitions
+### Queue Architecture (11 Queues)
+
+| Queue | Concurrency | Purpose |
+|:------|:-----------:|:--------|
+| `ingestion` | 3 | Trigger Python fetch pipeline |
+| `classify` | 5 | AI topic/entity/type classification |
+| `score` | 5 | 9-dimension signal scoring |
+| `draft` | 3 | AI article generation |
+| `seo` | 5 | Title, meta, FAQ optimization |
+| `review` | 1 | Human review queue |
+| `publish` | 1 | Validation + status transition |
+| `entity` | 3 | Entity profile building/refresh |
+| `newsletter` | 1 | Daily/weekly digest compilation |
+| `sitemap` | 1 | XML sitemap regeneration |
+| `maintenance` | 1 | Cleanup, stats, health checks |
 
 ---
 
-## Signal Scoring Dimensions
+## Signal Scoring System
 
-Each article is scored 1–10 across 9 intelligence dimensions:
+Each article is scored 1–10 across **9 intelligence dimensions**:
 
-| Dimension | Weight (Tier 1) | Description |
-|-----------|----------------|-------------|
-| Regulatory Impact | 20% | Policy and compliance implications |
-| Market Significance | 15% | Price and volume effects |
-| Institutional Relevance | 15% | Importance to institutional actors |
-| Infrastructure Development | 10% | Technical infrastructure changes |
-| Narrative Influence | 10% | Market sentiment and discourse |
-| Geopolitical Relevance | 10% | Cross-border and sovereignty impact |
-| Innovation Signal | 8% | Novel technology or approaches |
-| Risk Factor | 7% | Systemic or operational risk |
-| Temporal Urgency | 5% | Time-sensitivity of information |
+```mermaid
+pie title Signal Score Weight Distribution
+    "Regulatory Impact" : 20
+    "Market Significance" : 15
+    "Institutional Relevance" : 15
+    "Infrastructure Dev" : 10
+    "Narrative Influence" : 10
+    "Geopolitical Relevance" : 10
+    "Innovation Signal" : 8
+    "Risk Factor" : 7
+    "Temporal Urgency" : 5
+```
+
+| Dimension | Weight | Database Field | Description |
+|:----------|:------:|:---------------|:------------|
+| **Institutional Adoption** | 20% | `institutionalAdoption` | Enterprise/institutional engagement level |
+| **Regulatory Clarity** | 15% | `regulatoryClarity` | Regulatory framework development |
+| **Market Readiness** | 15% | `marketReadiness` | Market infrastructure preparedness |
+| **Infrastructure Maturity** | 10% | `infrastructureMaturity` | Technical infrastructure state |
+| **Settlement Impact** | 10% | `settlementImpact` | Settlement system implications |
+| **Compliance Intensity** | 10% | `complianceIntensity` | Compliance burden/requirements |
+| **Cross-Border Relevance** | 8% | `crossBorderRelevance` | International/cross-jurisdiction impact |
+| **Liquidity Significance** | 7% | `liquiditySignificance` | Market liquidity effects |
+| **Strategic Urgency** | 5% | `strategicUrgency` | Time-sensitivity of information |
+
+### Composite GMIIE Index
+
+Aggregate scores across all published articles in a rolling 30-day window produce the **GMIIE Composite Index** — a single-number barometer of global financial infrastructure transformation activity.
 
 ---
 
-## Source Tiers
+## Database Design
 
-| Tier | Sources | Credibility |
-|------|---------|------------|
-| **Tier 1** | Federal Reserve, SEC, BIS, IMF, CFTC, ECB | Authoritative — official government/regulatory |
-| **Tier 2** | CoinDesk, The Block, Bloomberg Law, FT, Chainalysis | Verified — established institutional media |
-| **Tier 3** | Ledger Insights, DL News, Cointelegraph, Blockworks | Contextual — industry-specific coverage |
-| **Tier 4** | Community, independent analysts | Supplementary — additional perspectives |
+```mermaid
+erDiagram
+    Source ||--o{ Article : "publishes"
+    Article ||--o| Signal : "has scores"
+    Article }o--o{ Topic : "ArticleTopic"
+    Article }o--o{ Entity : "ArticleEntity"
+    Article }o--o{ Tag : "ArticleTag"
+    Topic }o--|| TopicCluster : "belongs to"
+    Entity }o--o{ Topic : "EntityTopic"
+    Entity ||--o{ TimelineEvent : "has events"
+    Article }|--o| Author : "written by"
+    User ||--o{ AuditLog : "creates"
+
+    Source {
+        string name
+        string slug
+        string credibilityTier
+        string feedUrl
+        boolean isActive
+    }
+
+    Article {
+        string title
+        string headline
+        string content
+        string articleType
+        string status
+        float importanceScore
+        datetime publishedAt
+    }
+
+    Signal {
+        float institutionalAdoption
+        float regulatoryClarity
+        float marketReadiness
+        float overallScore
+    }
+
+    Entity {
+        string name
+        string entityType
+        string headquarters
+        string country
+        boolean isActive
+    }
+
+    Topic {
+        string name
+        string slug
+        string description
+        int sortOrder
+    }
+
+    TopicCluster {
+        string name
+        string slug
+        string description
+    }
+```
+
+### Key Models (15+)
+
+| Model | Records | Purpose |
+|:------|:-------:|:--------|
+| `Source` | 50 | Feed configurations with credibility tiers |
+| `Article` | 47+ | Full content with classification, scores, SEO metadata |
+| `Topic` | 20 | Intelligence taxonomy categories |
+| `TopicCluster` | 4 | High-level topic groupings |
+| `Entity` | 80 | Organizations, regulators, protocols, people |
+| `Signal` | per-article | 9-dimension scoring data |
+| `TimelineEvent` | per-entity | Entity development timeline |
+| `Tag` | variable | Content tagging system |
+| `Author` | variable | Human and AI authors |
+| `User` | admin | Admin authentication |
+| `AuditLog` | append-only | Editorial activity tracking |
+| `JobLog` | per-run | Pipeline execution history |
+
+### Schema Design Decisions
+
+1. **Credibility Tiers** — Sources rated `TIER_1` → `TIER_4` for weighted scoring
+2. **10-State Status Machine** — `INGESTED` → `PUBLISHED` with defined transitions
+3. **9D Signal Scores** — Stored as individual floats + indexed composite `overallScore`
+4. **Content Hashing** — xxhash for fast deduplication at ingestion
+5. **Soft Deletes** — Articles are archived, never hard-deleted
+6. **Zod Runtime Validation** — Every data mapper validates against typed schemas
 
 ---
 
-## Database Schema
+## AI Engine
 
-15+ models managed by Prisma ORM:
+### Model Selection
 
-- **Source** — Feed configurations with credibility tiers
-- **Article** — Full content with classification, scores, SEO metadata
-- **Topic / TopicCluster** — Hierarchical taxonomy (20 topics → 8 clusters)
-- **Entity** — Organizations, regulators, protocols, people
-- **Signal** — Raw signal events from various sources
-- **Tag** — Content tagging system
-- **User / AuditLog** — Admin authentication and activity tracking
-- **JobLog** — Pipeline job execution history
-- **TimelineEvent** — Entity timeline tracking
+| Task | Model | Temperature | Rationale |
+|:-----|:------|:----------:|:----------|
+| Classification | GPT-4o | 0.1 | High precision, structured output |
+| Signal Scoring | GPT-4o | 0.2 | Consistent numerical scoring |
+| Brief Writing | GPT-4o | 0.4 | Balanced creativity/accuracy |
+| Deep Analysis | GPT-4o | 0.5 | More creative freedom |
+| SEO Titles | GPT-4o-mini | 0.4 | Cost-effective, pattern-based |
+| Meta Descriptions | GPT-4o-mini | 0.3 | Cost-effective |
+| FAQ Generation | GPT-4o | 0.3 | Structured data accuracy |
+
+### Prompt Architecture
+
+12 structured prompt templates across 5 categories:
+
+```mermaid
+mindmap
+  root((Prompts))
+    Analysis
+      classify_article
+      score_signal
+    Generation
+      write_brief
+      write_analysis
+      write_deep_dive
+      summarize
+    SEO
+      generate_seo_title
+      generate_meta_description
+      generate_faqs
+    Profile
+      build_entity_profile
+    Digest
+      compile_newsletter
+      write_daily_digest
+```
+
+All prompts use **structured JSON output schemas** for deterministic parsing. No free-form text generation — every AI response is validated against a typed schema before storage.
+
+---
+
+## Source Credibility Tiers
+
+| Tier | Type | Example Sources | Treatment |
+|:-----|:-----|:----------------|:----------|
+| **Tier 1** | Government / Regulatory | Federal Reserve, SEC, BIS, IMF, ECB, CFTC | Authoritative — highest weight, fact basis |
+| **Tier 2** | Institutional Media | Bloomberg, FT, Reuters, CoinDesk, The Block | Verified — established editorial standards |
+| **Tier 3** | Industry Coverage | Ledger Insights, DL News, Blockworks, Cointelegraph | Contextual — requires cross-reference |
+| **Tier 4** | Community / Independent | Analyst blogs, forums, social media | Supplementary — lowest weight, flagged |
 
 ---
 
 ## Deployment Architecture
 
-Production environments are deployed as independent services:
+```mermaid
+graph TB
+    subgraph Production["Production Stack"]
+        V["Vercel<br/><i>Edge + Serverless</i>"]
+        N["Neon<br/><i>PostgreSQL</i>"]
+        CF["Cloudflare<br/><i>DNS + SSL</i>"]
+    end
 
-| Service | Infrastructure |
-|---------|----------------|
-| Web apps | Vercel / Netlify |
-| Workers | Docker containers |
-| Database | Managed PostgreSQL |
-| Queue | Redis cluster |
-| Search | Meilisearch |
-| Storage | S3 compatible |
+    subgraph Development["Development"]
+        DC["Docker Compose"]
+        LP["Local PostgreSQL"]
+        LR["Local Redis"]
+    end
 
-All services are horizontally scalable and containerized.
+    subgraph CI["Build Pipeline"]
+        GH["GitHub<br/><i>FTHTrading/Gmiie</i>"]
+        TB["Turborepo<br/><i>Cached builds</i>"]
+        VC["Vercel CI<br/><i>Auto-deploy</i>"]
+    end
+
+    GH --> VC --> TB --> V
+    V --> N
+    V --> CF
+
+    style Production fill:#1a2e1a,stroke:#10B981,color:#e0e0e0
+    style Development fill:#1a1a2e,stroke:#3B82F6,color:#e0e0e0
+    style CI fill:#2e1a2e,stroke:#8B5CF6,color:#e0e0e0
+```
+
+| Component | Platform | Scaling Strategy |
+|:----------|:---------|:-----------------|
+| Next.js Apps | **Vercel** | Edge + Serverless functions |
+| PostgreSQL | **Neon** | Serverless, auto-scaling |
+| DNS + SSL | **Cloudflare** | Global edge network |
+| Queue Workers | Railway / Fly.io | Horizontal (per queue) |
+| Ingestion | Railway / Fly.io | Single instance + cron |
+| Search | Meilisearch Cloud | Managed |
+| Object Storage | S3 / Cloudflare R2 | Unlimited |
+
+### Domain Configuration
+
+| Domain | Purpose | Provider |
+|:-------|:--------|:---------|
+| `xxxiii.io` | GMIIE production | Vercel |
+| `www.xxxiii.io` | Redirect → `xxxiii.io` | Vercel |
+| `donkeys.xxxiii.io` | Legacy site | Cloudflare Pages |
 
 ---
 
-## Security
+## Local Development
 
-XXXIII.IO follows several security practices:
+### Prerequisites
 
-- Role-based admin authentication
-- Signed ingestion sources with credibility tiers
-- HTML sanitization before publishing
-- Immutable article history
-- Audit logging for editorial actions
-- Environment variable secret isolation
-- Queue job isolation
-- Content hash verification for deduplication
+- **Node.js** >= 20
+- **pnpm** 9.15+
+- **Docker** (for PostgreSQL, Redis, Meilisearch)
+- **Python** 3.12+ (for ingestion service)
 
-Sensitive credentials are never committed to the repository.
+### Quick Start
+
+```bash
+# Clone
+git clone https://github.com/FTHTrading/Gmiie.git
+cd Gmiie
+
+# Install dependencies
+pnpm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys and database URL
+
+# Start infrastructure
+docker compose -f infra/docker/docker-compose.yml up -d
+
+# Generate Prisma client & push schema
+pnpm db:generate
+pnpm db:push
+
+# Seed database (optional)
+pnpm db:seed
+
+# Build shared packages
+pnpm run build --filter='./packages/*'
+
+# Start development
+pnpm dev          # All apps
+pnpm dev:gmiie    # Just GMIIE (port 3001)
+```
+
+### Available Scripts
+
+| Command | Description |
+|:--------|:------------|
+| `pnpm dev` | Start all apps in development |
+| `pnpm dev:hub` | Hub on `localhost:3000` |
+| `pnpm dev:gmiie` | GMIIE on `localhost:3001` |
+| `pnpm dev:lps` | LPS on `localhost:3002` |
+| `pnpm dev:studio` | Studio on `localhost:3003` |
+| `pnpm build` | Build all packages and apps |
+| `pnpm db:generate` | Generate Prisma client |
+| `pnpm db:push` | Push schema to database |
+| `pnpm db:seed` | Seed database with initial data |
+| `pnpm db:studio` | Open Prisma Studio GUI |
+| `pnpm test` | Run Vitest test suite (64 tests) |
+| `pnpm lint` | ESLint across workspace |
+| `pnpm clean` | Remove all build artifacts |
 
 ---
 
 ## Environment Variables
 
-Copy `.env.example` and configure:
-
 ```bash
-# Database
-DATABASE_URL=postgresql://xxxiii:password@localhost:5432/xxxiii
+# ── Database ──────────────────────────────
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
 
-# Redis
+# ── Redis ─────────────────────────────────
 REDIS_URL=redis://localhost:6379
 
-# AI
+# ── AI ────────────────────────────────────
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Domains
+# ── Domains ───────────────────────────────
 NEXT_PUBLIC_ROOT_DOMAIN=xxxiii.io
 NEXT_PUBLIC_GMIIE_DOMAIN=gmiie.xxxiii.io
-NEXT_PUBLIC_LPS_DOMAIN=lps.xxxiii.io
 
-# Search
+# ── Search ────────────────────────────────
 MEILISEARCH_URL=http://localhost:7700
 MEILISEARCH_KEY=xxxiii_meili_dev_key
 ```
 
-See `.env.example` for the complete list.
-
 ---
 
-## Project Structure Details
+## Security Model
 
-### Apps
+### Authentication & Access
 
-| App | Port | Domain | Purpose |
-|-----|------|--------|---------|
-| `hub` | 3000 | xxxiii.io | Ecosystem landing hub |
-| `gmiie` | 3001 | gmiie.xxxiii.io | Intelligence feed, topics, entities, signals |
-| `lps` | 3002 | lps.xxxiii.io | Protocol spec, reference implementations |
-| `studio` | 3003 | studio.xxxiii.io | Admin dashboard, content management |
+| Surface | Method | Roles |
+|:--------|:-------|:------|
+| Studio (CMS) | NextAuth.js | `ADMIN`, `EDITOR`, `ANALYST`, `VIEWER` |
+| Public Apps | None required | Open access |
+| Services | Internal network | No public exposure |
 
-### Packages
+### Content Security
 
-| Package | Purpose |
-|---------|---------|
-| `@xxxiii/db` | Prisma client singleton, database schema |
-| `@xxxiii/types` | Shared TypeScript interfaces and types |
-| `@xxxiii/config` | Brand constants, taxonomy, navigation, colors |
-| `@xxxiii/seo` | Metadata generation, JSON-LD schemas, sitemaps |
-| `@xxxiii/ui` | React component library, Tailwind design system |
-
-### Services
-
-| Service | Language | Purpose |
-|---------|----------|---------|
-| `ingestion` | Python | Async data pipeline (RSS, scraping, APIs) |
-| `ai-engine` | TypeScript | AI classification, scoring, content generation |
-| `queue` | TypeScript | BullMQ job orchestration and scheduling |
-| `publisher` | TypeScript | Content validation and publication workflow |
-
----
-
-## Roadmap
-
-### Phase 1 — Core Platform
-- Intelligence ingestion pipeline
-- AI classification and scoring
-- GMIIE intelligence feed
-- LPS protocol site
-
-### Phase 2 — Knowledge Graph
-- Entity relationship graph
-- Timeline tracking
-- Market maps
-
-### Phase 3 — Research Products
-- Institutional reports
-- Automated weekly briefings
-- Regulatory tracker
-
-### Phase 4 — Intelligence APIs
-- Developer APIs
-- Partner integrations
-- Enterprise dashboards
+- **HTML Sanitization** — `sanitize-html` with allowlisted tags
+- **External Links** — `rel="noopener noreferrer nofollow"`
+- **Input Validation** — Zod schemas at every boundary
+- **SQL Injection** — Prevented by Prisma parameterized queries
+- **Content Integrity** — xxhash deduplication, immutable article history
+- **Audit Logging** — All editorial actions tracked
+- **Secret Isolation** — Environment variable separation per deployment
 
 ---
 
 ## Design System
 
-- **Background**: `#0A0A0F` (near-black)
-- **Surface**: `#12121A` (dark elevated)
-- **Gold Accent**: `#C9A84C` (institutional gold)
-- **Fonts**: Inter (body), JetBrains Mono (code/data)
-- **Style**: Dark, premium, institutional aesthetic
+| Token | Value | Usage |
+|:------|:------|:------|
+| `background` | `#0A0A0F` | Page background |
+| `surface` | `#12121A` | Cards, panels |
+| `surface-elevated` | `#1A1A28` | Modals, dropdowns |
+| `gold` | `#C9A84C` | Primary accent, CTAs |
+| `text-primary` | `#F0F0F5` | Headlines, body |
+| `text-secondary` | `#A0A0B8` | Supporting text |
+| `text-muted` | `#5A5A78` | Labels, captions |
+| `border-subtle` | `#1E1E30` | Card borders |
+| Font Sans | Inter | Body text |
+| Font Mono | JetBrains Mono | Data, labels, code |
+
+The visual language draws from Bloomberg Terminal discipline — dark, premium, data-dense, institutional-grade.
 
 ---
 
-## License
+## Roadmap
 
-Proprietary. All rights reserved.
+```mermaid
+timeline
+    title XXXIII.IO Development Phases
+    section Phase 1 — Core Platform ✅
+        Intelligence pipeline : Ingestion + AI
+        GMIIE dashboard : Feed, entities, topics, signals
+        Signal scoring : 9-dimension system
+        Production deploy : Vercel + Neon
+    section Phase 2 — Knowledge Graph
+        Entity relationships : Graph visualization
+        Timeline tracking : Event correlation
+        Market maps : Sector analysis
+    section Phase 3 — Research Products
+        Institutional reports : PDF generation
+        Weekly briefings : Automated digests
+        Regulatory tracker : Real-time alerts
+    section Phase 4 — Intelligence APIs
+        Developer APIs : REST + GraphQL
+        Partner integrations : Data feeds
+        Enterprise dashboards : Custom views
+```
 
 ---
 
-**Built by XXXIII** — *Infrastructure for the tokenized economy.*
+## Tech Stack
+
+| Layer | Technology | Version |
+|:------|:-----------|:-------:|
+| **Runtime** | Node.js | 20+ |
+| **Framework** | Next.js | 15.5 |
+| **UI** | React | 19 |
+| **Language** | TypeScript | 5.9 |
+| **Styling** | Tailwind CSS | 4.x |
+| **Database** | PostgreSQL (Neon) | 16 |
+| **ORM** | Prisma | 6.19 |
+| **Validation** | Zod | 3.x |
+| **Testing** | Vitest | latest |
+| **Build** | Turborepo | latest |
+| **Package Manager** | pnpm | 9.15 |
+| **AI** | OpenAI GPT-4o | latest |
+| **Queue** | BullMQ + Redis | latest |
+| **Ingestion** | Python 3.12 | async |
+| **Deployment** | Vercel | Edge |
+| **DNS** | Cloudflare | — |
+
+---
+
+<div align="center">
+
+**Built by XXXIII** · *Infrastructure for the tokenized economy*
+
+[xxxiii.io](https://xxxiii.io)
+
+</div>

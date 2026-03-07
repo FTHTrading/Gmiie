@@ -89,7 +89,7 @@ export function SignalsPanel({
   };
 
   return (
-    <aside className="w-[340px] h-[calc(100vh-56px)] sticky top-14 overflow-y-auto border-l border-border-subtle bg-background px-5 py-5 hidden xl:block">
+    <aside className="w-[340px] h-[calc(100vh-76px)] sticky top-[76px] overflow-y-auto border-l border-border-subtle bg-background px-5 py-5 hidden xl:block">
       {/* ── GMIIE Composite Index ── */}
       <div className="mb-7">
         <h3 className="text-label font-mono font-semibold tracking-[0.15em] text-text-muted uppercase mb-3">

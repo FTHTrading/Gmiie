@@ -23,11 +23,11 @@ export function IntelligenceFeed({
 }: IntelligenceFeedProps) {
   return (
     <div>
-      {/* Feed header */}
+      {/* ── Doctrine: Section header with live indicator ── */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2.5">
           <span className="w-2 h-2 rounded-full bg-green animate-pulse-slow" />
-          <h2 className="text-body font-mono font-semibold text-text-primary tracking-wide uppercase">
+          <h2 className="meta-line text-gold">
             {title}
           </h2>
           <span className="text-caption font-mono text-text-muted">
@@ -36,13 +36,13 @@ export function IntelligenceFeed({
         </div>
       </div>
 
-      {/* Filter pills */}
+      {/* ── Filter pills — doctrine underline style ── */}
       {showFilters && (
-        <div className="flex items-center gap-1.5 mb-5 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1 mb-5 overflow-x-auto pb-1 border-b border-border-subtle">
           {ARTICLE_FILTERS.map((filter) => (
             <button
               key={filter.value}
-              className="px-3 py-1.5 text-label font-mono tracking-wider uppercase text-text-secondary hover:text-text-primary bg-surface hover:bg-surface-elevated border border-border-subtle rounded-lg transition-colors whitespace-nowrap"
+              className="px-3 py-2 text-label font-mono tracking-wider uppercase text-text-muted hover:text-gold border-b-2 border-transparent hover:border-gold transition-colors whitespace-nowrap"
             >
               {filter.label}
             </button>
@@ -50,8 +50,8 @@ export function IntelligenceFeed({
         </div>
       )}
 
-      {/* Articles */}
-      <div className="space-y-4">
+      {/* ── Articles ── */}
+      <div className="space-y-3">
         {articles.length > 0 ? (
           articles.map((article) => (
             <IntelligenceCardCompact key={article.slug} article={article} />

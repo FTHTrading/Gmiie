@@ -29,6 +29,7 @@ export async function generateMetadata({
   });
 }
 
+/* ── Design Doctrine: Meaningful status colors only ── */
 const TYPE_COLORS: Record<string, string> = {
   BRIEF: "border-blue text-blue",
   DEEP_DIVE: "border-purple text-purple",
@@ -37,6 +38,14 @@ const TYPE_COLORS: Record<string, string> = {
   MARKET_MOVE: "border-gold text-gold",
   ENTITY_INTEL: "border-green text-green",
   RESEARCH: "border-text-secondary text-text-secondary",
+};
+
+/* ── Credibility tier labels ── */
+const TIER_LABELS: Record<string, { label: string; className: string }> = {
+  "1": { label: "Tier 1 — Official", className: "status-verified" },
+  "2": { label: "Tier 2 — Major Media", className: "status-developing" },
+  "3": { label: "Tier 3 — Crypto Native", className: "status-caveat" },
+  "4": { label: "Tier 4 — Unverified", className: "status-historical" },
 };
 
 export default async function IntelligenceArticlePage({
@@ -57,44 +66,60 @@ export default async function IntelligenceArticlePage({
 
   const typeColor = TYPE_COLORS[article.articleType] || "border-border text-text-muted";
   const signal = article.signal;
+  const tier = article.source?.credibilityTier
+    ? TIER_LABELS[article.source.credibilityTier]
+    : null;
 
   return (
-    <div>
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-caption text-text-muted mb-4 font-mono">
+    <article>
+      {/* ── Breadcrumb ── */}
+      <nav className="flex items-center gap-2 text-caption text-text-muted mb-5 font-mono">
         <Link href="/" className="hover:text-gold transition-colors">GMIIE</Link>
-        <span>/</span>
+        <span className="opacity-40">/</span>
         <Link href="/intelligence" className="hover:text-gold transition-colors">Intelligence</Link>
-        <span>/</span>
+        <span className="opacity-40">/</span>
         <span className="text-text-secondary truncate max-w-[200px]">{article.headline}</span>
       </nav>
 
-      {/* Type badge + importance */}
-      <div className="flex items-center gap-3 mb-3">
-        <span className={`px-2.5 py-1 text-label font-mono uppercase tracking-wider border rounded-lg ${typeColor}`}>
+      {/* ── Doctrine: Meta line — Type · Source basis · Date ── */}
+      <div className="meta-line flex items-center gap-1.5 mb-3">
+        <span className={`px-2 py-0.5 border rounded text-[11px] ${typeColor}`}>
           {article.articleType.replace(/_/g, " ")}
         </span>
-        {signal && (
-          <span className="text-body-sm font-mono text-gold">
-            Score: {signal.overallScore?.toFixed(0) ?? "—"}
-          </span>
+        {tier && (
+          <>
+            <span className="opacity-40">·</span>
+            <span className={tier.className}>{tier.label}</span>
+          </>
+        )}
+        {signal && signal.overallScore && (
+          <>
+            <span className="opacity-40">·</span>
+            <span className="text-gold font-semibold">Score {signal.overallScore.toFixed(0)}</span>
+          </>
+        )}
+        {article.importanceScore && article.importanceScore >= 80 && (
+          <>
+            <span className="opacity-40">·</span>
+            <span className="text-gold font-semibold">HIGH IMPACT</span>
+          </>
         )}
       </div>
 
-      {/* Headline */}
-      <h1 className="text-heading-lg md:text-display font-bold text-text-primary leading-tight mb-3">
+      {/* ── Doctrine: Headline — strong, serif-scale feel ── */}
+      <h1 className="headline-hero text-text-primary mb-3">
         {article.headline}
       </h1>
 
-      {/* Dek */}
+      {/* ── Dek/subhead ── */}
       {article.dek && (
         <p className="text-body-lg text-text-secondary leading-relaxed mb-4">
           {article.dek}
         </p>
       )}
 
-      {/* Meta line */}
-      <div className="flex flex-wrap items-center gap-3 text-body-sm text-text-muted mb-6 pb-6 border-b border-border-subtle">
+      {/* ── Byline + publication info ── */}
+      <div className="flex flex-wrap items-center gap-3 text-body-sm text-text-muted mb-6 pb-6 border-b-2 border-border">
         <span className="font-mono">
           {article.publishedAt
             ? new Date(article.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
@@ -102,18 +127,18 @@ export default async function IntelligenceArticlePage({
         </span>
         {article.author && (
           <>
-            <span className="w-1 h-1 rounded-full bg-border-subtle" />
-            <span>{article.author.name}</span>
+            <span className="w-1 h-1 rounded-full bg-border" />
+            <span className="font-medium text-text-secondary">{article.author.name}</span>
           </>
         )}
         {article.source && (
           <>
-            <span className="w-1 h-1 rounded-full bg-border-subtle" />
+            <span className="w-1 h-1 rounded-full bg-border" />
             <span>
               Source:{" "}
               {article.sourceUrl ? (
                 <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">
-                  {article.source.name}
+                  {article.source.name} ↗
                 </a>
               ) : (
                 article.source.name
@@ -121,105 +146,114 @@ export default async function IntelligenceArticlePage({
             </span>
           </>
         )}
-        {article.source?.credibilityTier && (
-          <>
-            <span className="w-1 h-1 rounded-full bg-border-subtle" />
-            <span className="px-2 py-0.5 border border-border-subtle rounded-lg text-label">
-              Tier {article.source.credibilityTier}
-            </span>
-          </>
-        )}
       </div>
 
-      {/* Two-column: content + signal sidebar */}
+      {/* ── Two-column: content + signal sidebar ── */}
       <div className="grid lg:grid-cols-[1fr_280px] gap-8">
-        {/* Main content */}
+        {/* ═══ Main content — Editorial doctrine ═══ */}
         <div className="space-y-8">
-          {/* Executive Summary */}
+          {/* Executive Summary — highlighted callout */}
           {article.executiveSummary && (
-            <div className="p-5 rounded-xl bg-surface border border-border-subtle border-l-3 border-l-gold">
-              <h2 className="text-caption font-mono tracking-[0.15em] text-gold uppercase mb-2">
+            <div className="p-5 rounded-xl bg-surface border border-border-subtle border-l-4 border-l-gold">
+              <h2 className="meta-line text-gold mb-2">
                 Executive Summary
               </h2>
-              <p className="text-body text-text-secondary leading-relaxed">
+              <p className="text-body-lg text-text-primary leading-relaxed font-medium">
                 {article.executiveSummary}
               </p>
             </div>
           )}
 
-          {/* Body sections */}
-          {/* Editorial sections (direct fields) */}
-          {article.whyItMatters && (
-            <div>
-              <h2 className="text-body-lg font-bold text-text-primary mb-3 flex items-center gap-3">
-                <span className="w-6 h-px bg-gold" />
-                Why It Matters
-              </h2>
-              <p className="text-body text-text-secondary leading-relaxed">
-                {article.whyItMatters}
-              </p>
-            </div>
-          )}
+          {/* ── Doctrine: "What Happened" ── */}
           {article.whatHappened && (
-            <div>
+            <section>
               <h2 className="text-body-lg font-bold text-text-primary mb-3 flex items-center gap-3">
-                <span className="w-6 h-px bg-gold" />
+                <span className="w-6 h-0.5 bg-gold" />
                 What Happened
               </h2>
               <p className="text-body text-text-secondary leading-relaxed">
                 {article.whatHappened}
               </p>
-            </div>
+            </section>
           )}
+
+          {/* ── Doctrine: "Why It Matters" ── */}
+          {article.whyItMatters && (
+            <section>
+              <h2 className="text-body-lg font-bold text-text-primary mb-3 flex items-center gap-3">
+                <span className="w-6 h-0.5 bg-gold" />
+                Why It Matters
+              </h2>
+              <p className="text-body text-text-secondary leading-relaxed">
+                {article.whyItMatters}
+              </p>
+            </section>
+          )}
+
+          {/* Market Implications */}
           {article.marketImplications && (
-            <div>
+            <section>
               <h3 className="text-body font-semibold text-text-primary mb-2 flex items-center gap-3">
-                <span className="w-5 h-px bg-blue" />
+                <span className="w-5 h-0.5 bg-blue" />
                 Market Implications
               </h3>
               <p className="text-body text-text-secondary leading-relaxed">
                 {article.marketImplications}
               </p>
-            </div>
+            </section>
           )}
+
+          {/* Infrastructure Implications */}
           {article.infraImplications && (
-            <div>
+            <section>
               <h3 className="text-body font-semibold text-text-primary mb-2 flex items-center gap-3">
-                <span className="w-5 h-px bg-cyan" />
+                <span className="w-5 h-0.5 bg-cyan" />
                 Infrastructure Implications
               </h3>
               <p className="text-body text-text-secondary leading-relaxed">
                 {article.infraImplications}
               </p>
-            </div>
+            </section>
           )}
+
+          {/* Regulatory Implications */}
           {article.regulatoryImplications && (
-            <div>
+            <section>
               <h3 className="text-body font-semibold text-text-primary mb-2 flex items-center gap-3">
-                <span className="w-5 h-px bg-red" />
+                <span className="w-5 h-0.5 bg-red" />
                 Regulatory Implications
               </h3>
               <p className="text-body text-text-secondary leading-relaxed">
                 {article.regulatoryImplications}
               </p>
-            </div>
+            </section>
           )}
 
-          {/* Full content fallback if no editorial sections */}
+          {/* Full content fallback */}
           {!article.whyItMatters && !article.whatHappened && article.content && (
-            <div>
+            <section>
               <p className="text-body text-text-secondary leading-relaxed">
                 {article.content}
               </p>
-            </div>
+            </section>
           )}
+
+          {/* ── Doctrine: Caveat / Trust disclosure ── */}
+          <div className="p-4 rounded-lg bg-surface-elevated border border-border-subtle">
+            <p className="text-caption text-text-muted leading-relaxed">
+              <span className="font-semibold text-text-secondary">Disclosure:</span>{" "}
+              This intelligence is generated by GMIIE&apos;s AI analysis engine.
+              {article.source?.credibilityTier && Number(article.source.credibilityTier) >= 3 && (
+                <> Source credibility is rated {TIER_LABELS[article.source.credibilityTier]?.label}. Content should be independently verified.</>
+              )}
+              {" "}GMIIE intelligence is not financial advice.
+            </p>
+          </div>
 
           {/* Topics */}
           {article.topics && article.topics.length > 0 && (
-            <div>
-              <h3 className="text-caption font-mono tracking-[0.15em] text-text-muted uppercase mb-3">
-                Topics
-              </h3>
+            <div className="section-rule">
+              <h3 className="meta-line mb-3">Related Topics</h3>
               <div className="flex flex-wrap gap-2">
                 {article.topics.map((at) => (
                   <Link
@@ -237,9 +271,7 @@ export default async function IntelligenceArticlePage({
           {/* Entities */}
           {article.entities && article.entities.length > 0 && (
             <div>
-              <h3 className="text-caption font-mono tracking-[0.15em] text-text-muted uppercase mb-3">
-                Entities
-              </h3>
+              <h3 className="meta-line mb-3">Entities Referenced</h3>
               <div className="flex flex-wrap gap-2">
                 {article.entities.map((ae) => (
                   <Link
@@ -258,24 +290,24 @@ export default async function IntelligenceArticlePage({
           )}
         </div>
 
-        {/* Signal sidebar */}
+        {/* ═══ Signal sidebar ═══ */}
         <aside className="space-y-4">
           {signal && (
             <>
-              {/* Overall score */}
+              {/* Overall score — prominent */}
               <div className="p-5 rounded-xl bg-surface border border-border-subtle text-center">
                 <div className="text-display font-bold text-gold mb-1">
                   {signal.overallScore?.toFixed(0) ?? "—"}
                 </div>
-                <div className="text-label font-mono text-text-muted tracking-wider uppercase">
+                <div className="meta-line">
                   Overall Score
                 </div>
               </div>
 
               {/* Individual signals */}
               <div className="p-5 rounded-xl bg-surface border border-border-subtle space-y-3">
-                <h3 className="text-caption font-mono tracking-[0.15em] text-gold uppercase mb-2">
-                  Signal Scores
+                <h3 className="meta-line text-gold mb-2">
+                  Signal Dimensions
                 </h3>
                 {signal.institutionalAdoption != null && (
                   <SignalGauge label="Institutional Adoption" score={signal.institutionalAdoption} compact />
@@ -308,11 +340,9 @@ export default async function IntelligenceArticlePage({
             </>
           )}
 
-          {/* Meta block */}
+          {/* Metadata block */}
           <div className="p-5 rounded-xl bg-surface border border-border-subtle">
-            <h3 className="text-caption font-mono tracking-[0.15em] text-text-muted uppercase mb-3">
-              Metadata
-            </h3>
+            <h3 className="meta-line mb-3">Article Metadata</h3>
             <dl className="space-y-2.5 text-body-sm">
               <div className="flex justify-between">
                 <dt className="text-text-muted">Published</dt>
@@ -336,10 +366,10 @@ export default async function IntelligenceArticlePage({
                   <dd className="text-text-secondary">{article.source.name}</dd>
                 </div>
               )}
-              {article.source?.credibilityTier && (
+              {tier && (
                 <div className="flex justify-between">
                   <dt className="text-text-muted">Credibility</dt>
-                  <dd className="text-text-secondary">Tier {article.source.credibilityTier}</dd>
+                  <dd className={tier.className}>{tier.label}</dd>
                 </div>
               )}
               {article.assetClass && (
@@ -352,6 +382,6 @@ export default async function IntelligenceArticlePage({
           </div>
         </aside>
       </div>
-    </div>
+    </article>
   );
 }
