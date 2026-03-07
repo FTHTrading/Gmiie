@@ -51,12 +51,13 @@ export async function GET() {
     }
 
     // Calculate averages
-    const avg = (field: keyof typeof recentSignals[0]) => {
-      const values = recentSignals
-        .map((s) => s[field] as number | null)
-        .filter((v): v is number => v != null && v > 0);
+    type SignalRow = typeof recentSignals[number];
+    const avg = (field: keyof SignalRow): number => {
+      const values: number[] = recentSignals
+        .map((s: SignalRow) => Number(s[field]) || 0)
+        .filter((v: number) => v > 0);
       if (values.length === 0) return 0;
-      return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+      return Math.round((values.reduce((a: number, b: number) => a + b, 0) / values.length) * 10) / 10;
     };
 
     const signals = [

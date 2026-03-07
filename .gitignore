@@ -48,6 +48,7 @@ venv/
 # Prisma
 packages/db/prisma/*.db
 packages/db/prisma/migrations/
+packages/db/generated/
 
 # Docker
 docker-compose.override.yml
@@ -56,3 +57,4 @@ docker-compose.override.yml
 .vercel/
 .netlify/
 *.tsbuildinfo
+.vercel
