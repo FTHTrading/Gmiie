@@ -92,9 +92,14 @@ export function SignalsPanel({
     <aside className="w-[340px] h-[calc(100vh-76px)] sticky top-[76px] overflow-y-auto border-l border-border-subtle bg-background px-5 py-5 hidden xl:block">
       {/* ── GMIIE Composite Index ── */}
       <div className="mb-7">
-        <h3 className="text-label font-mono font-semibold tracking-[0.15em] text-text-muted uppercase mb-3">
-          GMIIE Market Infrastructure Index
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-label font-mono font-semibold tracking-[0.15em] text-text-muted uppercase">
+            GMIIE Market Infrastructure Index
+          </h3>
+          <span className="text-caption text-text-muted/60 cursor-help" title="Weighted composite of regulatory clarity, institutional adoption, settlement infrastructure, token standards, custody readiness, cross-border capability, market liquidity, DeFi integration, and CBDC development">
+            Methodology ↗
+          </span>
+        </div>
         <div className="bg-surface rounded-xl border border-border-subtle p-5">
           <div className="flex items-baseline gap-2 mb-1">
             <span className={`text-4xl font-mono font-bold ${getScoreColor(displayIndex.score)}`}>
@@ -102,9 +107,12 @@ export function SignalsPanel({
             </span>
             <span className="text-body font-mono text-text-muted">/ 10</span>
           </div>
-          <p className="text-caption font-mono text-text-muted mb-3">
+          <p className="text-caption font-mono text-text-muted mb-1">
             Weighted composite of 9 signal dimensions
             {displayIndex.sampleSize > 0 && ` · ${displayIndex.sampleSize} signals`}
+          </p>
+          <p className="text-caption font-mono text-text-muted/60 mb-3">
+            Confidence: model-generated · not investment advice
           </p>
           {displayIndex.dimensions.length > 0 && (
             <div className="space-y-2 pt-3 border-t border-border-subtle">
@@ -119,7 +127,7 @@ export function SignalsPanel({
                       />
                     </div>
                     <span className="text-caption font-mono text-text-secondary w-8 text-right">
-                      {d.score.toFixed(1)}
+                      {Math.round(d.score)}
                     </span>
                   </div>
                 </div>
@@ -235,10 +243,10 @@ export function SignalsPanel({
       {/* Footer info */}
       <div className="pt-4 border-t border-border-subtle">
         <p className="text-caption font-mono text-text-muted">
-          Signals updated every 30 minutes
+          Updated every 30 min · Model-generated scores
         </p>
-        <p className="text-caption font-mono text-text-muted mt-1">
-          Powered by GMIIE AI Engine v2.0
+        <p className="text-caption font-mono text-text-muted/50 mt-1">
+          GMIIE v2.0 · Not investment advice
         </p>
       </div>
     </aside>

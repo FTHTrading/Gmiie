@@ -42,10 +42,10 @@ const TYPE_COLORS: Record<string, string> = {
 
 /* ── Credibility tier labels ── */
 const TIER_LABELS: Record<string, { label: string; className: string }> = {
-  "1": { label: "Tier 1 — Official", className: "status-verified" },
-  "2": { label: "Tier 2 — Major Media", className: "status-developing" },
-  "3": { label: "Tier 3 — Crypto Native", className: "status-caveat" },
-  "4": { label: "Tier 4 — Unverified", className: "status-historical" },
+  "TIER_1": { label: "Tier 1 — Official", className: "status-verified" },
+  "TIER_2": { label: "Tier 2 — Major Media", className: "status-developing" },
+  "TIER_3": { label: "Tier 3 — Crypto Native", className: "status-caveat" },
+  "TIER_4": { label: "Tier 4 — Unverified", className: "status-historical" },
 };
 
 export default async function IntelligenceArticlePage({

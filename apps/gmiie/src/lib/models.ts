@@ -44,7 +44,8 @@ export interface ArticleListItem {
   articleType: string;
   publishedAt: string | null; // ISO string
   importanceScore: number | null;
-  source: { name: string } | null;
+  confidenceScore: number | null;
+  source: { name: string; credibilityTier: string } | null;
   topics: NameSlug[];
   entities: NameSlug[];
   signal: SignalSnapshot | null;

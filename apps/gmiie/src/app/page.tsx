@@ -62,8 +62,8 @@ export default async function GmiieHomePage() {
       {/* ═══ Utility bar: Dashboard stats ═══ */}
       <div className="flex items-center gap-6 mb-6 pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green animate-pulse-slow" />
-          <span className="meta-line">Live</span>
+          <span className="w-2 h-2 rounded-full bg-blue" />
+          <span className="meta-line">Monitored</span>
         </div>
         <StatPill label="Articles" value={counts.articles} />
         <StatPill label="Entities" value={counts.entities} />
@@ -108,7 +108,7 @@ export default async function GmiieHomePage() {
                     className="block group"
                   >
                     <div className="meta-line mb-0.5">
-                      {article.articleType.replace(/_/g, " ")} · {formatTimeAgo(article.publishedAt)}
+                      {article.articleType.replace(/_/g, " ")} · {formatDate(article.publishedAt)}
                     </div>
                     <h4 className="text-body-sm font-semibold text-text-primary group-hover:text-gold transition-colors line-clamp-2 leading-snug">
                       {article.title}
@@ -185,16 +185,11 @@ function StatPill({ label, value }: { label: string; value: number }) {
   );
 }
 
-function formatTimeAgo(dateStr: string | null): string {
+function formatDate(dateStr: string | null): string {
   if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }

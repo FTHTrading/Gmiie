@@ -36,26 +36,44 @@ const TYPE_LABELS: Record<string, string> = {
   STRATEGIC_MEMO: "Strategic Memo",
 };
 
-/* ── Design Doctrine: Source basis labels ── */
-const SOURCE_BASIS: Record<number, { label: string; color: string }> = {
-  1: { label: "Official Source", color: "status-verified" },
-  2: { label: "Major Media", color: "status-developing" },
-  3: { label: "Crypto Native", color: "status-caveat" },
-  4: { label: "Unverified", color: "status-historical" },
-};
+/* ── Design Doctrine: Trust instrumentation ── */
 
-function formatTimeAgo(dateStr: string | null): string {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+/** Verification status derived from confidence score + source tier */
+function getVerificationState(article: ArticleListItem): {
+  label: string;
+  className: string;
+} {
+  const tier = article.source?.credibilityTier;
+  const confidence = article.confidenceScore ?? 0;
+
+  // Tier 1 sources with decent confidence → Verified
+  if (tier === "TIER_1" && confidence >= 50) {
+    return { label: "Verified", className: "status-verified" };
+  }
+  // Tier 1 with low confidence or Tier 2 with good confidence → Verified with caveat
+  if (tier === "TIER_1" || (tier === "TIER_2" && confidence >= 60)) {
+    return { label: "Verified with caveat", className: "status-caveat" };
+  }
+  // Tier 2 or recent articles → Developing
+  if (tier === "TIER_2" || confidence >= 40) {
+    return { label: "Developing", className: "status-developing" };
+  }
+  // Tier 3+ or low confidence → Historical context
+  if (tier === "TIER_3" || tier === "TIER_4") {
+    return { label: "Historical context", className: "status-historical" };
+  }
+  return { label: "Developing", className: "status-developing" };
+}
+
+/** Source basis label from credibility tier */
+function getSourceBasis(tier: string | undefined): string {
+  switch (tier) {
+    case "TIER_1": return "Primary official";
+    case "TIER_2": return "Secondary reporting";
+    case "TIER_3": return "Crypto native";
+    case "TIER_4": return "Unverified";
+    default: return "Internal analysis";
+  }
 }
 
 function formatDate(dateStr: string | null): string {
@@ -74,22 +92,22 @@ function formatDate(dateStr: string | null): string {
 function HeroCard({ article }: { article: ArticleListItem }) {
   const typeLabel = TYPE_LABELS[article.articleType] || article.articleType.replace(/_/g, " ");
   const signal = article.signal;
+  const verification = getVerificationState(article);
+  const sourceBasis = getSourceBasis(article.source?.credibilityTier);
 
   return (
     <Link
       href={`/intelligence/${article.slug}`}
       className="block group"
     >
-      {/* Meta line: Type · Source · Date */}
-      <div className="meta-line flex items-center gap-1.5 mb-2">
+      {/* Doctrine meta line: Type · Verification · Source basis · Date */}
+      <div className="meta-line flex items-center gap-1.5 mb-2 flex-wrap">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
-        {article.importanceScore && article.importanceScore >= 80 && (
-          <>
-            <span className="text-gold font-semibold">HIGH IMPACT</span>
-            <span className="opacity-40">·</span>
-          </>
-        )}
+        <span className={verification.className}>{verification.label}</span>
+        <span className="opacity-40">·</span>
+        <span>{sourceBasis}</span>
+        <span className="opacity-40">·</span>
         <span>{formatDate(article.publishedAt)}</span>
       </div>
 
@@ -105,11 +123,11 @@ function HeroCard({ article }: { article: ArticleListItem }) {
         </p>
       )}
 
-      {/* Signal scores row */}
+      {/* Signal score — single overall, not cluttered */}
       {signal && signal.overallScore && (
         <div className="flex items-center gap-5 mb-3 py-3 border-t border-b border-border-subtle">
           <div className="flex items-center gap-1.5">
-            <span className="meta-line">Overall</span>
+            <span className="meta-line">Score</span>
             <span className="font-mono font-bold text-body text-gold">
               {signal.overallScore.toFixed(0)}
             </span>
@@ -120,15 +138,12 @@ function HeroCard({ article }: { article: ArticleListItem }) {
           {signal.regulatoryClarity != null && (
             <SignalPill label="Regulatory" value={signal.regulatoryClarity} />
           )}
-          {signal.infrastructureMaturity != null && (
-            <SignalPill label="Infrastructure" value={signal.infrastructureMaturity} />
-          )}
         </div>
       )}
 
-      {/* Entities + Topics */}
+      {/* Entities max 2 + overflow, Topics max 2 */}
       <div className="flex items-center gap-2 flex-wrap">
-        {article.entities.slice(0, 4).map((ae) => (
+        {article.entities.slice(0, 2).map((ae) => (
           <span
             key={ae.slug}
             className="text-label font-mono text-text-muted bg-surface-elevated px-2 py-0.5 rounded"
@@ -136,6 +151,11 @@ function HeroCard({ article }: { article: ArticleListItem }) {
             {ae.name}
           </span>
         ))}
+        {article.entities.length > 2 && (
+          <span className="text-label font-mono text-text-muted">
+            +{article.entities.length - 2}
+          </span>
+        )}
         {article.topics.slice(0, 2).map((at) => (
           <span
             key={at.slug}
@@ -156,17 +176,20 @@ function HeroCard({ article }: { article: ArticleListItem }) {
 function SecondaryCard({ article }: { article: ArticleListItem }) {
   const typeColor = TYPE_COLORS[article.articleType] || "border-l-border";
   const typeLabel = TYPE_LABELS[article.articleType] || article.articleType.replace(/_/g, " ");
+  const verification = getVerificationState(article);
 
   return (
     <Link
       href={`/intelligence/${article.slug}`}
       className={`block p-4 border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group rounded-lg`}
     >
-      {/* Meta line */}
+      {/* Meta line: Type · Verification · Date */}
       <div className="meta-line flex items-center gap-1.5 mb-1.5">
         <span>{typeLabel}</span>
         <span className="opacity-40">·</span>
-        <span>{formatTimeAgo(article.publishedAt)}</span>
+        <span className={verification.className}>{verification.label}</span>
+        <span className="opacity-40">·</span>
+        <span>{formatDate(article.publishedAt)}</span>
       </div>
 
       {/* Headline */}
@@ -181,10 +204,10 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
         </p>
       )}
 
-      {/* Entities */}
+      {/* Entities — max 2 */}
       {article.entities.length > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap">
-          {article.entities.slice(0, 3).map((ae) => (
+          {article.entities.slice(0, 2).map((ae) => (
             <span
               key={ae.slug}
               className="text-label font-mono text-text-muted"
@@ -192,6 +215,11 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
               {ae.name}
             </span>
           ))}
+          {article.entities.length > 2 && (
+            <span className="text-label font-mono text-text-muted">
+              +{article.entities.length - 2}
+            </span>
+          )}
         </div>
       )}
     </Link>
@@ -200,7 +228,7 @@ function SecondaryCard({ article }: { article: ArticleListItem }) {
 
 /* ═══════════════════════════════════════════════════════════════
    COMPACT CARD — Feed items, the standard doctrine card
-   Meta line → headline → what happened → why it matters → caveat
+   Type · Verification · Source basis · Date → headline → summary
    ═══════════════════════════════════════════════════════════════ */
 export function IntelligenceCardCompact({ article, variant = "default" }: IntelligenceCardCompactProps) {
   if (variant === "hero") return <HeroCard article={article} />;
@@ -209,23 +237,23 @@ export function IntelligenceCardCompact({ article, variant = "default" }: Intell
   const signal = article.signal;
   const typeColor = TYPE_COLORS[article.articleType] || "border-l-border";
   const typeLabel = TYPE_LABELS[article.articleType] || article.articleType.replace(/_/g, " ");
+  const verification = getVerificationState(article);
+  const sourceBasis = getSourceBasis(article.source?.credibilityTier);
 
   return (
     <Link
       href={`/intelligence/${article.slug}`}
       className={`block p-5 rounded-xl border-l-3 ${typeColor} bg-surface border border-border-subtle hover:border-gold/20 hover:bg-surface-elevated transition-all duration-200 group`}
     >
-      {/* ── Doctrine: Metadata line ── */}
-      <div className="meta-line flex items-center gap-1.5 mb-2">
+      {/* ── Doctrine: Type · Verification · Source basis · Date ── */}
+      <div className="meta-line flex items-center gap-1.5 mb-2 flex-wrap">
         <span>{typeLabel}</span>
-        {article.importanceScore && article.importanceScore >= 80 && (
-          <>
-            <span className="opacity-40">·</span>
-            <span className="text-gold font-semibold">HIGH IMPACT</span>
-          </>
-        )}
         <span className="opacity-40">·</span>
-        <span>{formatTimeAgo(article.publishedAt)}</span>
+        <span className={verification.className}>{verification.label}</span>
+        <span className="opacity-40">·</span>
+        <span>{sourceBasis}</span>
+        <span className="opacity-40">·</span>
+        <span>{formatDate(article.publishedAt)}</span>
       </div>
 
       {/* ── Doctrine: Headline ── */}
@@ -233,31 +261,21 @@ export function IntelligenceCardCompact({ article, variant = "default" }: Intell
         {article.title}
       </h3>
 
-      {/* ── Doctrine: "What happened" / Executive summary ── */}
+      {/* ── Doctrine: Executive summary ── */}
       {article.executiveSummary && (
         <p className="text-body-sm text-text-secondary leading-relaxed mb-3 line-clamp-2">
           {article.executiveSummary}
         </p>
       )}
 
-      {/* ── Doctrine: Signal scores (meaningful data, not decoration) ── */}
-      {signal && signal.overallScore && (
-        <div className="flex items-center gap-4 mb-2.5">
-          {signal.institutionalAdoption != null && (
-            <SignalPill label="Institutional" value={signal.institutionalAdoption} />
-          )}
-          {signal.regulatoryClarity != null && (
-            <SignalPill label="Regulatory" value={signal.regulatoryClarity} />
-          )}
-          {signal.infrastructureMaturity != null && (
-            <SignalPill label="Infrastructure" value={signal.infrastructureMaturity} />
-          )}
-        </div>
-      )}
-
-      {/* ── Doctrine: Entity + topic tags ── */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {article.entities.slice(0, 3).map((ae) => (
+      {/* ── Doctrine: Compact footer — score + max 2 entities + max 2 topics ── */}
+      <div className="flex items-center gap-3 flex-wrap">
+        {signal && signal.overallScore && (
+          <span className="font-mono text-caption font-bold text-gold">
+            Score {signal.overallScore.toFixed(0)}
+          </span>
+        )}
+        {article.entities.slice(0, 2).map((ae) => (
           <span
             key={ae.slug}
             className="text-label font-mono text-text-muted bg-surface-elevated px-2 py-0.5 rounded"
@@ -265,6 +283,11 @@ export function IntelligenceCardCompact({ article, variant = "default" }: Intell
             {ae.name}
           </span>
         ))}
+        {article.entities.length > 2 && (
+          <span className="text-label font-mono text-text-muted">
+            +{article.entities.length - 2}
+          </span>
+        )}
         {article.topics.slice(0, 2).map((at) => (
           <span
             key={at.slug}
