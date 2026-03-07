@@ -24,11 +24,14 @@ const REPORT_CATEGORIES = [
 ] as const;
 
 export default async function ReportsPage() {
-  /* Pull deep_dive articles as report proxies until a Report model exists */
+  /* Pull REPORT-type articles; fall back to DEEP_DIVE if none exist */
   let reports: ArticleListItem[] = [];
 
   try {
-    const raw = await getLatestArticles(20, "deep_dive");
+    let raw = await getLatestArticles(20, "REPORT");
+    if (raw.length === 0) {
+      raw = await getLatestArticles(20, "DEEP_DIVE");
+    }
     reports = raw;
   } catch {
     // DB not connected
