@@ -1,0 +1,93 @@
+# ═══════════════════════════════════════════════════════════
+# XXXIII.IO DNS Configuration
+# ═══════════════════════════════════════════════════════════
+# Domain: xxxiii.io
+# Registrar: [Configure in registrar dashboard]
+# CDN/Hosting: Vercel (apps) + dedicated infra (services)
+#
+# This file documents the required DNS records.
+# Apply via your DNS provider's dashboard or API.
+# ═══════════════════════════════════════════════════════════
+
+# ─── Root Domain ──────────────────────────────────────────
+# xxxiii.io → Vercel (apps/hub)
+records:
+  # A records for root domain (Vercel)
+  - type: A
+    name: "@"
+    value: 76.76.21.21
+    ttl: 300
+
+  # CNAME records for subdomains
+  - type: CNAME
+    name: gmiie
+    value: cname.vercel-dns.com
+    ttl: 300
+    comment: "GMIIE Intelligence Platform"
+
+  - type: CNAME
+    name: lps
+    value: cname.vercel-dns.com
+    ttl: 300
+    comment: "LPS-1 Protocol Documentation"
+
+  - type: CNAME
+    name: studio
+    value: cname.vercel-dns.com
+    ttl: 300
+    comment: "Admin Studio (restricted access)"
+
+  - type: CNAME
+    name: api
+    value: api-origin.xxxiii.io
+    ttl: 300
+    comment: "API Gateway"
+
+  - type: CNAME
+    name: data
+    value: data-origin.xxxiii.io
+    ttl: 300
+    comment: "Data feeds and exports"
+
+  - type: CNAME
+    name: status
+    value: statuspage.betteruptime.com
+    ttl: 300
+    comment: "Status page"
+
+  - type: CNAME
+    name: docs
+    value: cname.vercel-dns.com
+    ttl: 300
+    comment: "Developer documentation"
+
+  # ─── Email (if needed) ────────────────────────────────────
+  - type: MX
+    name: "@"
+    value: mx1.improvmx.com
+    priority: 10
+    ttl: 300
+
+  - type: MX
+    name: "@"
+    value: mx2.improvmx.com
+    priority: 20
+    ttl: 300
+
+  # ─── SPF / DKIM / DMARC ──────────────────────────────────
+  - type: TXT
+    name: "@"
+    value: "v=spf1 include:spf.improvmx.com ~all"
+    ttl: 300
+
+  - type: TXT
+    name: "_dmarc"
+    value: "v=DMARC1; p=quarantine; rua=mailto:dmarc@xxxiii.io"
+    ttl: 300
+
+  # ─── Verification ────────────────────────────────────────
+  - type: TXT
+    name: "@"
+    value: "google-site-verification=PLACEHOLDER"
+    ttl: 300
+    comment: "Google Search Console verification"

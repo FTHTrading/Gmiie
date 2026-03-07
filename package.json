@@ -1,0 +1,46 @@
+{
+  "name": "xxxiii-io",
+  "version": "0.1.0",
+  "private": true,
+  "description": "XXXIII Ecosystem — GMIIE Intelligence Platform + LPS Protocol Standard",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "db:push": "pnpm --filter @xxxiii/db db:push",
+    "db:migrate": "pnpm --filter @xxxiii/db db:migrate",
+    "db:generate": "pnpm --filter @xxxiii/db db:generate",
+    "db:studio": "pnpm --filter @xxxiii/db db:studio",
+    "db:seed": "pnpm --filter @xxxiii/db db:seed",
+    "dev:hub": "pnpm --filter @xxxiii/hub dev",
+    "dev:gmiie": "pnpm --filter @xxxiii/gmiie dev",
+    "dev:lps": "pnpm --filter @xxxiii/lps dev",
+    "dev:studio": "pnpm --filter @xxxiii/studio dev",
+    "build:hub": "pnpm --filter @xxxiii/hub build",
+    "build:gmiie": "pnpm --filter @xxxiii/gmiie build",
+    "build:lps": "pnpm --filter @xxxiii/lps build",
+    "build:studio": "pnpm --filter @xxxiii/studio build",
+    "ingest": "pnpm --filter @xxxiii/ingestion start",
+    "queue": "pnpm --filter @xxxiii/queue start",
+    "pipeline": "node scripts/orchestrator.mjs --no-web",
+    "launch": "node scripts/orchestrator.mjs",
+    "clean": "turbo clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "eslint": "^9.16.0",
+    "pg": "^8.20.0",
+    "prettier": "^3.4.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

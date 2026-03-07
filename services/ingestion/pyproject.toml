@@ -1,0 +1,52 @@
+# XXXIII Ingestion Service
+# AI-driven content ingestion pipeline for tokenized securities & capital markets intelligence
+
+[project]
+name = "xxxiii-ingestion"
+version = "0.1.0"
+description = "Content ingestion pipeline: RSS, web scraping, API feeds, sitemap crawling"
+requires-python = ">=3.11"
+
+dependencies = [
+  "feedparser>=6.0",
+  "playwright>=1.40",
+  "httpx>=0.25",
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+  "pydantic>=2.5",
+  "pydantic-settings>=2.1",
+  "redis>=5.0",
+  "psycopg[binary]>=3.1",
+  "python-dotenv>=1.0",
+  "structlog>=23.2",
+  "schedule>=1.2",
+  "pyyaml>=6.0",
+  "trafilatura>=1.6",
+  "newspaper3k>=0.2",
+  "dateparser>=1.2",
+  "tenacity>=8.2",
+  "xxhash>=3.4",
+  "orjson>=3.9",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.34",
+]
+
+[project.scripts]
+xxxiii-ingest = "src.server:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-asyncio>=0.23", "ruff>=0.1", "mypy>=1.7"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "ANN", "B", "SIM"]

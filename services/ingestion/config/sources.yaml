@@ -1,0 +1,235 @@
+# ─── XXXIII — Source Registry ─────────────────────────────────
+# Master configuration for all content sources.
+# Each source defines type, credibility, polling method, and extraction rules.
+
+# ─── TIER 1: Central Banks, Regulators, Exchanges ─────────────
+
+sources:
+  # ── Federal Reserve ──────────────────────────────────────────
+  - id: fed-rss
+    name: Federal Reserve
+    url: https://www.federalreserve.gov/feeds/press_all.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 900
+    tags: [central-bank, monetary-policy, regulation]
+    region: US
+    enabled: true
+
+  - id: fed-speeches
+    name: Federal Reserve — Speeches
+    url: https://www.federalreserve.gov/feeds/speeches.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [central-bank, speeches, policy]
+    region: US
+    enabled: true
+
+  # ── SEC EDGAR ────────────────────────────────────────────────
+  - id: sec-edgar
+    name: SEC EDGAR
+    url: https://efts.sec.gov/LATEST/search-index
+    source_type: API
+    scrape_method: API_CLIENT
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [sec, regulatory, filings, securities]
+    region: US
+    enabled: true
+
+  - id: sec-rss
+    name: SEC — Press Releases
+    url: https://www.sec.gov/rss/news/press.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 900
+    tags: [sec, regulatory, enforcement]
+    region: US
+    enabled: true
+
+  # ── BIS (Bank of International Settlements) ──────────────────
+  - id: bis-rss
+    name: BIS
+    url: https://www.bis.org/doclist/bis_fsi_publs.rss
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 3600
+    tags: [bis, international, central-bank, regulation]
+    region: GLOBAL
+    enabled: true
+
+  # ── IMF ──────────────────────────────────────────────────────
+  - id: imf-blog
+    name: IMF Blog
+    url: https://www.imf.org/en/Blogs/rss
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 3600
+    tags: [imf, international, macro, policy]
+    region: GLOBAL
+    enabled: true
+
+  # ── CFTC ─────────────────────────────────────────────────────
+  - id: cftc-rss
+    name: CFTC
+    url: https://www.cftc.gov/Newsroom/PressReleases/RSS
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [cftc, derivatives, regulation, commodities]
+    region: US
+    enabled: true
+
+  # ── ECB ──────────────────────────────────────────────────────
+  - id: ecb-press
+    name: ECB Press Releases
+    url: https://www.ecb.europa.eu/rss/press.html
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [ecb, central-bank, euro, monetary-policy]
+    region: EU
+    enabled: true
+
+  # ─── TIER 2: Major Financial Media ──────────────────────────
+
+  - id: coindesk-rss
+    name: CoinDesk
+    url: https://www.coindesk.com/arc/outboundfeeds/rss/
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 600
+    tags: [crypto, digital-assets, markets, news]
+    enabled: true
+
+  - id: theblock-rss
+    name: The Block
+    url: https://www.theblock.co/rss.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 600
+    tags: [crypto, digital-assets, institutional, research]
+    enabled: true
+
+  - id: bloomberg-law
+    name: Bloomberg Law
+    url: https://news.bloomberglaw.com/rss
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 900
+    tags: [legal, regulation, securities, compliance]
+    enabled: true
+
+  - id: ft-markets
+    name: Financial Times — Markets
+    url: https://www.ft.com/rss/markets
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 900
+    tags: [markets, finance, global, macro]
+    region: GLOBAL
+    enabled: true
+
+  # ─── TIER 2: Research & Analytics ────────────────────────────
+
+  - id: chainalysis-blog
+    name: Chainalysis Blog
+    url: https://blog.chainalysis.com/feed
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 3600
+    tags: [analytics, compliance, blockchain, research]
+    enabled: true
+
+  - id: messari-rss
+    name: Messari Research
+    url: https://messari.io/rss
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_2
+    poll_interval_seconds: 1800
+    tags: [research, crypto, analytics, data]
+    enabled: true
+
+  # ─── TIER 3: Industry Publications ──────────────────────────
+
+  - id: ledgerinsights
+    name: Ledger Insights
+    url: https://www.ledgerinsights.com/feed/
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_3
+    poll_interval_seconds: 1800
+    tags: [enterprise, blockchain, tokenization, cbdc]
+    enabled: true
+
+  - id: dlnews
+    name: DL News
+    url: https://www.dlnews.com/arc/outboundfeeds/rss/
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_3
+    poll_interval_seconds: 1200
+    tags: [defi, crypto, news]
+    enabled: true
+
+  - id: cointelegraph
+    name: Cointelegraph
+    url: https://cointelegraph.com/rss
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_3
+    poll_interval_seconds: 900
+    tags: [crypto, news, markets, regulation]
+    enabled: true
+
+  - id: blockworks
+    name: Blockworks
+    url: https://blockworks.co/feed
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_3
+    poll_interval_seconds: 900
+    tags: [institutional, crypto, tradfi, markets]
+    enabled: true
+
+  # ─── SCRAPE Sources ─────────────────────────────────────────
+
+  - id: bis-cbdc-tracker
+    name: BIS CBDC Tracker
+    url: https://www.bis.org/publ/othp42.htm
+    source_type: SCRAPE
+    scrape_method: PLAYWRIGHT
+    credibility_tier: TIER_1
+    poll_interval_seconds: 86400
+    selectors:
+      content: "#cmsContent"
+      title: "h1"
+    tags: [cbdc, central-bank, tracker]
+    region: GLOBAL
+    enabled: true
+
+  - id: rwa-xyz
+    name: RWA.xyz
+    url: https://app.rwa.xyz
+    source_type: SCRAPE
+    scrape_method: PLAYWRIGHT
+    credibility_tier: TIER_2
+    poll_interval_seconds: 43200
+    selectors:
+      content: "main"
+    tags: [rwa, tokenization, data, tracker]
+    enabled: true

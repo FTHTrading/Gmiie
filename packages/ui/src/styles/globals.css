@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   GMIIE Design System — CSS Custom Properties
+   Light mode default, dark mode via .dark class
+   Designed for institutional readability & older readers
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* ── LIGHT MODE (Default) ── */
+  :root {
+    --color-background: #FAFAF7;
+    --color-surface: #FFFFFF;
+    --color-surface-elevated: #F2F1EC;
+    --color-border: #D4D2CA;
+    --color-border-subtle: #E8E6DF;
+
+    --color-text-primary: #1A1A2E;
+    --color-text-secondary: #4A4A5E;
+    --color-text-muted: #7A7A8E;
+
+    --color-gold: #9A7B2C;
+    --color-gold-light: #B8952F;
+    --color-blue: #2B5BAE;
+    --color-blue-light: #4A78CC;
+    --color-green: #1A8F6E;
+    --color-red: #C0392B;
+    --color-purple: #6C3EC4;
+    --color-cyan: #0E7490;
+
+    --color-grid-line: rgba(154, 123, 44, 0.04);
+    --glow-color: rgba(154, 123, 44, 0.08);
+
+    --scrollbar-track: #F2F1EC;
+    --scrollbar-thumb: #D4D2CA;
+    --scrollbar-thumb-hover: #AAAAAA;
+
+    --selection-bg: rgba(154, 123, 44, 0.15);
+    --selection-text: #6B5520;
+
+    color-scheme: light;
+  }
+
+  /* ── DARK MODE ── */
+  .dark {
+    --color-background: #0F1419;
+    --color-surface: #171D24;
+    --color-surface-elevated: #1E262F;
+    --color-border: #2D3748;
+    --color-border-subtle: #232D3A;
+
+    --color-text-primary: #ECEFF4;
+    --color-text-secondary: #A8B2C1;
+    --color-text-muted: #6B7A8D;
+
+    --color-gold: #D4AF37;
+    --color-gold-light: #E8C84A;
+    --color-blue: #5B9AFF;
+    --color-blue-light: #82B4FF;
+    --color-green: #34D399;
+    --color-red: #F87171;
+    --color-purple: #A78BFA;
+    --color-cyan: #22D3EE;
+
+    --color-grid-line: rgba(212, 175, 55, 0.03);
+    --glow-color: rgba(212, 175, 55, 0.1);
+
+    --scrollbar-track: #0F1419;
+    --scrollbar-thumb: #2D3748;
+    --scrollbar-thumb-hover: #6B7A8D;
+
+    --selection-bg: rgba(212, 175, 55, 0.2);
+    --selection-text: #E8C84A;
+
+    color-scheme: dark;
+  }
+
+  /* ── GLOBAL RESETS ── */
+  * {
+    border-color: var(--color-border-subtle);
+  }
+
+  html {
+    font-size: 16px; /* base for rem — never go below */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    line-height: 1.75;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-text);
+  }
+
+  /* ── ACCESSIBLE FOCUS STYLES ── */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  /* ── SMOOTH THEME TRANSITION ── */
+  html.transitioning,
+  html.transitioning *,
+  html.transitioning *::before,
+  html.transitioning *::after {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+    transition-delay: 0s !important;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-image: linear-gradient(to right, var(--color-gold), var(--color-gold-light));
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

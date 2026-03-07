@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════
+# XXXIII Queue Worker — Dockerfile
+# ═══════════════════════════════════════════════════════════
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9 --activate
+WORKDIR /app
+
+# ─── Dependencies ─────────────────────────────────────────
+FROM base AS deps
+COPY pnpm-workspace.yaml pnpm-lock.yaml* package.json ./
+COPY packages/db/package.json packages/db/
+COPY packages/types/package.json packages/types/
+COPY packages/config/package.json packages/config/
+COPY packages/seo/package.json packages/seo/
+COPY services/ai-engine/package.json services/ai-engine/
+COPY services/queue/package.json services/queue/
+RUN pnpm install --frozen-lockfile
+
+# ─── Build ────────────────────────────────────────────────
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/*/node_modules ./packages/*/node_modules
+COPY --from=deps /app/services/*/node_modules ./services/*/node_modules
+COPY . .
+RUN pnpm --filter @xxxiii/db run build
+RUN pnpm --filter @xxxiii/types run build
+RUN pnpm --filter @xxxiii/config run build
+RUN pnpm --filter @xxxiii/seo run build
+RUN pnpm --filter @xxxiii/ai-engine run build
+RUN pnpm --filter @xxxiii/queue run build
+
+# ─── Production ───────────────────────────────────────────
+FROM base AS runner
+ENV NODE_ENV=production
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/services/queue ./services/queue
+COPY --from=builder /app/services/ai-engine ./services/ai-engine
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+CMD ["node", "services/queue/dist/worker.js"]

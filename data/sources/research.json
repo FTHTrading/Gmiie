@@ -1,0 +1,84 @@
+[
+  {
+    "id": "chainalysis-blog",
+    "name": "Chainalysis Blog",
+    "url": "https://blog.chainalysis.com/feed",
+    "source_type": "RSS",
+    "scrape_method": "RSS_NATIVE",
+    "credibility_tier": "TIER_2",
+    "category": "research",
+    "poll_interval_seconds": 3600,
+    "tags": ["analytics", "compliance", "blockchain", "research"],
+    "region": "GLOBAL",
+    "enabled": true
+  },
+  {
+    "id": "messari-rss",
+    "name": "Messari Research",
+    "url": "https://messari.io/rss",
+    "source_type": "RSS",
+    "scrape_method": "RSS_NATIVE",
+    "credibility_tier": "TIER_2",
+    "category": "research",
+    "poll_interval_seconds": 1800,
+    "tags": ["research", "crypto", "analytics", "data"],
+    "region": "GLOBAL",
+    "enabled": true
+  },
+  {
+    "id": "galaxy-research",
+    "name": "Galaxy Research",
+    "url": "https://www.galaxy.com/research/feed/",
+    "source_type": "RSS",
+    "scrape_method": "RSS_NATIVE",
+    "credibility_tier": "TIER_2",
+    "category": "research",
+    "poll_interval_seconds": 7200,
+    "tags": ["galaxy", "institutional", "research", "digital-assets"],
+    "region": "US",
+    "enabled": true
+  },
+  {
+    "id": "bis-cbdc-tracker",
+    "name": "BIS CBDC Tracker",
+    "url": "https://www.bis.org/publ/othp42.htm",
+    "source_type": "SCRAPE",
+    "scrape_method": "PLAYWRIGHT",
+    "credibility_tier": "TIER_1",
+    "category": "research",
+    "poll_interval_seconds": 86400,
+    "selectors": {
+      "content": "#cmsContent",
+      "title": "h1"
+    },
+    "tags": ["cbdc", "central-bank", "tracker"],
+    "region": "GLOBAL",
+    "enabled": true
+  },
+  {
+    "id": "elliptic-blog",
+    "name": "Elliptic Blog",
+    "url": "https://www.elliptic.co/blog/rss.xml",
+    "source_type": "RSS",
+    "scrape_method": "RSS_NATIVE",
+    "credibility_tier": "TIER_2",
+    "category": "research",
+    "poll_interval_seconds": 7200,
+    "tags": ["elliptic", "compliance", "aml", "blockchain-analytics"],
+    "region": "GLOBAL",
+    "enabled": true
+  },
+  {
+    "id": "dune-blog",
+    "name": "Dune Analytics Blog",
+    "url": "https://dune.com/blog/rss",
+    "source_type": "RSS",
+    "scrape_method": "RSS_NATIVE",
+    "credibility_tier": "TIER_3",
+    "category": "research",
+    "poll_interval_seconds": 14400,
+    "tags": ["dune", "analytics", "onchain-data", "dashboards"],
+    "region": "GLOBAL",
+    "enabled": true
+  }
+]

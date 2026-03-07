@@ -1,0 +1,41 @@
+# XXXIII.io — Infrastructure Services
+# ====================================
+# Run: docker compose up -d
+# Provides: PostgreSQL + Redis for the intelligence pipeline
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: xxxiii-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: xxxiii_dev
+    volumes:
+      - xxxiii_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: xxxiii-redis
+    restart: unless-stopped
+    ports:
+      - "6383:6379"
+    volumes:
+      - xxxiii_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  xxxiii_pgdata:
+  xxxiii_redis:

@@ -1,0 +1,477 @@
+// ═══════════════════════════════════════════════════════════════
+// XXXIII.IO — MASTER DATABASE SCHEMA
+// Global Monetary Infrastructure Intelligence Engine (GMIIE)
+// + LPS Protocol Standard
+// ═══════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// SOURCES — Feeds, sites, APIs we ingest from
+// ─────────────────────────────────────────────────────────────
+
+model Source {
+  id              String       @id @default(cuid())
+  name            String
+  slug            String       @unique
+  url             String
+  feedUrl         String?      // RSS/Atom feed URL
+  sitemapUrl      String?
+  sourceType      SourceType
+  credibilityTier CredibilityTier @default(TIER_2)
+  region          String?
+  country         String?
+  language        String       @default("en")
+  isActive        Boolean      @default(true)
+  scrapeMethod    ScrapeMethod @default(RSS)
+  scrapeConfig    Json?        // Custom scraper settings
+  lastPolledAt    DateTime?
+  lastSuccessAt   DateTime?
+  failureCount    Int          @default(0)
+  articles        Article[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([sourceType])
+  @@index([credibilityTier])
+  @@index([isActive])
+}
+
+enum SourceType {
+  REGULATOR
+  CENTRAL_BANK
+  EXCHANGE
+  BANK
+  CUSTODIAN
+  ASSET_MANAGER
+  TOKENIZATION_FIRM
+  FINANCIAL_PRESS
+  CRYPTO_PUBLICATION
+  GOVERNMENT
+  INDUSTRY_BODY
+  INFRASTRUCTURE_PROVIDER
+  RESEARCH_FIRM
+  COMPANY_BLOG
+  WIRE_SERVICE
+}
+
+enum CredibilityTier {
+  TIER_1  // Official regulators, exchanges, banks, DTCC-class
+  TIER_2  // Major business media, industry publications
+  TIER_3  // Crypto-native with mixed reliability
+  TIER_4  // Social / unverified commentary
+}
+
+enum ScrapeMethod {
+  RSS
+  SITEMAP
+  WEB_SCRAPE
+  API
+  WEBHOOK
+  MANUAL
+}
+
+// ─────────────────────────────────────────────────────────────
+// ARTICLES — Core content objects
+// ─────────────────────────────────────────────────────────────
+
+model Article {
+  id                String        @id @default(cuid())
+  slug              String        @unique
+  canonicalHash     String        @unique  // SHA-256 of normalized title + source
+  title             String
+  headline          String?       // SEO-optimized headline
+  dek               String?       // Subheadline
+  executiveSummary  String?       @db.Text
+  content           String        @db.Text
+  rawContent        String?       @db.Text
+  extractedSummary  String?       @db.Text
+
+  // Structured editorial sections
+  whyItMatters      String?       @db.Text
+  whatHappened       String?       @db.Text
+  marketImplications    String?   @db.Text
+  infraImplications     String?   @db.Text
+  regulatoryImplications String?  @db.Text
+
+  // Classification
+  articleType       ArticleType   @default(BRIEF)
+  status            ArticleStatus @default(DRAFT)
+  assetClass        AssetClass?
+  marketSegment     String?
+
+  // Scoring
+  importanceScore   Float?        @default(0)
+  confidenceScore   Float?        @default(0)
+  sentimentScore    Float?        @default(0)
+
+  // Geography
+  region            String?
+  country           String?
+  language          String        @default("en")
+
+  // Relations
+  sourceId          String?
+  source            Source?       @relation(fields: [sourceId], references: [id])
+  sourceUrl         String?
+  authorId          String?
+  author            Author?       @relation(fields: [authorId], references: [id])
+  topics            ArticleTopic[]
+  entities          ArticleEntity[]
+  signals           Signal[]
+  tags              ArticleTag[]
+
+  // SEO
+  metaTitle         String?
+  metaDescription   String?
+  ogImage           String?
+  canonicalUrl      String?
+
+  // Timestamps
+  publishedAt       DateTime?
+  sourcePublishedAt DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([articleType])
+  @@index([assetClass])
+  @@index([sourceId])
+  @@index([importanceScore])
+  @@index([createdAt])
+}
+
+enum ArticleType {
+  BRIEF                // Breaking intelligence brief
+  DAILY_DIGEST         // Daily roundup
+  WEEKLY_ROUNDUP       // Weekly summary
+  EXECUTIVE_SUMMARY    // Short executive brief
+  DEEP_DIVE            // Thematic deep dive
+  INFRA_ANALYSIS       // Infrastructure analysis
+  ENTITY_UPDATE        // Entity profile update
+  MARKET_MAP           // Market landscape
+  STRATEGIC_MEMO       // Strategic analysis
+  RESEARCH_ARTICLE     // Full research piece
+  PARTNER_SPOTLIGHT    // Partner/ecosystem highlight
+  WHITEPAPER           // Long-form whitepaper
+  REGULATOR_TRACKER    // Regulatory update
+  REPORT               // Downloadable report
+}
+
+enum ArticleStatus {
+  INGESTED   // Raw ingested, unprocessed
+  PROCESSING // AI is classifying/scoring
+  DRAFT      // AI draft generated
+  REVIEW     // Queued for human review
+  APPROVED   // Approved, ready to publish
+  PUBLISHED  // Live on site
+  ARCHIVED   // Removed from feed
+  REJECTED   // Rejected by editor
+}
+
+enum AssetClass {
+  TOKENIZED_EQUITIES
+  TOKENIZED_BONDS
+  TOKENIZED_FUNDS
+  TOKENIZED_REAL_ESTATE
+  TOKENIZED_TREASURIES
+  TOKENIZED_COMMODITIES
+  TOKENIZED_ALTERNATIVES
+  STABLECOINS
+  CBDC
+  DIGITAL_SECURITIES
+  CRYPTO_NATIVE
+  MULTI_ASSET
+}
+
+// ─────────────────────────────────────────────────────────────
+// TOPICS — Taxonomy system
+// ─────────────────────────────────────────────────────────────
+
+model Topic {
+  id              String         @id @default(cuid())
+  name            String
+  slug            String         @unique
+  description     String?        @db.Text
+  longDescription String?        @db.Text
+  parentId        String?
+  parent          Topic?         @relation("TopicHierarchy", fields: [parentId], references: [id])
+  children        Topic[]        @relation("TopicHierarchy")
+  articles        ArticleTopic[]
+  entities        EntityTopic[]
+  cluster         TopicCluster?  @relation(fields: [clusterId], references: [id])
+  clusterId       String?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+
+  sortOrder       Int            @default(0)
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([clusterId])
+}
+
+model TopicCluster {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?  @db.Text
+  explainerContent String? @db.Text
+  faqContent      String?  @db.Text  // JSON array of Q&A
+  glossaryTerms   String?  @db.Text  // JSON array of terms
+  topics          Topic[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ArticleTopic {
+  articleId String
+  topicId   String
+  relevance Float    @default(1.0)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, topicId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTITIES — Institutions, regulators, firms, etc.
+// ─────────────────────────────────────────────────────────────
+
+model Entity {
+  id                String         @id @default(cuid())
+  name              String
+  slug              String         @unique
+  shortName         String?
+  entityType        EntityType
+  description       String?        @db.Text
+  longDescription   String?        @db.Text
+  whyItMatters      String?        @db.Text
+  strategicRole     String?        @db.Text
+
+  // Details
+  website           String?
+  logoUrl           String?
+  headquarters      String?
+  country           String?
+  region            String?
+  founded           String?
+
+  // Relations
+  articles          ArticleEntity[]
+  topics            EntityTopic[]
+  timeline          TimelineEvent[]
+
+  // SEO
+  metaTitle         String?
+  metaDescription   String?
+  ogImage           String?
+
+  isActive          Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([entityType])
+  @@index([slug])
+}
+
+enum EntityType {
+  BANK
+  CENTRAL_BANK
+  REGULATOR
+  EXCHANGE
+  CUSTODIAN
+  ASSET_MANAGER
+  TOKENIZATION_FIRM
+  INFRASTRUCTURE_PROVIDER
+  CHAIN
+  PROTOCOL
+  COUNTRY
+  MARKET_UTILITY
+  FUND
+  BROKER_DEALER
+  TRANSFER_AGENT
+  CLEARING_HOUSE
+  PAYMENT_PROVIDER
+  GOVERNMENT_AGENCY
+}
+
+model ArticleEntity {
+  articleId  String
+  entityId   String
+  role       String?   // e.g. "mentioned", "subject", "partner"
+  article    Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  entity     Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, entityId])
+}
+
+model EntityTopic {
+  entityId String
+  topicId  String
+  entity   Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  topic    Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([entityId, topicId])
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  entityId    String
+  entity      Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  title       String
+  description String?  @db.Text
+  date        DateTime
+  sourceUrl   String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityId, date])
+}
+
+// ─────────────────────────────────────────────────────────────
+// SIGNALS — GMIIE proprietary scoring
+// ─────────────────────────────────────────────────────────────
+
+model Signal {
+  id                       String     @id @default(cuid())
+  articleId                String?
+  article                  Article?   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  // Scores (0-100)
+  institutionalAdoption    Float?     @default(0)
+  regulatoryClarity        Float?     @default(0)
+  marketReadiness          Float?     @default(0)
+  infrastructureMaturity   Float?     @default(0)
+  settlementImpact         Float?     @default(0)
+  complianceIntensity      Float?     @default(0)
+  crossBorderRelevance     Float?     @default(0)
+  liquiditySignificance    Float?     @default(0)
+  strategicUrgency         Float?     @default(0)
+
+  // Composite
+  overallScore             Float?     @default(0)
+
+  generatedAt              DateTime   @default(now())
+
+  @@index([articleId])
+  @@index([overallScore])
+}
+
+// ─────────────────────────────────────────────────────────────
+// TAGS
+// ─────────────────────────────────────────────────────────────
+
+model Tag {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
+  articles  ArticleTag[]
+  createdAt DateTime     @default(now())
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUTHORS
+// ─────────────────────────────────────────────────────────────
+
+model Author {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  bio       String?   @db.Text
+  avatarUrl String?
+  isAI      Boolean   @default(false)  // AI-generated content author
+  articles  Article[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// ADMIN / USERS
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          UserRole  @default(VIEWER)
+  passwordHash  String?
+  lastLoginAt   DateTime?
+  auditLogs     AuditLog[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  WRITER
+  VIEWER
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUDIT LOG — Publishing governance
+// ─────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   // e.g. "article.publish", "entity.update"
+  targetType String   // e.g. "Article", "Entity"
+  targetId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// JOB LOG — Automation tracking
+// ─────────────────────────────────────────────────────────────
+
+model JobLog {
+  id          String    @id @default(cuid())
+  jobType     String    // e.g. "rss_poll", "article_draft", "entity_refresh"
+  status      JobStatus @default(PENDING)
+  sourceId    String?
+  metadata    Json?
+  error       String?   @db.Text
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([jobType, status])
+  @@index([createdAt])
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  RETRYING
+}
