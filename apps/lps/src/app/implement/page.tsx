@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LPS_NAV } from "@xxxiii/config";
 import { Header, Footer, Container, Card, CardContent, Badge, Button } from "@xxxiii/ui";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Implementation Guide",
@@ -502,12 +503,16 @@ publish().catch(console.error);`}</pre>
                 Ready to start building? Check the reference implementations for production-ready code.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="gold" size="lg" onClick={() => window.location.href = "/reference"}>
-                  Reference Implementations
-                </Button>
-                <Button variant="outline" size="lg" onClick={() => window.location.href = "https://github.com/xxxiii-io"}>
-                  View on GitHub
-                </Button>
+                <Link href="/reference">
+                  <Button variant="gold" size="lg">
+                    Reference Implementations
+                  </Button>
+                </Link>
+                <a href="https://github.com/xxxiii-io" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="lg">
+                    View on GitHub
+                  </Button>
+                </a>
               </div>
             </div>
           </Container>

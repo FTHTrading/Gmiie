@@ -32,6 +32,12 @@ records:
     comment: "LPS-1 Protocol Documentation"
 
   - type: CNAME
+    name: hub
+    value: cname.vercel-dns.com
+    ttl: 300
+    comment: "Ecosystem Hub Portal"
+
+  - type: CNAME
     name: studio
     value: cname.vercel-dns.com
     ttl: 300

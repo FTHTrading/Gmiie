@@ -1,5 +1,6 @@
 import { BRAND, LPS_NAV } from "@xxxiii/config";
 import { Header, Footer, Container, Button, Card, CardContent } from "@xxxiii/ui";
+import Link from "next/link";
 
 export default function LpsHomePage() {
   return (
@@ -33,12 +34,16 @@ export default function LpsHomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <Button variant="gold" size="lg" onClick={() => window.location.href = "/spec"}>
-                Read the Specification
-              </Button>
-              <Button variant="outline" size="lg" onClick={() => window.location.href = "/verify"}>
-                Verify a Work
-              </Button>
+              <Link href="/spec">
+                <Button variant="gold" size="lg">
+                  Read the Specification
+                </Button>
+              </Link>
+              <Link href="/verify">
+                <Button variant="outline" size="lg">
+                  Verify a Work
+                </Button>
+              </Link>
             </div>
           </Container>
         </section>
@@ -170,12 +175,16 @@ export default function LpsHomePage() {
               LPS-1 is open source and free to implement. Build verifiable publishing into your platform, archive, or workflow.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="gold" size="lg" onClick={() => window.location.href = "https://github.com/xxxiii-io"}>
-                View on GitHub
-              </Button>
-              <Button variant="outline" size="lg" onClick={() => window.location.href = "/implement"}>
-                Developer Guide
-              </Button>
+              <a href="https://github.com/xxxiii-io" target="_blank" rel="noopener noreferrer">
+                <Button variant="gold" size="lg">
+                  View on GitHub
+                </Button>
+              </a>
+              <Link href="/implement">
+                <Button variant="outline" size="lg">
+                  Developer Guide
+                </Button>
+              </Link>
             </div>
           </Container>
         </section>

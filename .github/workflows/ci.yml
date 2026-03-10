@@ -39,7 +39,7 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        app: [web, gmiie, lps, studio]
+        app: [hub, gmiie, lps, studio]
     steps:
       - uses: actions/checkout@v4
 
@@ -165,14 +165,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - app: web
+          - app: hub
             domain: xxxiii.io
+            project_id_secret: VERCEL_PROJECT_ID_HUB
           - app: gmiie
             domain: gmiie.xxxiii.io
+            project_id_secret: VERCEL_PROJECT_ID_GMIIE
           - app: lps
             domain: lps.xxxiii.io
+            project_id_secret: VERCEL_PROJECT_ID_LPS
           - app: studio
             domain: studio.xxxiii.io
+            project_id_secret: VERCEL_PROJECT_ID_STUDIO
     steps:
       - uses: actions/checkout@v4
 
@@ -181,6 +185,6 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-project-id: ${{ secrets[matrix.project_id_secret] }}
           vercel-args: '--prod'
           working-directory: apps/${{ matrix.app }}

@@ -1,0 +1,148 @@
+name: XXXIII Pipeline — Scheduled Ingestion & Processing
+
+# ═══════════════════════════════════════════════════════════════
+# Runs the intelligence pipeline on a schedule to keep content
+# fresh. This workflow triggers RSS polling, web scraping, and
+# API fetching, then dispatches jobs to the queue for AI
+# classification, scoring, drafting, and publishing.
+#
+# For 24/7 operation, deploy the queue worker and ingestion
+# service to Railway/Fly.io using infra/docker/Dockerfile.queue
+# and infra/docker/Dockerfile.ingestion.
+# ═══════════════════════════════════════════════════════════════
+
+on:
+  schedule:
+    # RSS poll — every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      pipeline_mode:
+        description: 'Pipeline mode to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - rss_only
+          - scrape_only
+          - api_only
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.12'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ─── Ingestion Cycle ──────────────────────────────────────
+  ingest:
+    name: Run Ingestion Pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      REDIS_URL: redis://localhost:6379
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: gpt-4o
+      AI_DEFAULT_MODEL: gpt-4o
+      AI_FALLBACK_MODEL: gpt-4o-mini
+      INGESTION_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      INGESTION_REDIS_URL: redis://localhost:6379/0
+      DRAFT_SCORE_THRESHOLD: '5.0'
+      AUTO_PUBLISH: 'true'
+      NODE_ENV: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Node.js setup (for queue worker) ──
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build packages & queue service
+        run: |
+          pnpm run build --filter='./packages/*'
+          pnpm --filter @xxxiii/ai-engine run build
+          pnpm --filter @xxxiii/queue run build
+          pnpm --filter @xxxiii/publisher run build
+
+      # ── Python setup (for ingestion) ──
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install ingestion dependencies
+        working-directory: services/ingestion
+        run: pip install -e "."
+
+      # ── Start queue worker in background ──
+      - name: Start queue worker
+        run: |
+          cd services/queue
+          npx tsx src/worker.ts &
+          echo "Queue worker PID: $!"
+          sleep 5
+
+      # ── Run ingestion pipeline ──
+      - name: Run ingestion cycle
+        working-directory: services/ingestion
+        run: |
+          MODE="${{ github.event.inputs.pipeline_mode || 'full' }}"
+          echo "Running pipeline in mode: $MODE"
+          python -m src.pipeline once --mode "$MODE"
+        timeout-minutes: 20
+
+      # ── Wait for queue processing ──
+      - name: Wait for queue jobs to complete
+        run: |
+          echo "Waiting for queue jobs to finish processing..."
+          sleep 120
+
+      - name: Pipeline summary
+        if: always()
+        run: |
+          echo "## Pipeline Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Mode**: ${{ github.event.inputs.pipeline_mode || 'full' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+
+  # ─── Revalidate Vercel Cache ───────────────────────────────
+  revalidate:
+    name: Revalidate Production Cache
+    runs-on: ubuntu-latest
+    needs: ingest
+    if: success()
+    steps:
+      - name: Revalidate GMIIE
+        run: |
+          curl -s -X POST "https://xxxiii.io/api/revalidate" \
+            -H "Authorization: Bearer ${{ secrets.REVALIDATION_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"paths": ["/", "/intelligence", "/timeline", "/signals", "/topics", "/entities"]}' \
+            || echo "Revalidation endpoint not configured yet"
+
+      - name: Revalidate Hub
+        run: |
+          curl -s -X POST "https://hub.xxxiii.io/api/revalidate" \
+            -H "Authorization: Bearer ${{ secrets.REVALIDATION_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"paths": ["/"]}' \
+            || echo "Revalidation endpoint not configured yet"

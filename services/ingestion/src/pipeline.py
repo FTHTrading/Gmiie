@@ -285,12 +285,42 @@ pipeline = IngestionPipeline()
 
 async def main() -> None:
     """Entry point for the ingestion service."""
-    import sys
+    import argparse
 
-    if len(sys.argv) > 1 and sys.argv[1] == "once":
+    parser = argparse.ArgumentParser(description="XXXIII Ingestion Pipeline")
+    parser.add_argument(
+        "command",
+        nargs="?",
+        default="daemon",
+        choices=["daemon", "once"],
+        help="Run mode: 'daemon' (continuous polling) or 'once' (single cycle then exit)",
+    )
+    parser.add_argument(
+        "--mode",
+        default="full",
+        choices=["full", "rss_only", "scrape_only", "api_only"],
+        help="Which ingestion cycle to run (default: full)",
+    )
+    parser.add_argument(
+        "--single-cycle",
+        action="store_true",
+        help="Alias for 'once' command — run one cycle then exit",
+    )
+    args = parser.parse_args()
+
+    run_once = args.command == "once" or args.single_cycle
+
+    if run_once:
         await pipeline.startup()
         try:
-            stats = await pipeline.run_full_cycle()
+            if args.mode == "rss_only":
+                stats = await pipeline.run_rss_cycle()
+            elif args.mode == "scrape_only":
+                stats = await pipeline.run_scrape_cycle()
+            elif args.mode == "api_only":
+                stats = await pipeline.run_api_cycle()
+            else:
+                stats = await pipeline.run_full_cycle()
             logger.info("one_shot_complete", stats=stats)
         finally:
             await pipeline.shutdown()

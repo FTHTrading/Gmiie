@@ -515,8 +515,12 @@ graph TB
 
 | Domain | Purpose | Provider |
 |:-------|:--------|:---------|
-| `xxxiii.io` | GMIIE production | Vercel |
+| `xxxiii.io` | GMIIE production (Hub) | Vercel |
 | `www.xxxiii.io` | Redirect → `xxxiii.io` | Vercel |
+| `gmiie.xxxiii.io` | Intelligence Engine | Vercel |
+| `hub.xxxiii.io` | Ecosystem Portal | Vercel |
+| `lps.xxxiii.io` | LPS-1 Protocol Spec | Vercel |
+| `studio.xxxiii.io` | Admin Studio (CMS) | Vercel |
 | `donkeys.xxxiii.io` | Legacy site | Cloudflare Pages |
 
 ---

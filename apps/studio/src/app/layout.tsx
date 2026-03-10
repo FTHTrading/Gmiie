@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
-import '@xxxiii/ui/globals.css';
+import '@xxxiii/ui/src/styles/globals.css';
 import { StudioSidebar } from './components/sidebar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });

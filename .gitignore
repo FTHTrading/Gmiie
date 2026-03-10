@@ -58,3 +58,4 @@ docker-compose.override.yml
 .netlify/
 *.tsbuildinfo
 .vercel
+.env*.local
