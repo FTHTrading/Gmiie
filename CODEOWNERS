@@ -1,0 +1,32 @@
+# CODEOWNERS — XXXIII.IO
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ─── Global ───────────────────────────────────────────────
+*                           @FTHTrading/core
+
+# ─── Applications ─────────────────────────────────────────
+apps/gmiie/                 @FTHTrading/core
+apps/hub/                   @FTHTrading/core
+apps/lps/                   @FTHTrading/core
+apps/studio/                @FTHTrading/core
+
+# ─── Shared Packages ──────────────────────────────────────
+packages/db/                @FTHTrading/core
+packages/types/             @FTHTrading/core
+packages/config/            @FTHTrading/core
+packages/seo/               @FTHTrading/core
+packages/ui/                @FTHTrading/core
+
+# ─── Services ─────────────────────────────────────────────
+services/ingestion/         @FTHTrading/core
+services/ai-engine/         @FTHTrading/core
+services/queue/             @FTHTrading/core
+
+# ─── Infrastructure ───────────────────────────────────────
+infra/                      @FTHTrading/core
+.github/                    @FTHTrading/core
+docker-compose.yml          @FTHTrading/core
+
+# ─── Documentation ────────────────────────────────────────
+docs/                       @FTHTrading/core
+*.md                        @FTHTrading/core
