@@ -6,6 +6,148 @@
 
 ---
 
+<br/>
+
+<div align="center">
+
+## 📂 Gmiie-Content-Platform — Repository Table of Contents
+
+![TypeScript](https://img.shields.io/badge/TypeScript-54.8%25-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![HCL](https://img.shields.io/badge/HCL-42.0%25-7B42BC?style=flat-square&logo=terraform&logoColor=white)
+![Docker](https://img.shields.io/badge/Dockerfile-2.6%25-2496ED?style=flat-square&logo=docker&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-0.6%25-E34F26?style=flat-square&logo=html5&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)
+![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+![Node](https://img.shields.io/badge/Node.js-20-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)
+
+</div>
+
+<br/>
+
+> **Legend:**
+> 🟦 = TypeScript / Application Code &nbsp;|&nbsp;
+> 🟪 = Infrastructure (HCL / Terraform) &nbsp;|&nbsp;
+> 🟧 = CI/CD & Automation &nbsp;|&nbsp;
+> 🟩 = Documentation &nbsp;|&nbsp;
+> ⬜ = Configuration &nbsp;|&nbsp;
+> 🟥 = Security & Governance
+
+---
+
+### 🏗️ Top-Level Structure
+
+```
+FTHTrading/Gmiie-Content-Platform (private)
+├── 🟧 .github/              CI/CD workflows & repo automation
+├── 🟦 apps/                  Application packages (API, Web)
+├── 🟩 docs/                  Architecture & project documentation
+├── 🟪 infra/                 AWS infrastructure-as-code (Terraform/HCL)
+├── 🟦 packages/              Shared libraries & internal packages
+└──    ⚙️  Config & Meta Files
+```
+
+---
+
+### 📁 Directory Breakdown
+
+| Icon | Path | Purpose | Language / Stack |
+|:----:|:-----|:--------|:-----------------|
+| 🟧 | **`.github/`** | GitHub Actions workflows, PR templates, issue templates | YAML |
+| 🟧 | `.github/workflows/ci.yml` | Build, lint, typecheck, test on push/PR | GitHub Actions |
+| 🟧 | `.github/workflows/deploy.yml` | Deploy API → ECS, Web → S3 + CloudFront | GitHub Actions |
+| | | | |
+| 🟦 | **`apps/`** | Deployable applications (monorepo workspaces) | TypeScript |
+| 🟦 | `apps/api/` | Backend REST/GraphQL service | Node.js / Express |
+| 🟦 | `apps/web/` | Frontend web application | Next.js / React |
+| | | | |
+| 🟩 | **`docs/`** | Project & architecture documentation | Markdown |
+| 🟩 | `docs/architecture/` | System design, patterns, ADRs | Markdown |
+| | | | |
+| 🟪 | **`infra/`** | Cloud infrastructure definitions | HCL (Terraform) |
+| 🟪 | `infra/` | ECS, S3, CloudFront, IAM, VPC, RDS | Terraform / AWS |
+| | | | |
+| 🟦 | **`packages/`** | Shared internal libraries | TypeScript |
+| 🟦 | `packages/db/` | Prisma client & schema (`@xxxiii/db`) | Prisma / TS |
+| 🟦 | `packages/config/` | Shared tsconfig, ESLint, Tailwind presets | JSON / TS |
+
+---
+
+### 📄 Root Files
+
+| Icon | File | Purpose |
+|:----:|:-----|:--------|
+| ⬜ | `.dockerignore` | Docker build exclusions |
+| ⬜ | `.env.example` | Environment variable template — **copy to `.env.local`** |
+| ⬜ | `.gitignore` | Git tracking exclusions |
+| ⬜ | `.nvmrc` | Pin Node.js version (`20`) |
+| 🟥 | `CODEOWNERS` | PR review ownership rules |
+| 🟩 | `CONTRIBUTING.md` | Contribution guidelines & workflow |
+| 🟩 | `LICENSE` | MIT License |
+| 🟩 | `README.md` | Repo overview, setup, CI/CD reference |
+| 🟥 | `SECURITY.md` | Vulnerability reporting & security policy |
+| ⬜ | `package.json` | Root workspace manifest (scripts, deps) |
+| ⬜ | `pnpm-lock.yaml` | Dependency lockfile (deterministic installs) |
+| ⬜ | `pnpm-workspace.yaml` | pnpm workspace package glob config |
+| 🟦 | `tsconfig.base.json` | Shared TypeScript compiler options |
+| 🟧 | `turbo.json` | Turborepo pipeline task definitions |
+
+---
+
+### 🔄 CI/CD Pipeline Map
+
+```
+ ┌────────────────────────────────────────────────────────────────────┐
+ │                    🟧 GitHub Actions Pipelines                     │
+ ├────────────────────────────────────────────────────────────────────┤
+ │                                                                    │
+ │  ci.yml (push to main / PRs)                                      │
+ │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+ │  │ Checkout  │─▶│ pnpm     │─▶│ Lint +   │─▶│ Build +  │          │
+ │  │ + Node 20 │  │ Install  │  │ Typecheck│  │ Test     │          │
+ │  └──────────┘  └──────────┘  └──────────┘  └──────────┘          │
+ │                                                                    │
+ │  deploy.yml (push to main / manual)                               │
+ │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+ │  │ OIDC Auth│─▶│ Build    │─▶│ API →    │─▶│ Web →    │          │
+ │  │ (no keys)│  │ Artifacts│  │ ECS      │  │ S3 + CDN │          │
+ │  └──────────┘  └──────────┘  └──────────┘  └──────────┘          │
+ │                                                                    │
+ │  Required Secrets: AWS_ACCOUNT_ID, AWS_REGION                     │
+ └────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 🛡️ Governance & Security
+
+| Category | File | Owner |
+|:---------|:-----|:------|
+| 🟥 Code Review | `CODEOWNERS` | Auto-assign reviewers per path |
+| 🟥 Security Disclosure | `SECURITY.md` | Responsible vulnerability reporting |
+| 🟩 Contribution Rules | `CONTRIBUTING.md` | Branch naming, PR flow, commit conventions |
+| 🟩 Licensing | `LICENSE` | MIT — permissive open source |
+
+---
+
+### 📊 Repository Stats
+
+| Metric | Value |
+|:-------|:------|
+| **Primary Language** | TypeScript (54.8%) |
+| **Infrastructure** | HCL / Terraform (42.0%) |
+| **Containerization** | Dockerfile (2.6%) |
+| **Markup** | HTML (0.6%) |
+| **Package Manager** | pnpm (workspaces) |
+| **Build Orchestrator** | Turborepo |
+| **Runtime** | Node.js 20 |
+| **Deploy Target** | AWS (ECS + S3 + CloudFront) |
+| **Auth Model** | GitHub OIDC → AWS (zero static keys) |
+
+---
+
+<br/>
+
 ## 1. Overview
 
 Every feature in the GMIIE codebase follows a three-layer contract pattern between the database and the UI:
