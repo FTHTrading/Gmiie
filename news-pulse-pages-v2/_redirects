@@ -1,1 +1,3 @@
-/* https://xxxiii.io/briefs/ 302
+# Static files (index.html, 404.html) are served by Cloudflare Pages directly.
+# Sub-paths that don't have a file will serve 404.html instead.
+# The 404 page links users to the full GMIIE Intelligence platform.

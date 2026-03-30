@@ -19,7 +19,7 @@ const SMTP_PORT = Number.parseInt(process.env.NEWSLETTER_SMTP_PORT || '587', 10)
 const SMTP_SECURE = process.env.NEWSLETTER_SMTP_SECURE === 'true';
 const SMTP_USER = process.env.NEWSLETTER_SMTP_USER;
 const SMTP_PASS = process.env.NEWSLETTER_SMTP_PASS;
-const SMTP_FROM = process.env.NEWSLETTER_FROM || 'insights@xxxiii.io';
+const SMTP_FROM = process.env.NEWSLETTER_FROM || 'pulse@xxxiii.io';
 const BRIEFS_URL = 'https://xxxiii.io/briefs/';
 
 function shouldSendEmail(): boolean {
@@ -48,31 +48,47 @@ function buildPdfBuffer(params: {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    // Header block
+    // Header block — Pulse brand: white background, deep navy accent bar
     doc
-      .fillColor('#0a0a0a')
-      .rect(0, 0, doc.page.width, 90)
+      .fillColor('#1a3a5c')
+      .rect(0, 0, doc.page.width, 6)
       .fill();
 
     doc
-      .fillColor('#ffffff')
-      .fontSize(20)
-      .font('Helvetica-Bold')
-      .text('GMIIE', 50, 28, { continued: true })
-      .fillColor('#4a9eff')
-      .text(' — Global Monetary Infrastructure Intelligence Engine');
+      .fillColor('#f8f5f0')
+      .rect(0, 6, doc.page.width, 80)
+      .fill();
 
     doc
-      .fillColor('#aaaaaa')
+      .fillColor('#1a1a1a')
+      .fontSize(22)
+      .font('Helvetica-Bold')
+      .text('GMIIE Pulse', 50, 22);
+
+    doc
+      .fillColor('#1a3a5c')
       .fontSize(9)
       .font('Helvetica')
-      .text(params.dateLabel, 50, 58);
+      .text('Global Monetary Infrastructure Intelligence Engine', 50, 50);
+
+    doc
+      .fillColor('#6b6b6b')
+      .fontSize(9)
+      .font('Helvetica')
+      .text(params.dateLabel, 50, 63);
+
+    doc
+      .moveTo(0, 86)
+      .lineTo(doc.page.width, 86)
+      .strokeColor('#d4cfc8')
+      .lineWidth(0.5)
+      .stroke();
 
     doc.moveDown(3);
 
     // Title
     doc
-      .fillColor('#111111')
+      .fillColor('#1a1a1a')
       .fontSize(16)
       .font('Helvetica-Bold')
       .text(params.title, { align: 'left' });
@@ -80,7 +96,7 @@ function buildPdfBuffer(params: {
     doc
       .moveTo(50, doc.y + 6)
       .lineTo(doc.page.width - 50, doc.y + 6)
-      .strokeColor('#4a9eff')
+      .strokeColor('#1a3a5c')
       .lineWidth(1.5)
       .stroke();
 
@@ -88,7 +104,7 @@ function buildPdfBuffer(params: {
 
     // Articles
     for (const article of params.articles) {
-      const scoreColor = article.score >= 75 ? '#16a34a' : article.score >= 50 ? '#ca8a04' : '#dc2626';
+      const scoreColor = article.score >= 75 ? '#216b3e' : article.score >= 50 ? '#854d0e' : '#b91c1c';
 
       doc
         .fillColor('#111111')
@@ -131,9 +147,10 @@ function buildPdfBuffer(params: {
     // Footer
     doc
       .fontSize(8)
-      .fillColor('#888888')
-      .text(`View live intelligence at ${BRIEFS_URL}`, 50, doc.page.height - 60, { align: 'center' })
-      .text('You are receiving this because you subscribed via xxxiii.io. Reply to unsubscribe.', { align: 'center' });
+      .fillColor('#6b6b6b')
+      .text(`View full analysis at ${BRIEFS_URL}`, 50, doc.page.height - 60, { align: 'center' })
+      .fillColor('#9ca3af')
+      .text('You are receiving GMIIE Pulse because you subscribed at xxxiii.io. Reply to unsubscribe.', { align: 'center' });
 
     doc.end();
   });
@@ -146,19 +163,17 @@ function buildHtmlEmail(params: {
   slug: string;
 }): string {
   const articleRows = params.articles.map(a => {
-    const scoreColor = a.score >= 75 ? '#16a34a' : a.score >= 50 ? '#ca8a04' : '#dc2626';
+    const scoreColor = a.score >= 75 ? '#216b3e' : a.score >= 50 ? '#854d0e' : '#b91c1c';
+    const scoreBg   = a.score >= 75 ? '#dcfce7' : a.score >= 50 ? '#fef9c3' : '#fee2e2';
+    const topicLabel = a.topic ? `<span style="font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#b8860b;">${escapeHtml(a.topic)}</span>` : '';
     return `
       <tr>
-        <td style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
-          <div style="font-size:13px;font-weight:700;color:#111111;margin-bottom:4px;">${a.rank}. ${escapeHtml(a.title)}</div>
-          <div style="font-size:11px;margin-bottom:6px;">
-            <span style="color:${scoreColor};font-weight:600;">Signal ${a.score}/100</span>
-            <span style="color:#9ca3af;margin:0 6px;">|</span>
-            <span style="color:#6b7280;">${escapeHtml(a.topic)}</span>
-            <span style="color:#9ca3af;margin:0 6px;">|</span>
-            <span style="color:#6b7280;">${escapeHtml(a.source)}</span>
-          </div>
-          <div style="font-size:12px;color:#374151;line-height:1.6;">${escapeHtml(a.summary)}</div>
+        <td style="padding:16px 0;border-bottom:1px solid #d4cfc8;">
+          ${topicLabel ? `<div style="margin-bottom:5px;">${topicLabel}</div>` : ''}
+          <div style="font-size:14px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:6px;">${a.rank}. ${escapeHtml(a.title)}</div>
+          <div style="font-size:12px;color:#3d3d3d;line-height:1.6;font-family:Georgia,'Times New Roman',Times,serif;margin-bottom:8px;">${escapeHtml(a.summary)}</div>
+          <span style="display:inline-block;background:${scoreBg};color:${scoreColor};font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:700;padding:2px 7px;letter-spacing:0.04em;">Signal ${a.score}/100</span>
+          <span style="font-family:Helvetica,Arial,sans-serif;font-size:9px;color:#9ca3af;margin-left:8px;">${escapeHtml(a.source)}</span>
         </td>
       </tr>`;
   }).join('');
@@ -166,47 +181,56 @@ function buildHtmlEmail(params: {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Helvetica,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:32px 0;">
+<body style="margin:0;padding:0;background:#f0ede8;font-family:Georgia,'Times New Roman',Times,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0ede8;padding:32px 0;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb;">
+      <table width="620" cellpadding="0" cellspacing="0" style="background:#ffffff;overflow:hidden;border:1px solid #d4cfc8;">
 
-        <!-- Header -->
-        <tr><td style="background:#0a0a0a;padding:24px 32px;">
-          <div style="font-size:18px;font-weight:700;color:#ffffff;">
-            GMIIE <span style="color:#4a9eff;">Intelligence Engine</span>
-          </div>
-          <div style="font-size:11px;color:#9ca3af;margin-top:4px;">Global Monetary Infrastructure — Macro Situational Awareness</div>
+        <!-- Accent bar -->
+        <tr><td style="background:#1a3a5c;height:5px;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+        <!-- Masthead -->
+        <tr><td style="background:#ffffff;padding:24px 36px 16px;border-bottom:3px double #1a1a1a;text-align:center;">
+          <div style="font-family:Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.3em;color:#6b6b6b;text-transform:uppercase;margin-bottom:8px;">GMIIE &middot; Global Monetary Infrastructure Intelligence Engine</div>
+          <div style="font-size:42px;font-weight:900;color:#1a1a1a;letter-spacing:-0.03em;line-height:1;">Pulse</div>
+          <div style="font-family:Helvetica,Arial,sans-serif;font-size:10px;color:#6b6b6b;margin-top:6px;letter-spacing:0.1em;text-transform:uppercase;">The Cliff Notes on Capital Markets &amp; Monetary Policy</div>
         </td></tr>
 
-        <!-- Title -->
-        <tr><td style="padding:24px 32px 0;">
-          <div style="font-size:15px;color:#6b7280;margin-bottom:4px;">${params.greeting}</div>
-          <h1 style="margin:8px 0 4px;font-size:20px;font-weight:700;color:#111111;">${escapeHtml(params.title)}</h1>
-          <div style="height:2px;background:linear-gradient(90deg,#4a9eff,#0ea5e9);border-radius:2px;margin-top:12px;"></div>
+        <!-- Date bar -->
+        <tr><td style="background:#f8f5f0;padding:7px 36px;border-bottom:1px solid #d4cfc8;">
+          <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#6b6b6b;">
+            <span style="text-transform:uppercase;letter-spacing:0.06em;">${params.greeting}</span>
+          </div>
+        </td></tr>
+
+        <!-- Edition title -->
+        <tr><td style="padding:20px 36px 0;">
+          <h1 style="margin:0 0 4px;font-size:20px;font-weight:900;color:#1a1a1a;line-height:1.2;">${escapeHtml(params.title)}</h1>
+          <div style="height:2px;background:#1a3a5c;margin-top:12px;"></div>
         </td></tr>
 
         <!-- Articles -->
-        <tr><td style="padding:8px 32px 16px;">
+        <tr><td style="padding:8px 36px 16px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             ${articleRows}
           </table>
         </td></tr>
 
         <!-- CTA -->
-        <tr><td style="padding:16px 32px 32px;text-align:center;">
-          <a href="${BRIEFS_URL}" style="display:inline-block;background:#4a9eff;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:13px;font-weight:600;">
-            View All Intelligence Briefs →
+        <tr><td style="padding:16px 36px 28px;text-align:center;border-top:1px solid #d4cfc8;">
+          <a href="${BRIEFS_URL}" style="display:inline-block;background:#1a3a5c;color:#ffffff;text-decoration:none;padding:12px 28px;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">
+            Read Full Analysis at GMIIE Intelligence &rarr;
           </a>
-          <div style="margin-top:12px;font-size:11px;color:#9ca3af;">
+          <div style="margin-top:12px;font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#9ca3af;">
             A PDF copy of this briefing is attached.
           </div>
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;text-align:center;">
-          <div style="font-size:11px;color:#9ca3af;">
-            You subscribed at xxxiii.io. To change your preferences, re-subscribe with updated settings.
+        <tr><td style="background:#1a1a1a;padding:16px 36px;text-align:center;">
+          <div style="font-family:Helvetica,Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.45);line-height:1.7;">
+            <strong style="color:rgba(255,255,255,0.7);">GMIIE Pulse</strong> &middot; news.unykorn.org<br>
+            You subscribed at xxxiii.io. Reply to this email to unsubscribe.
           </div>
         </td></tr>
 

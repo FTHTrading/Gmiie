@@ -3,11 +3,674 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Redirecting to XXXIII</title>
-    <meta http-equiv="refresh" content="0;url=https://xxxiii.io/briefs/" />
+  <title>GMIIE Pulse — Daily Intelligence Briefing</title>
+  <meta name="description" content="GMIIE Pulse — The Cliff Notes on global monetary markets. Short, sharp, daily." />
+  <meta property="og:title" content="GMIIE Pulse" />
+  <meta property="og:description" content="Daily intelligence briefing for financial markets, monetary policy, and capital flows." />
+  <meta name="theme-color" content="#f8f5f0" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #1a1a1a;
+      --ink-2:    #3d3d3d;
+      --ink-3:    #6b6b6b;
+      --rule:     #d4cfc8;
+      --paper:    #f8f5f0;
+      --white:    #ffffff;
+      --gold:     #b8860b;
+      --gold-lt:  #f5e9c8;
+      --red:      #c0392b;
+      --green:    #216b3e;
+      --blue:     #1a3a5c;
+      --accent:   #1a3a5c;
+      --font-serif: Georgia, 'Times New Roman', Times, serif;
+      --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    html { background: var(--paper); color: var(--ink); font-family: var(--font-serif); font-size: 16px; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--white);
+      border-bottom: 3px double var(--ink);
+      padding: 0;
+    }
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 32px 6px;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+    .masthead-top .date { text-transform: uppercase; }
+    .masthead-top .tagline { text-align: center; font-style: italic; color: var(--ink-2); }
+    .masthead-top .edition { text-align: right; }
+
+    .masthead-title {
+      text-align: center;
+      padding: 18px 32px 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-title .brand {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .masthead-title h1 {
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--ink);
+      font-family: Georgia, serif;
+    }
+    .masthead-title .subtitle {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-top: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .masthead-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 8px 32px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+    .masthead-nav a { color: inherit; text-decoration: none; }
+    .masthead-nav a:hover { color: var(--accent); text-decoration: underline; }
+    .masthead-nav .sep { color: var(--rule); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── TICKER BAND ── */
+    .ticker-band {
+      background: var(--accent);
+      color: var(--white);
+      padding: 6px 0;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner { display: inline-flex; gap: 48px; animation: ticker 25s linear infinite; }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item { display: flex; align-items: center; gap: 10px; }
+    .ticker-item .label { color: rgba(255,255,255,0.6); }
+    .ticker-item .val { color: #fff; }
+    .ticker-item .chg.up { color: #6ee7b7; }
+    .ticker-item .chg.dn { color: #fca5a5; }
+
+    /* ── MAIN GRID ── */
+    .main { padding: 28px 0 48px; }
+
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 0;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 28px;
+    }
+
+    /* Lead story */
+    .lead {
+      padding: 0 28px 24px 0;
+      border-right: 1px solid var(--rule);
+    }
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--accent);
+      display: inline-block;
+      padding: 3px 8px;
+      margin-bottom: 14px;
+    }
+    .lead h2 {
+      font-size: clamp(22px, 3.5vw, 30px);
+      line-height: 1.15;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+    .lead .deck {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--ink-2);
+      margin-bottom: 14px;
+      font-family: var(--font-serif);
+    }
+    .lead .byline {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-top: 1px solid var(--rule);
+      padding-top: 10px;
+    }
+    .read-more {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      margin-top: 10px;
+    }
+    .read-more:hover { text-decoration: underline; }
+
+    /* Sidebar quick hits */
+    .sidebar {
+      padding: 0 0 24px 24px;
+    }
+    .sidebar-title {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+    }
+    .quick-hit {
+      padding: 0 0 14px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 14px;
+    }
+    .quick-hit:last-child { border-bottom: none; margin-bottom: 0; }
+    .quick-hit .tag {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .quick-hit h3 {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 5px;
+      color: var(--ink);
+    }
+    .quick-hit p {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      font-family: var(--font-sans);
+    }
+
+    /* ── MIDDLE ROW: 3-col digest ── */
+    .digest-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 28px;
+    }
+    .digest-col {
+      padding: 20px;
+      border-right: 1px solid var(--rule);
+    }
+    .digest-col:last-child { border-right: none; }
+    .digest-col h3 {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 7px;
+      margin-bottom: 14px;
+    }
+    .digest-item {
+      margin-bottom: 13px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .digest-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .digest-item .headline {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .digest-item .summary {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--ink-2);
+      font-family: var(--font-sans);
+    }
+    .digest-item .score-badge {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-top: 5px;
+    }
+    .score-high { background: #dcfce7; color: #15803d; }
+    .score-mid  { background: #fef9c3; color: #854d0e; }
+    .score-low  { background: #fee2e2; color: #b91c1c; }
+
+    /* ── WHAT TO WATCH ── */
+    .watch-bar {
+      background: var(--accent);
+      color: var(--white);
+      padding: 20px 32px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .watch-bar .ww-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      min-width: 100px;
+      padding-top: 3px;
+    }
+    .watch-items { display: flex; flex-wrap: wrap; gap: 8px 32px; }
+    .watch-item {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .watch-item::before { content: '\2192'; color: rgba(255,255,255,0.5); font-size: 12px; }
+
+    /* ── SUBSCRIBE ── */
+    .subscribe-band {
+      background: var(--gold-lt);
+      border-top: 2px solid var(--gold);
+      border-bottom: 2px solid var(--gold);
+      padding: 28px 0;
+      margin-bottom: 28px;
+    }
+    .subscribe-inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .subscribe-copy { flex: 1; }
+    .subscribe-copy h3 {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .subscribe-copy p {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .subscribe-form {
+      display: flex;
+      gap: 0;
+      flex: 1;
+      max-width: 440px;
+    }
+    .subscribe-form input {
+      flex: 1;
+      border: 1.5px solid var(--gold);
+      border-right: none;
+      background: var(--white);
+      padding: 11px 14px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      border-radius: 3px 0 0 3px;
+    }
+    .subscribe-form input:focus { border-color: var(--accent); }
+    .subscribe-form button {
+      background: var(--accent);
+      color: var(--white);
+      border: 1.5px solid var(--accent);
+      padding: 11px 20px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      border-radius: 0 3px 3px 0;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .subscribe-form button:hover { background: #102840; }
+    .subscribe-ok { font-family: var(--font-sans); font-size: 14px; color: var(--green); font-weight: 700; display: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.55);
+      padding: 28px 24px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+      margin-top: auto;
+    }
+    footer .footer-brand {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+    footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    footer a:hover { color: #fff; text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .grid-top { grid-template-columns: 1fr; }
+      .lead { padding: 0 0 20px; border-right: none; border-bottom: 1px solid var(--rule); }
+      .sidebar { padding: 20px 0 0; }
+      .digest-row { grid-template-columns: 1fr; }
+      .digest-col { border-right: none; border-bottom: 1px solid var(--rule); }
+      .digest-col:last-child { border-bottom: none; }
+      .watch-bar { flex-direction: column; gap: 16px; }
+      .subscribe-inner { flex-direction: column; }
+      .subscribe-form { max-width: 100%; width: 100%; }
+      .masthead-top .tagline { display: none; }
+      .masthead-nav { flex-wrap: wrap; gap: 10px; }
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to the live intelligence feed...</p>
-  <p><a href="https://xxxiii.io/intelligence">Continue</a></p>
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="date" id="pub-date">Daily Edition</span>
+      <span class="tagline">Short. Sharp. Actionable intelligence for financial professionals.</span>
+      <span class="edition">Vol. I &nbsp;&middot;&nbsp; Free Edition</span>
+    </div>
+    <div class="masthead-title">
+      <div class="brand">GMIIE &nbsp;&middot;&nbsp; Global Monetary Infrastructure Intelligence Engine</div>
+      <h1>Pulse</h1>
+      <div class="subtitle">The Cliff Notes on Capital Markets &amp; Monetary Policy</div>
+    </div>
+    <nav class="masthead-nav">
+      <a href="https://xxxiii.io/briefs/" target="_blank">Full Intelligence</a>
+      <span class="sep">|</span>
+      <a href="https://xxxiii.io/signals" target="_blank">Signals</a>
+      <span class="sep">|</span>
+      <a href="https://xxxiii.io/methodology" target="_blank">Methodology</a>
+      <span class="sep">|</span>
+      <a href="#subscribe">Subscribe</a>
+    </nav>
+  </header>
+
+  <!-- TICKER -->
+  <div class="ticker-band" aria-hidden="true">
+    <div class="ticker-inner">
+      <span class="ticker-item"><span class="label">CBDC TRACKER</span> <span class="val">134 jurisdictions</span></span>
+      <span class="ticker-item"><span class="label">SETTLEMENT RISK</span> <span class="val chg up">ELEVATED</span></span>
+      <span class="ticker-item"><span class="label">FED FUNDS TARGET</span> <span class="val">4.25&ndash;4.50%</span></span>
+      <span class="ticker-item"><span class="label">BASEL IV</span> <span class="val">Transition in progress</span></span>
+      <span class="ticker-item"><span class="label">DIGITAL EURO</span> <span class="val">Preparation phase</span></span>
+      <span class="ticker-item"><span class="label">STABLECOIN BILL</span> <span class="val chg up">Senate markup</span></span>
+      <span class="ticker-item"><span class="label">BIS REPORTS</span> <span class="val">Q1 2026 cycle</span></span>
+      <span class="ticker-item"><span class="label">XRPL SETTLEMENT</span> <span class="val chg up">Cross-border pilots</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item"><span class="label">CBDC TRACKER</span> <span class="val">134 jurisdictions</span></span>
+      <span class="ticker-item"><span class="label">SETTLEMENT RISK</span> <span class="val chg up">ELEVATED</span></span>
+      <span class="ticker-item"><span class="label">FED FUNDS TARGET</span> <span class="val">4.25&ndash;4.50%</span></span>
+      <span class="ticker-item"><span class="label">BASEL IV</span> <span class="val">Transition in progress</span></span>
+      <span class="ticker-item"><span class="label">DIGITAL EURO</span> <span class="val">Preparation phase</span></span>
+      <span class="ticker-item"><span class="label">STABLECOIN BILL</span> <span class="val chg up">Senate markup</span></span>
+      <span class="ticker-item"><span class="label">BIS REPORTS</span> <span class="val">Q1 2026 cycle</span></span>
+      <span class="ticker-item"><span class="label">XRPL SETTLEMENT</span> <span class="val chg up">Cross-border pilots</span></span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="container">
+
+      <!-- TOP GRID: Lead + Quick Hits -->
+      <div class="grid-top">
+
+        <!-- LEAD STORY -->
+        <div class="lead">
+          <div class="section-label">Today's Lead</div>
+          <h2 id="lead-headline">Stablecoin Oversight Bill Advances as Senate Banking Committee Schedules Markup</h2>
+          <p class="deck" id="lead-deck">
+            The U.S. Senate Banking Committee has scheduled a markup session for the Stablecoin Transparency and Accountability Act. The bill would subject dollar-pegged stablecoins to federal reserve requirements and mandate monthly attestations from issuers &mdash; a significant escalation of oversight that could reshape the $175B+ stablecoin market. Industry groups are pushing for state-level opt-outs; Treasury is opposing carve-outs for non-bank issuers.
+          </p>
+          <p class="deck" style="margin-top:10px;">
+            <strong>Why it matters:</strong> Federal stablecoin regulation would be the first direct U.S. legislative framework for digital dollar instruments. Settlement rails, issuance limits, and reserve composition requirements will all be defined &mdash; directly affecting fintech, banking, and cross-border payment infrastructure.
+          </p>
+          <div class="byline">GMIIE Intelligence Engine &nbsp;&middot;&nbsp; Capital Markets Desk &nbsp;&middot;&nbsp; Updated: <span id="lead-time"></span></div>
+          <a href="https://xxxiii.io/briefs/" class="read-more" target="_blank">Read Full Analysis at GMIIE Intelligence &rarr;</a>
+        </div>
+
+        <!-- QUICK HITS SIDEBAR -->
+        <div class="sidebar">
+          <div class="sidebar-title">Quick Hits</div>
+
+          <div class="quick-hit">
+            <div class="tag">Central Banks</div>
+            <h3>ECB Holds Rates at 2.5% &mdash; But Signals Pause Is Conditional</h3>
+            <p>Lagarde flagged "material uncertainty" around U.S. tariff pass-through to eurozone inflation. Markets pricing one more cut in June, but ECB pushback growing internally.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Digital Infrastructure</div>
+            <h3>BIS Proposes Unified Ledger for Cross-Border Settlement</h3>
+            <p>Project Agor&aacute; working paper calls for a multi-CBDC platform layer. Seven central banks co-signing. Implementation timeline: 2027&ndash;2028 at earliest.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Tokenization</div>
+            <h3>BlackRock BUIDL Fund Tops $500M AUM</h3>
+            <p>Tokenized T-bill product now the largest on-chain RWA by AUM. Institutional demand accelerating as settlement benefits prove measurable vs. traditional T+2 rails.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Regulatory</div>
+            <h3>Basel IV FRTB Deadline Pressure Mounts for U.S. Banks</h3>
+            <p>OCC, Fed, and FDIC have yet to finalize U.S. market risk implementation rules. Non-U.S. G-SIBs now operating under rules U.S. peers are not.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-COLUMN DIGEST -->
+      <div class="digest-row">
+        <div class="digest-col">
+          <h3>Monetary Policy</h3>
+          <div class="digest-item">
+            <div class="headline">Fed Holds &mdash; Dot Plot Shifts to Two Cuts in 2026</div>
+            <div class="summary">March FOMC statement removed "confident" language on inflation. Median projection now 4.0% by year-end. Labor market remains "solid."</div>
+            <span class="score-badge score-mid">Signal 68/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Bank of Japan Hints at Second Rate Hike by Mid-Year</div>
+            <div class="summary">Deputy Governor Himino's speech flagged "broadening wage-price dynamics." Yen carry trades under renewed pressure. JGB yields at decade high along the 10Y.</div>
+            <span class="score-badge score-high">Signal 81/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">PBOC Cuts RRR 25bps &mdash; Targets Real Economy Lending</div>
+            <div class="summary">First reserve ratio cut of 2026 frees ~&yen;500B. Targeted at SME credit channels, not broad stimulus. Signals Beijing managing deflation risk carefully.</div>
+            <span class="score-badge score-mid">Signal 72/100</span>
+          </div>
+        </div>
+
+        <div class="digest-col">
+          <h3>Settlement &amp; Infrastructure</h3>
+          <div class="digest-item">
+            <div class="headline">SWIFT Go Volumes Up 34% YoY as Adoption Broadens</div>
+            <div class="summary">Low-value cross-border payment rails gaining traction among mid-tier banks. Average settlement time now under 90 seconds end-to-end for participating corridors.</div>
+            <span class="score-badge score-high">Signal 76/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Ripple vs. SEC: Full Remedies Hearing Scheduled</div>
+            <div class="summary">Outcome will determine whether XRP's "not-a-security" institutional ruling opens broader secondary market participation. Closely watched by exchanges and custodians.</div>
+            <span class="score-badge score-high">Signal 88/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Project mBridge Adds Saudi Arabia as Participant</div>
+            <div class="summary">BIS multi-CBDC bridge now includes four central banks plus an observer. Live pilot transactions exceeded $22M. First cross-border use case: oil trade settlement.</div>
+            <span class="score-badge score-high">Signal 84/100</span>
+          </div>
+        </div>
+
+        <div class="digest-col">
+          <h3>Capital &amp; Regulation</h3>
+          <div class="digest-item">
+            <div class="headline">EU MiCA Enforcement Phase Begins: 5 Exchanges Flagged</div>
+            <div class="summary">ESMA's first enforcement sweep identified five exchanges for non-compliance with whitepaper disclosure rules. Grace period until Q3 2026 for remediation.</div>
+            <span class="score-badge score-mid">Signal 65/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Tokenized Money Market Funds Receive SEC No-Action Relief</div>
+            <div class="summary">SEC staff issued limited no-action relief allowing registered MMFs to explore on-chain share class structures. Does not permit DeFi distribution channels.</div>
+            <span class="score-badge score-high">Signal 79/100</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">IMF Warns of "Fragmentation Risk" in Global Payment Corridors</div>
+            <div class="summary">Diverging CBDC interoperability standards flagged as potential source of long-run settlement friction. Calls for ISO 20022 harmonization by 2027.</div>
+            <span class="score-badge score-mid">Signal 71/100</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .container -->
+
+    <!-- WHAT TO WATCH -->
+    <div class="watch-bar">
+      <div class="ww-label">What to Watch</div>
+      <div class="watch-items">
+        <div class="watch-item">Senate stablecoin markup vote &mdash; week of April 7</div>
+        <div class="watch-item">ECB April meeting &mdash; rates decision April 17</div>
+        <div class="watch-item">U.S. Q1 GDP advance estimate &mdash; April 30</div>
+        <div class="watch-item">BIS FSB report on AI in financial stability</div>
+        <div class="watch-item">Project Agor&aacute; Phase 2 announcement</div>
+        <div class="watch-item">OCC bank charter for crypto applicants &mdash; ruling pending</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SUBSCRIBE -->
+  <section class="subscribe-band" id="subscribe">
+    <div class="subscribe-inner">
+      <div class="subscribe-copy">
+        <h3>Get Pulse in Your Inbox</h3>
+        <p>Daily Cliff Notes on monetary policy, markets, and infrastructure &mdash; delivered before markets open. No noise. No filler. Just what moved and why it matters.</p>
+      </div>
+      <form class="subscribe-form" id="sub-form" onsubmit="handleSubscribe(event)">
+        <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" />
+        <button type="submit">Subscribe Free</button>
+      </form>
+      <div class="subscribe-ok" id="sub-ok">&#10003; You're in. Next Pulse lands tomorrow.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">GMIIE Pulse &nbsp;&middot;&nbsp; news.unykorn.org</div>
+    <p>Published by the GMIIE Intelligence Engine &nbsp;&middot;&nbsp; <a href="https://xxxiii.io" target="_blank">xxxiii.io</a></p>
+    <p style="margin-top:8px;">
+      <a href="https://xxxiii.io/briefs/" target="_blank">Full Intelligence Briefs</a> &nbsp;&middot;&nbsp;
+      <a href="https://xxxiii.io/methodology" target="_blank">Methodology</a> &nbsp;&middot;&nbsp;
+      <a href="#subscribe">Subscribe / Manage Preferences</a>
+    </p>
+    <p style="margin-top:14px;font-size:10px;color:rgba(255,255,255,0.35);">
+      This briefing is for informational purposes only and does not constitute investment advice.
+      Content is compiled from publicly available sources and GMIIE proprietary analysis.
+    </p>
+  </footer>
+
+  <script>
+    // Set live date
+    const now = new Date();
+    document.getElementById('pub-date').textContent = now.toLocaleDateString('en-US',
+      { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    document.getElementById('lead-time').textContent = now.toLocaleDateString('en-US',
+      { month:'short', day:'numeric', year:'numeric' });
+
+    // Try to pull live headline from GMIIE API (non-blocking, silent fail)
+    fetch('https://xxxiii.io/api/articles?limit=1', { signal: AbortSignal.timeout(4000) })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const top = data && data.articles && data.articles[0];
+        if (!top) return;
+        if (top.headline) document.getElementById('lead-headline').textContent = top.headline;
+        if (top.executiveSummary || top.summary)
+          document.getElementById('lead-deck').textContent = top.executiveSummary || top.summary;
+      })
+      .catch(() => {});
+
+    // Subscribe handler
+    function handleSubscribe(e) {
+      e.preventDefault();
+      const email = e.currentTarget.querySelector('input[name="email"]').value.trim();
+      if (!email) return;
+      fetch('https://xxxiii.io/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, cadence: 'daily', site: 'pulse' }),
+      })
+      .then(r => {
+        if (r.ok) {
+          document.getElementById('sub-form').style.display = 'none';
+          document.getElementById('sub-ok').style.display = 'block';
+        } else {
+          alert('There was a problem subscribing. Please try again.');
+        }
+      })
+      .catch(() => alert('There was a problem subscribing. Please try again.'));
+    }
+  </script>
+
 </body>
 </html>
