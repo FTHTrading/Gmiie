@@ -28,7 +28,7 @@ function getOptimizer(): SEOOptimizer {
   return optimizer;
 }
 
-const AUTO_PUBLISH = process.env.AUTO_PUBLISH === 'true';
+const AUTO_PUBLISH = (process.env.AUTO_PUBLISH || 'true') === 'true';
 
 export async function handleSEO(job: Job<SEOJobData>): Promise<any> {
   const { articleId, title, primaryTopic, entities, summary, keyPoints } = job.data;

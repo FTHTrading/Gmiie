@@ -29,6 +29,8 @@ dependencies = [
   "orjson>=3.9",
   "fastapi>=0.115",
   "uvicorn[standard]>=0.34",
+  "langdetect>=1.0.9",
+  "deep-translator>=1.11.4",
 ]
 
 [project.scripts]

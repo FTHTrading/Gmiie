@@ -110,20 +110,21 @@ export function PlatformHeader() {
             <div className="md:hidden">
               <ThemeToggle />
             </div>
-            {/* Mobile hamburger */}
+            {/* Mobile hamburger — min 44px touch target per WCAG */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden flex flex-col items-center justify-center w-8 h-8 gap-1"
+              className="md:hidden flex flex-col items-center justify-center w-11 h-11 -mr-1.5 gap-[5px] rounded-lg"
               aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
             >
-              <span className={`block w-4 h-0.5 bg-text-secondary transition-transform duration-200 ${
-                mobileMenuOpen ? "rotate-45 translate-y-[3px]" : ""
+              <span className={`block w-5 h-0.5 bg-text-secondary transition-transform duration-200 ${
+                mobileMenuOpen ? "rotate-45 translate-y-[7px]" : ""
               }`} />
-              <span className={`block w-4 h-0.5 bg-text-secondary transition-opacity duration-200 ${
+              <span className={`block w-5 h-0.5 bg-text-secondary transition-opacity duration-200 ${
                 mobileMenuOpen ? "opacity-0" : ""
               }`} />
-              <span className={`block w-4 h-0.5 bg-text-secondary transition-transform duration-200 ${
-                mobileMenuOpen ? "-rotate-45 -translate-y-[3px]" : ""
+              <span className={`block w-5 h-0.5 bg-text-secondary transition-transform duration-200 ${
+                mobileMenuOpen ? "-rotate-45 -translate-y-[7px]" : ""
               }`} />
             </button>
           </div>

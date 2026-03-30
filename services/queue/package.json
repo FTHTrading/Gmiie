@@ -17,9 +17,11 @@
     "@xxxiii/db": "workspace:*",
     "@xxxiii/types": "workspace:*",
     "dotenv": "^16.3.0",
+    "nodemailer": "^6.9.16",
     "pino": "^8.17.0"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
     "typescript": "^5.3.0",
     "tsx": "^4.7.0",
     "vitest": "^1.1.0",

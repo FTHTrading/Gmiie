@@ -139,7 +139,8 @@ export interface EntityJobData {
 
 export interface NewsletterJobData {
   type: 'daily' | 'weekly';
-  dateRange: { from: string; to: string };
+  edition?: 'am' | 'pm';
+  dateRange?: { from: string; to: string };
 }
 
 export interface SitemapJobData {
@@ -234,15 +235,47 @@ export async function setupScheduledJobs(): Promise<void> {
     },
   );
 
-  // Daily newsletter — 6:00 AM UTC
-  await newsletterQueue.upsertJobScheduler(
-    'daily-newsletter',
-    { pattern: '0 6 * * *' },
-    {
-      name: 'daily-digest',
-      data: { type: 'daily', dateRange: { from: '', to: '' } } satisfies NewsletterJobData,
-    },
-  );
+  const digestCadence = (process.env.NEWSLETTER_DIGEST_CADENCE || 'twice_daily').toLowerCase();
+  const windows = (process.env.NEWSLETTER_DAILY_WINDOWS_UTC || '6,18')
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
+    .map((v) => Number.parseInt(v, 10))
+    .filter((v) => Number.isFinite(v) && v >= 0 && v <= 23);
+
+  const [amHour, pmHour] = windows.length >= 2
+    ? [windows[0], windows[1]]
+    : [6, 18];
+
+  if (digestCadence === 'daily') {
+    await newsletterQueue.upsertJobScheduler(
+      'daily-newsletter',
+      { pattern: `0 ${amHour} * * *` },
+      {
+        name: 'daily-digest',
+        data: { type: 'daily', edition: 'am' } satisfies NewsletterJobData,
+      },
+    );
+  } else {
+    // Twice-daily digest windows (AM / PM UTC)
+    await newsletterQueue.upsertJobScheduler(
+      'daily-newsletter-am',
+      { pattern: `0 ${amHour} * * *` },
+      {
+        name: 'daily-digest-am',
+        data: { type: 'daily', edition: 'am' } satisfies NewsletterJobData,
+      },
+    );
+
+    await newsletterQueue.upsertJobScheduler(
+      'daily-newsletter-pm',
+      { pattern: `0 ${pmHour} * * *` },
+      {
+        name: 'daily-digest-pm',
+        data: { type: 'daily', edition: 'pm' } satisfies NewsletterJobData,
+      },
+    );
+  }
 
   // Weekly newsletter — Monday 7:00 AM UTC
   await newsletterQueue.upsertJobScheduler(
@@ -250,7 +283,7 @@ export async function setupScheduledJobs(): Promise<void> {
     { pattern: '0 7 * * 1' },
     {
       name: 'weekly-roundup',
-      data: { type: 'weekly', dateRange: { from: '', to: '' } } satisfies NewsletterJobData,
+      data: { type: 'weekly' } satisfies NewsletterJobData,
     },
   );
 

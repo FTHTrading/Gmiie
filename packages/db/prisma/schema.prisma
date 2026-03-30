@@ -433,6 +433,28 @@ enum UserRole {
   VIEWER
 }
 
+enum DigestCadence {
+  DAILY
+  TWICE_DAILY
+  WEEKLY
+}
+
+model NewsletterSubscriber {
+  id         String        @id @default(cuid())
+  email      String
+  name       String?
+  site       String        @default("xxxiii")
+  cadence    DigestCadence @default(DAILY)
+  language   String        @default("en")
+  location   String?
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@unique([email, site])
+  @@index([cadence, isActive])
+}
+
 // ─────────────────────────────────────────────────────────────
 // AUDIT LOG — Publishing governance
 // ─────────────────────────────────────────────────────────────

@@ -124,7 +124,7 @@ export default async function SignalsPage() {
       </div>
 
       {/* Signal Grid */}
-      <div className="grid md:grid-cols-3 gap-4 mb-8">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         {scores.map((signal) => (
           <div
             key={signal.key}

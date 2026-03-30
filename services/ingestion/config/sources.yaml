@@ -233,3 +233,53 @@ sources:
       content: "main"
     tags: [rwa, tokenization, data, tracker]
     enabled: true
+
+  # ─── Multilingual + Regional Sources ─────────────────────────
+
+  - id: boc-news
+    name: Bank of China - News
+    url: https://www.boc.cn/en/rss/news.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [central-bank, china, cbdc, policy]
+    region: CN
+    language: zh
+    enabled: true
+
+  - id: boe-news
+    name: Bank of England - News
+    url: https://www.bankofengland.co.uk/rss/news
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [central-bank, uk, monetary-policy]
+    region: UK
+    language: en
+    enabled: true
+
+  - id: boj-news
+    name: Bank of Japan - News
+    url: https://www.boj.or.jp/en/rss/announcements.xml
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [central-bank, japan, policy]
+    region: JP
+    language: ja
+    enabled: true
+
+  - id: mas-news
+    name: Monetary Authority of Singapore - News
+    url: https://www.mas.gov.sg/rss/mas-news
+    source_type: RSS
+    scrape_method: RSS_NATIVE
+    credibility_tier: TIER_1
+    poll_interval_seconds: 1800
+    tags: [regulation, singapore, payments]
+    region: SG
+    language: en
+    enabled: true

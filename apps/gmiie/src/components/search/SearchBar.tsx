@@ -152,7 +152,8 @@ export function SearchBar() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border-subtle bg-surface hover:bg-surface-elevated transition-colors"
+        className="flex items-center gap-2.5 px-3 min-h-[44px] rounded-lg border border-border-subtle bg-surface hover:bg-surface-elevated transition-colors"
+        aria-label="Search"
       >
         <svg
           className="w-4 h-4 text-text-muted"

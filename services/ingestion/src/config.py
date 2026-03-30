@@ -52,6 +52,11 @@ class Settings(BaseSettings):
     min_content_length: int = Field(default=200, description="Minimum content length to accept")
     max_content_length: int = Field(default=50000, description="Maximum content length")
 
+    # Translation
+    translate_to_english: bool = Field(default=True, description="Translate non-English content to English")
+    translation_chunk_size: int = Field(default=3000, description="Max chars per translation chunk")
+    translation_max_chars: int = Field(default=12000, description="Maximum chars to send to translator")
+
     # Rate limiting
     rate_limit_requests_per_minute: int = Field(default=30)
     rate_limit_burst: int = Field(default=10)

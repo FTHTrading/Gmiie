@@ -88,6 +88,22 @@ export default async function GmiieHomePage() {
         </span>
       </div>
 
+      <div className="mb-5 sm:mb-7 flex flex-wrap items-center gap-3">
+        <Link
+          href="/subscribe"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-black text-body-sm font-semibold"
+        >
+          Register for Daily Insights
+          <span className="text-caption">→</span>
+        </Link>
+        <Link
+          href="/methodology"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border-subtle text-body-sm font-medium text-text-secondary hover:text-text-primary"
+        >
+          How The Algorithms Work
+        </Link>
+      </div>
+
       {/* Mobile signals summary — shown when sidebar signal panel is hidden */}
       <MobileSignalsSummary
         signals={aggregateSignals.length > 0 ? aggregateSignals : undefined}

@@ -16,6 +16,36 @@ import type { PublishJobData } from '../index';
 import { getQueue, QUEUE_NAMES } from '../index';
 import { prisma } from '@xxxiii/db';
 
+const REVALIDATE_URLS = (process.env.REVALIDATE_ENDPOINTS || '')
+  .split(',')
+  .map((v) => v.trim())
+  .filter(Boolean);
+
+async function triggerRevalidation(): Promise<void> {
+  if (REVALIDATE_URLS.length === 0) return;
+
+  const token = process.env.REVALIDATION_TOKEN;
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+  };
+
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  }
+
+  await Promise.allSettled(
+    REVALIDATE_URLS.map((url) =>
+      fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          paths: ['/', '/intelligence', '/signals', '/timeline', '/methodology'],
+        }),
+      }),
+    ),
+  );
+}
+
 export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
   const { articleId, autoPublish } = job.data;
 
@@ -43,9 +73,12 @@ export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
   const issues: string[] = [];
   if (!article.title && !article.headline) issues.push('Missing title/headline');
   if (!article.content || article.content.length < 100) issues.push('Content too short or missing');
-  if (!article.slug) issues.push('Missing slug');
-  if (!article.metaTitle) issues.push('Missing SEO title');
-  if (!article.metaDescription) issues.push('Missing meta description');
+
+  const computedMetaTitle = article.metaTitle || article.headline || article.title || '';
+  const computedMetaDescription =
+    article.metaDescription ||
+    article.executiveSummary ||
+    (article.content ? article.content.replace(/\s+/g, ' ').slice(0, 160) : '');
 
   // Generate slug if missing
   let slug = article.slug;
@@ -76,6 +109,8 @@ export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
     data: {
       status: newStatus,
       ...(slug ? { slug } : {}),
+      ...(computedMetaTitle ? { metaTitle: computedMetaTitle } : {}),
+      ...(computedMetaDescription ? { metaDescription: computedMetaDescription } : {}),
       ...(publishedAt ? { publishedAt } : {}),
     },
   });
@@ -123,6 +158,8 @@ export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
     await sitemapQueue.add('news-sitemap', {
       type: 'news',
     });
+
+    await triggerRevalidation();
   }
 
   job.updateProgress(100);
