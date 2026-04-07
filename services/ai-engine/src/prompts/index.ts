@@ -35,3 +35,4 @@ export {
   SUPPORTED_LANGUAGES,
 } from './translate';
 export { extract_entities } from './extract-entities';
+export { write_narration } from './narrate';

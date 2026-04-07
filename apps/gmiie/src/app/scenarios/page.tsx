@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@xxxiii/seo";
 import Link from "next/link";
 import { prisma } from "@xxxiii/db";
+import { ScenarioListenButton } from "@/components/audio/ScenarioListenButton";
 
 export const revalidate = 600;
 
@@ -203,6 +204,21 @@ function timeAgo(iso: string | null): string {
   return `${Math.floor(d / 30)}mo ago`;
 }
 
+/** Assemble a spoken narration script for a scenario chain (no GPT — uses static chain data) */
+function buildChainNarration(chain: (typeof SCENARIO_CHAINS)[number]): string {
+  const parts: string[] = [
+    `${chain.title}. ${chain.description}`,
+    `The trigger event: ${chain.trigger}.`,
+    "Here is how the cascade unfolds.",
+    ...chain.steps.map(
+      (s, i) =>
+        `Stage ${i + 1}: ${s.dimension}. ${s.description} This signal is expected to ${s.direction === "up" ? "rise" : "fall"}.`,
+    ),
+    "Watch this chain closely — each stage depends on whether the preceding signal confirmation arrives.",
+  ];
+  return parts.join(" ");
+}
+
 function directionBadge(dir: "up" | "down") {
   return dir === "up" ? (
     <span className="inline-flex items-center gap-1 text-caption px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
@@ -299,6 +315,12 @@ export default async function ScenariosPage() {
                   <p className="text-body-sm text-text-muted">
                     {chain.description}
                   </p>
+                  <div className="mt-2">
+                    <ScenarioListenButton
+                      narrationText={buildChainNarration(chain)}
+                      readingMins={Math.ceil(chain.steps.length * 0.4 + 0.6)}
+                    />
+                  </div>
                 </div>
                 <span
                   className={`shrink-0 text-label font-mono px-2 py-1 rounded-full border ${chain.badgeColor} uppercase tracking-wider whitespace-nowrap`}

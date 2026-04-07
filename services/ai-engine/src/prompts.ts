@@ -45,6 +45,7 @@ import {
   detect_and_normalize,
 } from './prompts/translate';
 import { extract_entities } from './prompts/extract-entities';
+import { write_narration } from './prompts/narrate';
 
 // ─── PROMPT LIBRARY ──────────────────────────────────────────────
 
@@ -69,9 +70,7 @@ export const PROMPT_LIBRARY: Record<string, PromptTemplate> = {
   translate_article,
   detect_and_normalize,
   extract_entities,
-};
-
-
+  write_narration,
 export class PromptManager {
   private overrides: Map<string, Partial<PromptTemplate>> = new Map();
 

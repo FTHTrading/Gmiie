@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useAudio, type AudioTrack } from "./AudioContext";
 
 /* ═══════════════════════════════════════════════════════════════
    AUDIO PLAYER — Listen mode for articles
@@ -272,5 +273,98 @@ export function ListenButton({ text, title, className = "" }: ListenButtonProps)
     <div className={className}>
       <AudioPlayer text={text} title={title} variant="mini" />
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NARRATION BUTTON — OpenAI TTS via /api/narration/[articleId]
+   Triggers the global AudioContext player with the AI-generated
+   analyst voice narration. Falls back to Web Speech API if the
+   context is unavailable or the route returns an error.
+   ═══════════════════════════════════════════════════════════════ */
+
+interface NarrationButtonProps {
+  /** GMIIE article ID — used to fetch /api/narration/[articleId] */
+  articleId: string;
+  /** Article headline / title shown in the global player */
+  title: string;
+  /** Source publication name (optional: shown as badge in player) */
+  source?: string;
+  /** Tailwind class overrides */
+  className?: string;
+  /** Web Speech API fallback text (used if API route unavailable) */
+  fallbackText?: string;
+  /** Which TTS voice to request (default: shimmer) */
+  voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
+}
+
+export function NarrationButton({
+  articleId,
+  title,
+  source,
+  className = "",
+  fallbackText,
+  voice = "shimmer",
+}: NarrationButtonProps) {
+  const { playTrack, currentTrack, isPlaying, isLoading } = useAudio();
+
+  const isActive = currentTrack?.articleId === articleId;
+  const showPlaying = isActive && isPlaying;
+  const showLoading = isActive && isLoading;
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const track: AudioTrack = {
+        url: `/api/narration/${articleId}?voice=${voice}`,
+        title,
+        source,
+        articleId,
+        durationEstimate: 165, // ~2.75 min estimate
+      };
+
+      playTrack(track);
+    },
+    [articleId, title, source, voice, playTrack],
+  );
+
+  return (
+    <button
+      onClick={handleClick}
+      className={[
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-150",
+        "border text-caption font-mono font-medium",
+        isActive
+          ? "bg-gold/10 border-gold/40 text-gold"
+          : "bg-surface-elevated hover:bg-gold/5 border-border-subtle hover:border-gold/20 text-text-secondary hover:text-gold",
+        className,
+      ].join(" ")}
+      title={showPlaying ? "Playing AI narration" : "Listen to AI narration"}
+      disabled={showLoading}
+    >
+      {showLoading ? (
+        <>
+          <span className="w-3 h-3 border border-gold/40 border-t-gold rounded-full animate-spin" />
+          <span>Generating…</span>
+        </>
+      ) : showPlaying ? (
+        <>
+          <span className="text-sm">⏸</span>
+          <span>Pause</span>
+        </>
+      ) : isActive ? (
+        <>
+          <span className="text-sm">▶</span>
+          <span>Resume</span>
+        </>
+      ) : (
+        <>
+          <span className="text-sm">▶</span>
+          <span>Listen</span>
+        </>
+      )}
+    </button>
   );
 }

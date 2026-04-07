@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { BRAND } from "@xxxiii/config";
 import "@xxxiii/ui/src/styles/globals.css";
@@ -7,6 +7,8 @@ import { PlatformHeader } from "@/components/header/Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { SignalsPanel } from "@/components/signals/SignalsPanel";
 import { MobileNav } from "@/components/navigation/MobileNav";
+import { AudioProvider } from "@/components/audio/AudioContext";
+import { GlobalAudioPlayer } from "@/components/audio/GlobalAudioPlayer";
 import { getTrendingTopics, getTrendingEntities, getAggregateSignals, getCompositeIndex } from "@/lib/data";
 
 const inter = Inter({
@@ -23,7 +25,7 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: `${BRAND.gmiie} — Global Monetary Infrastructure Intelligence Engine`,
+    default: `${BRAND.gmiie} - Global Monetary Infrastructure Intelligence Engine`,
     template: `%s | ${BRAND.gmiie}`,
   },
   description:
@@ -53,32 +55,37 @@ export default async function GmiieLayout({
     aggregateSignals = as_;
     compositeIndex = ci;
   } catch {
-    // Database not connected — render shell with empty data
+    // Database not connected - render shell with empty data
   }
 
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <body className="bg-background text-text-primary antialiased min-h-screen" suppressHydrationWarning>
         <ThemeProvider defaultTheme="dark" storageKey="gmiie-theme">
-          <PlatformHeader />
+          <AudioProvider>
+            <PlatformHeader />
 
-          {/* pt-12 on mobile (no utility bar), pt-[76px] on md+ (utility bar + nav bar) */}
-          <div className="pt-12 md:pt-[76px] pb-16 lg:pb-0 flex">
-            <Sidebar />
+            {/* pt-12 on mobile (no utility bar), pt-[76px] on md+ (utility bar + nav bar)
+                pb-20 on lg to give the sticky GlobalAudioPlayer room */}
+            <div className="pt-12 md:pt-[76px] pb-16 lg:pb-20 flex">
+              <Sidebar />
 
-            <main className="flex-1 min-w-0 px-4 lg:px-8 py-6">
-              {children}
-            </main>
+              <main className="flex-1 min-w-0 px-4 lg:px-8 py-6">
+                {children}
+              </main>
 
-            <SignalsPanel
-              signals={aggregateSignals.length > 0 ? aggregateSignals : undefined}
-              trendingTopics={trendingTopics.length > 0 ? trendingTopics : undefined}
-              trendingEntities={trendingEntities.length > 0 ? trendingEntities : undefined}
-              compositeIndex={compositeIndex}
-            />
-          </div>
+              <SignalsPanel
+                signals={aggregateSignals.length > 0 ? aggregateSignals : undefined}
+                trendingTopics={trendingTopics.length > 0 ? trendingTopics : undefined}
+                trendingEntities={trendingEntities.length > 0 ? trendingEntities : undefined}
+                compositeIndex={compositeIndex}
+              />
+            </div>
 
-          <MobileNav />
+            {/* Sticky audio player - sits above MobileNav (z-40) */}
+            <GlobalAudioPlayer />
+            <MobileNav />
+          </AudioProvider>
         </ThemeProvider>
       </body>
     </html>

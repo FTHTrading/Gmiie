@@ -133,4 +133,27 @@ export class AIEngine {
     const inputTokens = this.estimateTokens(systemPrompt) + this.estimateTokens(userPrompt);
     return (inputTokens + maxResponseTokens) < limit;
   }
-}
+
+  /**
+   * Generate speech audio from text using OpenAI TTS.
+   * Returns a ReadableStream of MP3 audio bytes.
+   *
+   * @param text   - The narration script to speak
+   * @param voice  - OpenAI voice ID (default: shimmer)
+   * @param speed  - Playback speed 0.25–4.0 (default: 0.95)
+   */
+  async generateSpeech(params: {
+    text: string;
+    voice?: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
+    speed?: number;
+  }): Promise<ReadableStream<Uint8Array>> {
+    const response = await this.openai.audio.speech.create({
+      model: 'tts-1-hd',
+      voice: params.voice || 'shimmer',
+      input: params.text,
+      response_format: 'mp3',
+      speed: params.speed ?? 0.95,
+    });
+    // openai v4 returns response.body as a Web ReadableStream
+    return response.body as ReadableStream<Uint8Array>;
+  }

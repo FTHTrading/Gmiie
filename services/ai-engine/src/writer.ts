@@ -195,6 +195,51 @@ export class Writer {
   }
 
   /**
+   * Write an audio narration script for a published article.
+   * Returns a natural-language spoken script suitable for TTS synthesis.
+   */
+  async writeNarration(params: {
+    title: string;
+    summary: string;
+    whatHappened?: string;
+    whyItMatters?: string;
+    marketImplications?: string;
+    infraImplications?: string;
+    regulatoryImplications?: string;
+    entities?: string;
+    topics?: string;
+    gmiieSignal?: string;
+  }): Promise<{ script: string; tokensUsed: number; durationMs: number }> {
+    const systemPrompt = this.prompts.getSystemPrompt('write_narration');
+    const userPrompt = this.prompts.renderUserPrompt('write_narration', {
+      title: params.title,
+      summary: params.summary || '',
+      whatHappened: params.whatHappened || '',
+      whyItMatters: params.whyItMatters || '',
+      marketImplications: params.marketImplications || '',
+      infraImplications: params.infraImplications || '',
+      regulatoryImplications: params.regulatoryImplications || '',
+      entities: params.entities || '',
+      topics: params.topics || '',
+      gmiieSignal: params.gmiieSignal || '',
+    });
+
+    const result = await this.engine.generate({
+      systemPrompt,
+      userPrompt,
+      model: 'gpt-4o-mini',
+      temperature: 0.6,
+      maxTokens: 700,
+    });
+
+    return {
+      script: result.content,
+      tokensUsed: result.totalTokens,
+      durationMs: result.durationMs,
+    };
+  }
+
+  /**
    * Extract known financial entities mentioned in a published article.
    * Uses gpt-4o-mini for cost efficiency — runs once per published article.
    */
