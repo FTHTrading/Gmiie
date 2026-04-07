@@ -20,25 +20,25 @@ const COVERAGE_AREAS = [
     title: "Tokenized Securities Market Map",
     description: "Comprehensive mapping of tokenized securities issuance platforms, regulatory regimes, and institutional adoption across 12 jurisdictions.",
     status: "In Research",
-    quarter: "Q3 2025",
+    quarter: "Q2 2026",
   },
   {
     title: "Stablecoin Regulatory Landscape",
     description: "Comparative analysis of stablecoin frameworks: US (GENIUS Act), EU (MiCA), UK (FCA), Singapore (MAS) — requirements, timelines, and market impact.",
     status: "In Research",
-    quarter: "Q3 2025",
+    quarter: "Q2 2026",
   },
   {
     title: "Digital Settlement Infrastructure",
     description: "Assessment of T+0 settlement pilots, DLT-based clearing platforms, and the evolving role of CSDs and CCPs in digital asset markets.",
     status: "Planned",
-    quarter: "Q4 2025",
+    quarter: "Q3 2026",
   },
   {
     title: "Institutional Custody Standards",
     description: "Review of qualified custody requirements, multi-party computation approaches, and insurance frameworks for digital asset custody.",
     status: "Planned",
-    quarter: "Q4 2025",
+    quarter: "Q3 2026",
   },
 ] as const;
 

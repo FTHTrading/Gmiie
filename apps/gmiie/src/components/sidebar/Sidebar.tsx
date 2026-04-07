@@ -21,6 +21,7 @@ const SIDEBAR_SECTIONS = [
     items: [
       { label: "Backtest Engine", href: "/backtest", icon: "◆" },
       { label: "Scenarios", href: "/scenarios", icon: "◈" },
+      { label: "Agent API", href: "/context", icon: "⬡" },
     ],
   },
   {
