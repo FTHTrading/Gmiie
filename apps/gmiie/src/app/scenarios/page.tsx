@@ -379,7 +379,7 @@ export default async function ScenariosPage() {
                             <p className="text-caption text-text-muted uppercase tracking-wider">
                               Observed:
                             </p>
-                            {related.map((a) => (
+                            {related.map((a: { slug: string; title: string; importanceScore: number | null; publishedAt: Date | null; source: { name: string } | null }) => (
                               <Link
                                 key={a.slug}
                                 href={`/intelligence/${a.slug}`}

@@ -40,7 +40,7 @@ export async function GET() {
         });
 
         send("init", {
-          alerts: recent.map((a) => ({
+          alerts: recent.map((a: { slug: string; title: string; headline: string | null; articleType: string; importanceScore: number | null; publishedAt: Date | null; source: { name: string } | null }) => ({
             slug: a.slug,
             title: a.title,
             headline: a.headline ?? a.title,

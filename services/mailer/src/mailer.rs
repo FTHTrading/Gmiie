@@ -9,7 +9,7 @@ use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::config::Config;
-use crate::models::{AlertSeverity, DigestArticle, DispatchRequest, Subscriber};
+use crate::models::{DigestArticle, DispatchRequest, Subscriber};
 use crate::templates::Templates;
 
 pub struct MailerService {

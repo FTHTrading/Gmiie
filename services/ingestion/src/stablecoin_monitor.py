@@ -1,4 +1,4 @@
-"""
+﻿"""
 US State Stablecoin & Digital Currency Monitor
 ================================================
 Tracks state-level stablecoin legislation, CBDC pilots, digital asset
@@ -10,7 +10,7 @@ Data sources:
 - Curated news feeds filtered for state stablecoin keywords
 - Policy org trackers (NCSL, Brookings, Cato)
 - Fed / OCC / FDIC official feeds
-- Algorithm scoring: keyword density × source tier × recency
+- Algorithm scoring: keyword density Ã— source tier Ã— recency
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from .config import settings
 from .logger import logger
 from .models import CredibilityTier, IngestedItem, SourceType
 
-# ── US state stablecoin keyword signal set ────────────────────
+# â”€â”€ US state stablecoin keyword signal set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 STATE_STABLECOIN_KEYWORDS: list[str] = [
     # Core legislation terms
@@ -77,124 +77,124 @@ US_STATES: dict[str, str] = {
     "wisconsin": "WI", "wyoming": "WY", "district of columbia": "DC",
 }
 
-# ── Feed catalog ──────────────────────────────────────────────
+# â”€â”€ Feed catalog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 # These feeds are monitored specifically for US stablecoin/digital currency signals
 STABLECOIN_FEEDS: list[dict[str, Any]] = [
-    # Tier 1 — Official government / regulator
+    # Tier 1 â€” Official government / regulator
     {
         "name": "Federal Reserve Board - Speeches & Testimony",
         "url": "https://www.federalreserve.gov/feeds/speeches.xml",
         "tier": CredibilityTier.TIER_1,
-        "source_type": SourceType.CENTRAL_BANK,
+        "source_type": SourceType.RSS,
         "weight": 2.5,           # Score multiplier for this source
     },
     {
         "name": "OCC Interpretive Letters & Bulletins",
         "url": "https://www.occ.gov/rss/news.xml",
         "tier": CredibilityTier.TIER_1,
-        "source_type": SourceType.REGULATOR,
+        "source_type": SourceType.RSS,
         "weight": 2.5,
     },
     {
         "name": "SEC News - Digital Assets",
         "url": "https://www.sec.gov/rss/news/press.xml",
         "tier": CredibilityTier.TIER_1,
-        "source_type": SourceType.REGULATOR,
+        "source_type": SourceType.RSS,
         "weight": 2.0,
     },
     {
         "name": "FDIC Press Releases",
         "url": "https://www.fdic.gov/news/rss/press-releases.xml",
         "tier": CredibilityTier.TIER_1,
-        "source_type": SourceType.REGULATOR,
+        "source_type": SourceType.RSS,
         "weight": 2.0,
     },
     {
         "name": "Wyoming Legislature News",
         "url": "https://wyoleg.gov/News/rss.aspx",
         "tier": CredibilityTier.TIER_1,
-        "source_type": SourceType.GOVERNMENT,
+        "source_type": SourceType.RSS,
         "weight": 2.0,
         "state": "WY",
     },
-    # Tier 2 — Major institutional press / policy orgs
+    # Tier 2 â€” Major institutional press / policy orgs
     {
         "name": "American Banker - Digital Banking",
         "url": "https://feeds.americanbanker.com/americanbanker/digital-banking",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.FINANCIAL_PRESS,
+        "source_type": SourceType.RSS,
         "weight": 1.8,
     },
     {
         "name": "NCSL - Financial Services",
         "url": "https://www.ncsl.org/rss/financial-services.xml",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.INDUSTRY_BODY,
+        "source_type": SourceType.RSS,
         "weight": 1.8,
     },
     {
         "name": "Brookings - Digital Finance",
         "url": "https://www.brookings.edu/topic/digital-currency/feed/",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.RESEARCH_FIRM,
+        "source_type": SourceType.RSS,
         "weight": 1.6,
     },
     {
         "name": "Cato Institute - Monetary Policy",
         "url": "https://www.cato.org/rss/monetary-fiscal-policy",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.RESEARCH_FIRM,
+        "source_type": SourceType.RSS,
         "weight": 1.5,
     },
     {
         "name": "Reuters - Stablecoin & CBDC",
         "url": "https://feeds.reuters.com/reuters/businessNews",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.WIRE_SERVICE,
+        "source_type": SourceType.RSS,
         "weight": 1.6,
     },
     {
         "name": "Bloomberg Law - Banking",
         "url": "https://feeds.bloomberglaw.com/banking-law",
         "tier": CredibilityTier.TIER_2,
-        "source_type": SourceType.FINANCIAL_PRESS,
+        "source_type": SourceType.RSS,
         "weight": 1.7,
     },
-    # Tier 3 — Crypto-native (signal value)
+    # Tier 3 â€” Crypto-native (signal value)
     {
         "name": "CoinDesk",
         "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
         "tier": CredibilityTier.TIER_3,
-        "source_type": SourceType.CRYPTO_PUBLICATION,
+        "source_type": SourceType.RSS,
         "weight": 1.2,
     },
     {
         "name": "The Block",
         "url": "https://www.theblock.co/rss.xml",
         "tier": CredibilityTier.TIER_3,
-        "source_type": SourceType.CRYPTO_PUBLICATION,
+        "source_type": SourceType.RSS,
         "weight": 1.2,
     },
     {
         "name": "Blockworks",
         "url": "https://blockworks.co/feed",
         "tier": CredibilityTier.TIER_3,
-        "source_type": SourceType.CRYPTO_PUBLICATION,
+        "source_type": SourceType.RSS,
         "weight": 1.1,
     },
     {
         "name": "CoinTelegraph - Regulation",
         "url": "https://cointelegraph.com/rss/tag/regulation",
         "tier": CredibilityTier.TIER_3,
-        "source_type": SourceType.CRYPTO_PUBLICATION,
+        "source_type": SourceType.RSS,
         "weight": 1.1,
     },
     {
         "name": "Decrypt - Policy",
         "url": "https://decrypt.co/feed",
         "tier": CredibilityTier.TIER_3,
-        "source_type": SourceType.CRYPTO_PUBLICATION,
+        "source_type": SourceType.RSS,
         "weight": 1.0,
     },
 ]
@@ -211,7 +211,7 @@ class StablecoinSignal:
     source_tier: CredibilityTier
     state_codes: list[str]           # US states mentioned (e.g. ["TX", "WY"])
     keywords_matched: list[str]
-    raw_score: float                 # 0–10 importance estimate
+    raw_score: float                 # 0â€“10 importance estimate
     detected_at: datetime
     published_at: datetime | None = None
     feed_url: str = ""
@@ -243,11 +243,11 @@ class StateStablecoinMonitor:
     stablecoin / digital currency legislative signals.
 
     Scoring algorithm:
-      base_score = keyword_density_score (0–5)
-      × source_weight (tier multiplier)
-      + state_specificity_bonus (0–2)
-      + recency_bonus (0–1)
-      → normalized to 0–10
+      base_score = keyword_density_score (0â€“5)
+      Ã— source_weight (tier multiplier)
+      + state_specificity_bonus (0â€“2)
+      + recency_bonus (0â€“1)
+      â†’ normalized to 0â€“10
     """
 
     def __init__(self) -> None:
@@ -341,7 +341,7 @@ class StateStablecoinMonitor:
                 published_at=self._parse_date(entry),
             )
 
-            # Only emit if score ≥ 5.0 (midpoint threshold)
+            # Only emit if score â‰¥ 5.0 (midpoint threshold)
             if score < 5.0:
                 continue
 
@@ -401,8 +401,8 @@ class StateStablecoinMonitor:
           title_boost   = +1.5 if any required term in title
           state_bonus   = min(len(state_codes) * 0.5, 2.0)
           recency_bonus = 1.0 if < 6h old, 0.5 if < 24h, 0 otherwise
-          raw = (keyword_score + title_boost + state_bonus + recency_bonus) × source_weight
-          → clamped to 0–10
+          raw = (keyword_score + title_boost + state_bonus + recency_bonus) Ã— source_weight
+          â†’ clamped to 0â€“10
         """
         keyword_score = min(len(matched_keywords) * 0.6, 4.0)
 

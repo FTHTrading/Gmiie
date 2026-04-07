@@ -5,6 +5,7 @@ use uuid::Uuid;
 // ── Inbound requests ─────────────────────────────────────────
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct DispatchRequest {
     pub article_id: String,
     pub title: String,
