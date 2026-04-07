@@ -65,7 +65,90 @@ export default async function GmiieHomePage() {
   });
 
   return (
-    <div>
+    <div>      {/* ╌╌╌ CINEMATIC HERO ╌╌╌ */}
+      <div className="relative overflow-hidden rounded-xl mb-7 bg-[#0F1419] border border-[#D4AF37]/20">
+        {/* Decorative rings */}
+        <div aria-hidden="true" className="pointer-events-none select-none">
+          <div className="hero-ring hero-ring-1" />
+          <div className="hero-ring hero-ring-2" />
+          <div className="hero-ring hero-ring-3" />
+          <div className="hero-stream" style={{ width: "55%", top: "38%", left: "30%" }} />
+          <div className="hero-stream" style={{ width: "35%", top: "62%", left: "50%", animationDelay: "2s" }} />
+        </div>
+
+        <div className="relative z-10 px-6 py-10 md:px-12 md:py-14 max-w-3xl">
+          {/* Live status pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/8 text-[#D4AF37] text-[10px] font-mono uppercase tracking-widest mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] signal-dot-live" />
+            Intelligence Pipeline Live
+          </div>
+
+          <h1 className="text-3xl md:text-[2.6rem] lg:text-5xl font-black text-white leading-[1.1] tracking-tight mb-5">
+            Track how central banks
+            <br />are rewiring
+            <br /><span style={{ color: "#D4AF37" }}>global finance</span>
+          </h1>
+
+          <p className="text-white/55 text-base md:text-lg leading-relaxed mb-8 max-w-xl">
+            GMIIE monitors 40+ official sources — regulators, central banks, and
+            market infrastructure providers — then scores every development for
+            what it means to institutional capital flows.
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/subscribe"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold text-black"
+              style={{ background: "#D4AF37" }}
+            >
+              Get Daily Intelligence →
+            </Link>
+            <Link
+              href="/methodology"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white/70 border border-white/15 hover:border-[#D4AF37]/40 hover:text-white transition-colors"
+            >
+              How the Algorithms Work
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ╌╌╌ PLAIN-ENGLISH EXPLAINER ╌╌╌ */}
+      <div className="grid sm:grid-cols-3 gap-3 mb-7">
+        <div className="explainer-card">
+          <span className="explainer-number">01 — Watch</span>
+          <h3 className="text-sm font-bold text-text-primary leading-snug">
+            We ingest 40+ official sources
+          </h3>
+          <p className="text-xs text-text-muted leading-relaxed">
+            SEC, Federal Reserve, ECB, BIS, BoE, MAS and 34 more regulators and
+            central banks — scraped every 15 minutes, deduplicated, and
+            normalised.
+          </p>
+        </div>
+        <div className="explainer-card">
+          <span className="explainer-number">02 — Score</span>
+          <h3 className="text-sm font-bold text-text-primary leading-snug">
+            Our AI rates each signal 0–100
+          </h3>
+          <p className="text-xs text-text-muted leading-relaxed">
+            Every item is classified by urgency, jurisdiction, and market impact.
+            Only scores above 60 surface in the intelligence feed — everything
+            else is filtered out.
+          </p>
+        </div>
+        <div className="explainer-card">
+          <span className="explainer-number">03 — Signal</span>
+          <h3 className="text-sm font-bold text-text-primary leading-snug">
+            You get the intelligence, not the noise
+          </h3>
+          <p className="text-xs text-text-muted leading-relaxed">
+            Structured briefs and deep dives — organised by Regulatory Watch,
+            Infrastructure, Adoption, and Research — delivered daily at market
+            open.
+          </p>
+        </div>
+      </div>
       {/* ═══ Utility bar: Dashboard stats ═══ */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-6 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">

@@ -59,7 +59,7 @@ export default async function GmiieLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <body className="bg-background text-text-primary antialiased min-h-screen" suppressHydrationWarning>
-        <ThemeProvider defaultTheme="light" storageKey="gmiie-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="gmiie-theme">
           <PlatformHeader />
 
           {/* pt-12 on mobile (no utility bar), pt-[76px] on md+ (utility bar + nav bar) */}

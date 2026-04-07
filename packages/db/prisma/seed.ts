@@ -120,6 +120,17 @@ async function main() {
     { name: 'Asset Servicing Times', url: 'https://assetservicingtimes.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'GB', region: 'Global' },
     { name: 'Ledger Insights', url: 'https://ledgerinsights.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'Global' },
     { name: 'The Block', url: 'https://theblock.co', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'Global' },
+    // TIER_2 — Global Macro, Geopolitical & General Press (10 new)
+    { name: 'The Economist', url: 'https://economist.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'GB', region: 'Global' },
+    { name: 'Project Syndicate', url: 'https://project-syndicate.org', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'CZ', region: 'Global' },
+    { name: 'Foreign Affairs', url: 'https://foreignaffairs.com', sourceType: 'GOVERNMENT' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'Global' },
+    { name: 'South China Morning Post', url: 'https://scmp.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'HK', region: 'Asia-Pacific' },
+    { name: 'Al Jazeera English', url: 'https://aljazeera.com', sourceType: 'WIRE_SERVICE' as const, credibilityTier: 'TIER_2' as const, country: 'QA', region: 'Global' },
+    { name: 'Politico', url: 'https://politico.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'North America' },
+    { name: 'Axios Markets', url: 'https://axios.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'North America' },
+    { name: 'CNBC Finance', url: 'https://cnbc.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'North America' },
+    { name: 'MarketWatch', url: 'https://marketwatch.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'North America' },
+    { name: 'The Hindu BusinessLine', url: 'https://thehindubusinessline.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'IN', region: 'Asia-Pacific' },
     // TIER_3 — Industry (15)
     { name: 'CoinDesk', url: 'https://coindesk.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
     { name: 'Cointelegraph', url: 'https://cointelegraph.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },

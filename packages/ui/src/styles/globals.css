@@ -240,4 +240,78 @@
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-}
+
+  /* ── GMIIE Hero: Cinematic ring pulse animations ── */
+  @keyframes hero-ring-pulse {
+    0%   { transform: scale(0.85); opacity: 0.15; }
+    50%  { transform: scale(1.05); opacity: 0.06; }
+    100% { transform: scale(0.85); opacity: 0.15; }
+  }
+
+  @keyframes hero-ring-drift {
+    0%   { transform: scale(1) rotate(0deg);   opacity: 0.08; }
+    50%  { transform: scale(1.12) rotate(15deg); opacity: 0.04; }
+    100% { transform: scale(1) rotate(0deg);   opacity: 0.08; }
+  }
+
+  @keyframes signal-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+  }
+
+  .hero-ring {
+    position: absolute;
+    border-radius: 9999px;
+    border: 1px solid #D4AF37;
+    pointer-events: none;
+  }
+  .hero-ring-1 {
+    width: 420px; height: 420px;
+    top: -120px; right: -80px;
+    animation: hero-ring-pulse 6s ease-in-out infinite;
+  }
+  .hero-ring-2 {
+    width: 280px; height: 280px;
+    top: -50px; right: 20px;
+    animation: hero-ring-drift 9s ease-in-out infinite 1.5s;
+  }
+  .hero-ring-3 {
+    width: 160px; height: 160px;
+    top: 40px; right: 120px;
+    animation: hero-ring-pulse 7s ease-in-out infinite 3s;
+    border-color: #5B9AFF;
+  }
+  .hero-stream {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #D4AF37 40%, transparent);
+    opacity: 0.2;
+    animation: hero-ring-drift 8s ease-in-out infinite;
+  }
+
+  .signal-dot-live {
+    animation: signal-blink 2s ease-in-out infinite;
+  }
+
+  /* ── Explainer strip cards ── */
+  .explainer-card {
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s;
+  }
+  .explainer-card:hover {
+    border-color: var(--color-gold);
+  }
+  .explainer-number {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    font-weight: 700;
+  }

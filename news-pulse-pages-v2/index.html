@@ -3,6 +3,1166 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GMIIE Pulse – Daily Intelligence Briefing</title>
+  <meta name="description" content="GMIIE Pulse – The Cliff Notes on global monetary markets, geopolitics, trade, and capital flows. Short, sharp, daily." />
+  <meta property="og:title" content="GMIIE Pulse" />
+  <meta property="og:description" content="Daily intelligence briefing for financial markets, monetary policy, geopolitics, and capital flows." />
+  <meta name="theme-color" content="#0d1117" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #e8eaf0;
+      --ink-2:    #9da3b4;
+      --ink-3:    #6b7280;
+      --rule:     #1f2533;
+      --paper:    #0d1117;
+      --surface:  #131925;
+      --surface-2:#1a2236;
+      --white:    #ffffff;
+      --gold:     #d4af37;
+      --gold-lt:  rgba(212,175,55,0.1);
+      --gold-border: rgba(212,175,55,0.25);
+      --red:      #f87171;
+      --green:    #34d399;
+      --blue:     #5b9aff;
+      --purple:   #a78bfa;
+      --accent:   #1a3a5c;
+      --font-serif: Georgia, 'Times New Roman', Times, serif;
+      --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-mono:  'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    html { background: var(--paper); color: var(--ink); font-family: var(--font-sans); font-size: 16px; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 32px 6px;
+      border-bottom: 1px solid var(--rule);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.06em;
+    }
+    .masthead-top .date { text-transform: uppercase; font-family: var(--font-mono); }
+    .masthead-top .tagline { text-align: center; color: var(--ink-2); }
+    .masthead-top .edition { text-align: right; color: var(--gold); font-weight: 700; }
+
+    .masthead-title {
+      text-align: center;
+      padding: 20px 32px 14px;
+      border-bottom: 1px solid var(--rule);
+      background: linear-gradient(180deg, rgba(212,175,55,0.04) 0%, transparent 100%);
+    }
+    .masthead-title .brand {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .masthead-title h1 {
+      font-size: clamp(42px, 7vw, 78px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--white);
+      font-family: Georgia, serif;
+    }
+    .masthead-title .subtitle {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-top: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .masthead-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 8px 32px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .masthead-nav a { color: inherit; text-decoration: none; }
+    .masthead-nav a:hover { color: var(--gold); }
+    .masthead-nav .sep { color: var(--rule); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── TICKER BAND ── */
+    .ticker-band {
+      background: var(--accent);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 7px 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner { display: inline-flex; gap: 48px; animation: ticker 30s linear infinite; }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item { display: flex; align-items: center; gap: 10px; }
+    .ticker-item .label { color: rgba(255,255,255,0.45); }
+    .ticker-item .val { color: #c7d4e8; }
+    .ticker-item .chg.up { color: #6ee7b7; }
+    .ticker-item .chg.dn { color: #fca5a5; }
+    .ticker-item .chg.warn { color: var(--gold); }
+
+    /* ── MAIN GRID ── */
+    .main { padding: 28px 0 48px; }
+
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 28px;
+    }
+
+    /* Lead story */
+    .lead {
+      padding: 0 28px 24px 0;
+      border-right: 1px solid var(--rule);
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: var(--gold);
+      display: inline-block;
+      padding: 3px 8px;
+      margin-bottom: 14px;
+    }
+    .section-label.blue   { background: var(--blue); color: var(--paper); }
+    .section-label.green  { background: var(--green); color: #0a1a12; }
+    .section-label.purple { background: var(--purple); color: var(--paper); }
+    .section-label.dark   { background: var(--surface-2); color: var(--ink); border: 1px solid var(--rule); }
+
+    .lead h2 {
+      font-size: clamp(20px, 3vw, 28px);
+      line-height: 1.18;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--white);
+      font-family: Georgia, serif;
+    }
+    .lead .deck {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      margin-bottom: 14px;
+      font-family: var(--font-sans);
+    }
+    .lead .byline {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-top: 1px solid var(--rule);
+      padding-top: 10px;
+    }
+    .read-more {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+    .read-more:hover { text-decoration: underline; }
+
+    /* Sidebar quick hits */
+    .sidebar {
+      padding: 0 0 24px 24px;
+    }
+    .sidebar-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 7px;
+      margin-bottom: 16px;
+    }
+    .quick-hit {
+      padding: 0 0 14px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 14px;
+    }
+    .quick-hit:last-child { border-bottom: none; margin-bottom: 0; }
+    .quick-hit .tag {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .quick-hit h3 {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 5px;
+      color: var(--ink);
+    }
+    .quick-hit p {
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ink-3);
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0 10px;
+      border-top: 2px solid var(--rule);
+      margin-bottom: 0;
+    }
+    .section-header h2 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ink-2);
+    }
+    .section-header .rule { flex: 1; height: 1px; background: var(--rule); }
+
+    /* ── DIGEST ROWS (3-col and 5-col) ── */
+    .digest-row {
+      display: grid;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 0;
+    }
+    .digest-row-3 { grid-template-columns: repeat(3, 1fr); }
+    .digest-row-2 { grid-template-columns: repeat(2, 1fr); }
+    .digest-row-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .digest-col {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule);
+    }
+    .digest-col:last-child { border-right: none; }
+    .digest-col h3 {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 7px;
+      margin-bottom: 14px;
+    }
+    .digest-item {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .digest-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .digest-item .headline {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+    .digest-item .summary {
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ink-3);
+    }
+    .digest-item .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .score-high { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+    .score-mid  { background: rgba(212,175,55,0.12); color: var(--gold); border: 1px solid var(--gold-border); }
+    .score-low  { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+
+    /* ── WORLD STRIP (5 region columns) ── */
+    .world-strip {
+      background: var(--surface);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 0;
+    }
+    .world-header {
+      padding: 10px 24px 0;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 8px;
+    }
+    .world-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+    }
+    .world-col {
+      padding: 14px 16px;
+      border-right: 1px solid var(--rule);
+    }
+    .world-col:last-child { border-right: none; }
+    .world-col .region {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .world-item {
+      margin-bottom: 12px;
+    }
+    .world-item .headline {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .world-item .detail {
+      font-size: 10px;
+      line-height: 1.55;
+      color: var(--ink-3);
+    }
+
+    /* ── WHAT TO WATCH ── */
+    .watch-bar {
+      background: var(--accent);
+      color: var(--white);
+      padding: 18px 32px;
+      margin-bottom: 0;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .watch-bar .ww-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      min-width: 90px;
+      padding-top: 3px;
+    }
+    .watch-items { display: flex; flex-wrap: wrap; gap: 6px 28px; }
+    .watch-item {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .watch-item::before { content: '→'; color: var(--gold); font-size: 11px; }
+
+    /* ── GEOPOLITICAL ALERT BAND ── */
+    .geo-band {
+      background: linear-gradient(90deg, rgba(167,139,250,0.08), rgba(91,154,255,0.08));
+      border-top: 1px solid rgba(167,139,250,0.2);
+      border-bottom: 1px solid rgba(167,139,250,0.2);
+      padding: 18px 0;
+      margin-bottom: 0;
+    }
+    .geo-inner {
+      display: flex;
+      gap: 0;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .geo-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--purple);
+      min-width: 120px;
+      padding-top: 3px;
+    }
+    .geo-items {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px 28px;
+      flex: 1;
+    }
+    .geo-item .geo-headline {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.35;
+      margin-bottom: 3px;
+    }
+    .geo-item .geo-context {
+      font-size: 10px;
+      color: var(--ink-3);
+      line-height: 1.55;
+    }
+    .geo-item .geo-tag {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--purple);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    /* ── SUBSCRIBE ── */
+    .subscribe-band {
+      background: var(--surface);
+      border-top: 1px solid var(--gold-border);
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 0;
+      margin-top: 0;
+    }
+    .subscribe-inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .subscribe-copy { flex: 1; }
+    .subscribe-copy h3 {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .subscribe-copy .sub-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .subscribe-copy .sub-badge::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+    .subscribe-copy p {
+      font-size: 12px;
+      color: var(--ink-3);
+      line-height: 1.6;
+    }
+    .subscribe-form {
+      display: flex;
+      gap: 0;
+      flex: 1;
+      max-width: 440px;
+    }
+    .subscribe-form input {
+      flex: 1;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      padding: 11px 14px;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      border-radius: 4px 0 0 4px;
+    }
+    .subscribe-form input:focus { border-color: var(--gold); }
+    .subscribe-form button {
+      background: var(--gold);
+      color: #0a0a0a;
+      border: 1px solid var(--gold);
+      padding: 11px 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0 4px 4px 0;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .subscribe-form button:hover { background: #c9a427; }
+    .subscribe-ok { font-family: var(--font-mono); font-size: 13px; color: var(--green); font-weight: 700; display: none; }
+
+    /* ── ARCHIVE/EDITIONS STRIP ── */
+    .archive-strip {
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule);
+      padding: 14px 0;
+    }
+    .archive-inner {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .archive-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+    .archive-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .archive-link {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ink-3);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .archive-link:hover, .archive-link.active { border-color: var(--gold); color: var(--gold); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--rule);
+      color: var(--ink-3);
+      padding: 28px 24px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1.7;
+      text-align: center;
+      margin-top: auto;
+    }
+    footer .footer-brand {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+    }
+    footer a { color: var(--ink-2); text-decoration: none; }
+    footer a:hover { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 760px) {
+      .grid-top { grid-template-columns: 1fr; }
+      .lead { padding: 0 0 20px; border-right: none; border-bottom: 1px solid var(--rule); }
+      .sidebar { padding: 20px 0 0; }
+      .digest-row-3, .digest-row-4, .digest-row-2 { grid-template-columns: 1fr; }
+      .digest-col { border-right: none; border-bottom: 1px solid var(--rule); }
+      .digest-col:last-child { border-bottom: none; }
+      .watch-bar { flex-direction: column; gap: 12px; }
+      .subscribe-inner { flex-direction: column; }
+      .subscribe-form { max-width: 100%; width: 100%; }
+      .masthead-top .tagline { display: none; }
+      .masthead-nav { flex-wrap: wrap; gap: 10px; }
+      .world-grid { grid-template-columns: repeat(2, 1fr); }
+      .world-col:nth-child(2n) { border-right: none; }
+      .geo-items { grid-template-columns: 1fr; }
+      .geo-inner { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="date" id="pub-date">Daily Edition</span>
+      <span class="tagline">Short. Sharp. Actionable intelligence for financial professionals.</span>
+      <span class="edition">Vol. I · Free Edition</span>
+    </div>
+    <div class="masthead-title">
+      <div class="brand">GMIIE · Global Monetary Infrastructure Intelligence Engine</div>
+      <h1>Pulse</h1>
+      <div class="subtitle">Capital Markets · Monetary Policy · Geopolitics · Global Trade</div>
+    </div>
+    <nav class="masthead-nav">
+      <a href="https://xxxiii.io/briefs/" target="_blank">Full Intelligence</a>
+      <span class="sep">|</span>
+      <a href="https://xxxiii.io/signals" target="_blank">Signals</a>
+      <span class="sep">|</span>
+      <a href="https://xxxiii.io/methodology" target="_blank">Methodology</a>
+      <span class="sep">|</span>
+      <a href="#archive">Editions</a>
+      <span class="sep">|</span>
+      <a href="#subscribe">Subscribe</a>
+    </nav>
+  </header>
+
+  <!-- ARCHIVE / EDITIONS STRIP -->
+  <div class="archive-strip" id="archive">
+    <div class="archive-inner">
+      <span class="archive-label">Editions</span>
+      <div class="archive-links">
+        <a href="#" class="archive-link active" id="edition-today">Today</a>
+        <a href="https://xxxiii.io/briefs/" class="archive-link" target="_blank">Full Archive →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker-band" aria-hidden="true">
+    <div class="ticker-inner">
+      <span class="ticker-item"><span class="label">CBDC TRACKER</span> <span class="val">134 jurisdictions</span></span>
+      <span class="ticker-item"><span class="label">SETTLEMENT RISK</span> <span class="val chg warn">ELEVATED</span></span>
+      <span class="ticker-item"><span class="label">FED FUNDS</span> <span class="val">4.25–4.50%</span></span>
+      <span class="ticker-item"><span class="label">ECB RATE</span> <span class="val">2.50%</span></span>
+      <span class="ticker-item"><span class="label">BOJ RATE</span> <span class="val">0.50%</span></span>
+      <span class="ticker-item"><span class="label">PBOC RRR</span> <span class="val chg up">CUT 25bps</span></span>
+      <span class="ticker-item"><span class="label">STABLECOIN BILL</span> <span class="val chg warn">Senate markup</span></span>
+      <span class="ticker-item"><span class="label">DIGITAL EURO</span> <span class="val">Preparation phase</span></span>
+      <span class="ticker-item"><span class="label">MBRIDGE</span> <span class="val">Saudi Arabia joins</span></span>
+      <span class="ticker-item"><span class="label">BIS REPORTS</span> <span class="val">Q1 2026 cycle</span></span>
+      <span class="ticker-item"><span class="label">XRPL</span> <span class="val chg up">Cross-border pilots</span></span>
+      <span class="ticker-item"><span class="label">TARIFFS</span> <span class="val chg dn">US/China escalation</span></span>
+      <span class="ticker-item"><span class="label">BRENT CRUDE</span> <span class="val">$71.40</span></span>
+      <span class="ticker-item"><span class="label">DXY</span> <span class="val">103.8</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item"><span class="label">CBDC TRACKER</span> <span class="val">134 jurisdictions</span></span>
+      <span class="ticker-item"><span class="label">SETTLEMENT RISK</span> <span class="val chg warn">ELEVATED</span></span>
+      <span class="ticker-item"><span class="label">FED FUNDS</span> <span class="val">4.25–4.50%</span></span>
+      <span class="ticker-item"><span class="label">ECB RATE</span> <span class="val">2.50%</span></span>
+      <span class="ticker-item"><span class="label">BOJ RATE</span> <span class="val">0.50%</span></span>
+      <span class="ticker-item"><span class="label">PBOC RRR</span> <span class="val chg up">CUT 25bps</span></span>
+      <span class="ticker-item"><span class="label">STABLECOIN BILL</span> <span class="val chg warn">Senate markup</span></span>
+      <span class="ticker-item"><span class="label">DIGITAL EURO</span> <span class="val">Preparation phase</span></span>
+      <span class="ticker-item"><span class="label">MBRIDGE</span> <span class="val">Saudi Arabia joins</span></span>
+      <span class="ticker-item"><span class="label">BIS REPORTS</span> <span class="val">Q1 2026 cycle</span></span>
+      <span class="ticker-item"><span class="label">XRPL</span> <span class="val chg up">Cross-border pilots</span></span>
+      <span class="ticker-item"><span class="label">TARIFFS</span> <span class="val chg dn">US/China escalation</span></span>
+      <span class="ticker-item"><span class="label">BRENT CRUDE</span> <span class="val">$71.40</span></span>
+      <span class="ticker-item"><span class="label">DXY</span> <span class="val">103.8</span></span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="container">
+
+      <!-- TOP GRID: Lead + Quick Hits -->
+      <div class="grid-top">
+
+        <!-- LEAD STORY -->
+        <div class="lead">
+          <div class="section-label">Today's Lead</div>
+          <h2 id="lead-headline">Stablecoin Oversight Bill Advances as Senate Banking Committee Schedules Markup</h2>
+          <p class="deck" id="lead-deck">
+            The U.S. Senate Banking Committee has scheduled a markup session for the Stablecoin Transparency and Accountability Act. The bill would subject dollar-pegged stablecoins to federal reserve requirements and mandate monthly attestations from issuers — a significant escalation of oversight that could reshape the $175B+ stablecoin market. Industry groups are pushing for state-level opt-outs; Treasury is opposing carve-outs for non-bank issuers.
+          </p>
+          <p class="deck" style="margin-top:10px;">
+            <strong style="color:var(--ink);">Why it matters:</strong> Federal stablecoin regulation would be the first direct U.S. legislative framework for digital dollar instruments. Settlement rails, issuance limits, and reserve composition requirements will all be defined — directly affecting fintech, banking, and cross-border payment infrastructure.
+          </p>
+          <div class="byline">GMIIE Intelligence Engine · Capital Markets Desk · Updated: <span id="lead-time"></span></div>
+          <a href="https://xxxiii.io/briefs/" class="read-more" target="_blank">Read Full Analysis at GMIIE Intelligence →</a>
+        </div>
+
+        <!-- QUICK HITS SIDEBAR -->
+        <div class="sidebar">
+          <div class="sidebar-title">Quick Hits</div>
+
+          <div class="quick-hit">
+            <div class="tag">Central Banks</div>
+            <h3>ECB Holds at 2.5% — Signals Conditional Pause</h3>
+            <p>Lagarde flagged "material uncertainty" around U.S. tariff pass-through to eurozone inflation. Markets pricing one more cut in June.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Digital Infrastructure</div>
+            <h3>BIS Proposes Unified Ledger for Cross-Border Settlement</h3>
+            <p>Project Agorá working paper calls for a multi-CBDC platform layer. Seven central banks co-signing. Timeline: 2027–2028.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Tokenization</div>
+            <h3>BlackRock BUIDL Fund Tops $500M AUM</h3>
+            <p>Tokenized T-bill product now the largest on-chain RWA. Settlement benefits measurable vs. traditional T+2 rails.</p>
+          </div>
+
+          <div class="quick-hit">
+            <div class="tag">Regulatory</div>
+            <h3>Basel IV FRTB Pressure Mounts for U.S. Banks</h3>
+            <p>OCC, Fed, and FDIC have yet to finalize U.S. market risk rules. Non-U.S. G-SIBs now operating under rules U.S. peers are not.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECTION: MONETARY POLICY + SETTLEMENT ─── -->
+      <div class="section-header">
+        <div class="rule"></div>
+        <h2>Monetary Policy &amp; Settlement</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="digest-row digest-row-3">
+        <div class="digest-col">
+          <h3>Monetary Policy</h3>
+          <div class="digest-item">
+            <div class="headline">Fed Holds — Dot Plot Shifts to Two Cuts in 2026</div>
+            <div class="summary">March FOMC statement removed "confident" language on inflation. Median projection now 4.0% by year-end. Labor market remains "solid."</div>
+            <span class="score-badge score-mid">Signal 68</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Bank of Japan Hints at Second Rate Hike by Mid-Year</div>
+            <div class="summary">Deputy Governor Himino's speech flagged "broadening wage-price dynamics." Yen carry trades under renewed pressure. JGB yields at decade high.</div>
+            <span class="score-badge score-high">Signal 81</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">PBOC Cuts RRR 25bps — Targets Real Economy Lending</div>
+            <div class="summary">First reserve ratio cut of 2026 frees ~¥500B in liquidity. Targeted at SME credit channels. Signals Beijing managing deflation risk carefully.</div>
+            <span class="score-badge score-mid">Signal 72</span>
+          </div>
+        </div>
+
+        <div class="digest-col">
+          <h3>Settlement &amp; Infrastructure</h3>
+          <div class="digest-item">
+            <div class="headline">SWIFT Go Volumes Up 34% YoY as Adoption Broadens</div>
+            <div class="summary">Low-value cross-border rail gaining traction. Average settlement time now under 90 seconds end-to-end for participating corridors.</div>
+            <span class="score-badge score-high">Signal 76</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Ripple vs. SEC: Full Remedies Hearing Scheduled</div>
+            <div class="summary">Outcome will determine whether XRP's institutional ruling opens secondary market participation. Closely watched by exchanges and custodians.</div>
+            <span class="score-badge score-high">Signal 88</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Project mBridge Adds Saudi Arabia as Participant</div>
+            <div class="summary">BIS multi-CBDC bridge now includes four central banks. Live pilot transactions exceeded $22M. First use case: oil trade settlement.</div>
+            <span class="score-badge score-high">Signal 84</span>
+          </div>
+        </div>
+
+        <div class="digest-col">
+          <h3>Capital &amp; Regulation</h3>
+          <div class="digest-item">
+            <div class="headline">EU MiCA Enforcement Phase Begins: 5 Exchanges Flagged</div>
+            <div class="summary">ESMA's first enforcement sweep identified five exchanges for non-compliance with whitepaper disclosure rules. Grace period until Q3 2026.</div>
+            <span class="score-badge score-mid">Signal 65</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Tokenized Money Market Funds Receive SEC No-Action Relief</div>
+            <div class="summary">SEC staff issued limited no-action relief allowing registered MMFs to explore on-chain share class structures. DeFi distribution excluded.</div>
+            <span class="score-badge score-high">Signal 79</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">IMF Warns of "Fragmentation Risk" in Global Payment Corridors</div>
+            <div class="summary">Diverging CBDC interoperability standards flagged as long-run friction. Calls for ISO 20022 harmonisation by 2027.</div>
+            <span class="score-badge score-mid">Signal 71</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .container -->
+
+    <!-- ─── GEOPOLITICAL RISK BAND ─── -->
+    <div class="geo-band">
+      <div class="geo-inner">
+        <div class="geo-label">Geopolitical Risk</div>
+        <div class="geo-items">
+          <div class="geo-item">
+            <div class="geo-tag">Trade War</div>
+            <div class="geo-headline">U.S.–China Tariff Escalation Enters New Phase</div>
+            <div class="geo-context">Washington signals 60%+ tariff on Chinese EVs and semiconductors. Beijing's counter-measures target agricultural exports. Supply chain re-routing accelerating.</div>
+          </div>
+          <div class="geo-item">
+            <div class="geo-tag">Middle East</div>
+            <div class="geo-headline">Gulf States Accelerate De-Dollarisation Moves</div>
+            <div class="geo-context">Saudi Arabia and UAE expanding local-currency bilateral trade agreements. Oil settlement diversification pilots expanding beyond mBridge framework.</div>
+          </div>
+          <div class="geo-item">
+            <div class="geo-tag">Europe</div>
+            <div class="geo-headline">EU Launches €500B Defence &amp; Infrastructure Fund</div>
+            <div class="geo-context">European Commission proposes joint borrowing facility for dual-use infrastructure. Eurozone sovereign bond supply surge expected to pressure ECB rate path.</div>
+          </div>
+          <div class="geo-item">
+            <div class="geo-tag">BRICS+</div>
+            <div class="geo-headline">BRICS+ Payment Platform Pilot Expands to 12 Nations</div>
+            <div class="geo-context">Alternative cross-border rail bypassing SWIFT now processing live transactions between Brazil, Russia, India, China, South Africa, and 7 observer nations.</div>
+          </div>
+          <div class="geo-item">
+            <div class="geo-tag">Asia-Pacific</div>
+            <div class="geo-headline">Taiwan Strait Tensions Reopen Insurance Premium Debate</div>
+            <div class="geo-context">Shipping insurers raising war-risk premiums on Taiwan Strait routes. Lloyd's Market Association updating exclusion clauses. Impact on chip supply chain pricing.</div>
+          </div>
+          <div class="geo-item">
+            <div class="geo-tag">Sanctions</div>
+            <div class="geo-headline">OFAC Expands Secondary Sanctions on Russian Energy</div>
+            <div class="geo-context">New SDN additions target shadow fleet operators and Turkish intermediary banks. European banks tightening correspondent banking for high-risk corridors.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── WORLD INTELLIGENCE STRIP (5 regions) ─── -->
+    <div class="world-strip">
+      <div class="world-header">World Intelligence — Regional Developments</div>
+      <div class="world-grid">
+        <div class="world-col">
+          <div class="region">Americas</div>
+          <div class="world-item">
+            <div class="headline">Brazil's DREX CBDC Pilot Expands to Retail Banks</div>
+            <div class="detail">BCB admits 16 new institutions. Tokenised government securities as collateral now live on pilot rails.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Mexico Peso Under Pressure on Nearshoring Reversal</div>
+            <div class="detail">Banxico signals potential rate cut. FDI inflows slowing as U.S. tariff uncertainty delays factory investment decisions.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Canada Eyes Crypto Asset Capital Rules</div>
+            <div class="detail">OSFI consultation on digital asset risk weights. Aligns with Basel III approach; comment period closes May 2026.</div>
+          </div>
+        </div>
+        <div class="world-col">
+          <div class="region">Europe &amp; UK</div>
+          <div class="world-item">
+            <div class="headline">BoE Publishes Digital Pound "Blueprint Phase" Report</div>
+            <div class="detail">Calls for interoperable private wallets with offline functionality. Decision on full launch deferred to 2027 at earliest.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">ECB Launches DLT Settlement Pilot on TARGET Services</div>
+            <div class="detail">Three-month trial settles tokenised bonds on distributed ledger vs. TARGET2. Six G-SIFIs participating.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Switzerland Enacts Digital Securities Register Law</div>
+            <div class="detail">FINMA approves first batch of issuers. Uncertificated register provisions now in force under revised CO.</div>
+          </div>
+        </div>
+        <div class="world-col">
+          <div class="region">Asia–Pacific</div>
+          <div class="world-item">
+            <div class="headline">MAS Project Guardian Phase 3 Pilots Live</div>
+            <div class="detail">DBS, JPMorgan, and Standard Chartered executing live tokenised bond trades. Cross-border settlement tested Singapore–Switzerland.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Hong Kong SFC Issues Crypto Licensing Decisions</div>
+            <div class="detail">OKX and HashKey receive full VASP licences. Four applicants rejected. Institutional on-ramp expanding for Asia wealth.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">India RBI Pilot e-Rupee Reaches 5M Users</div>
+            <div class="detail">Retail CBDC adoption growing through bank-distributed wallets. Wholesale pilot covering interbank settlement operationally stable.</div>
+          </div>
+        </div>
+        <div class="world-col">
+          <div class="region">Middle East &amp; Africa</div>
+          <div class="world-item">
+            <div class="headline">ADGM Launches Tokenised Real Asset Framework</div>
+            <div class="detail">Abu Dhabi invites applications for RWA issuance licences. Targeting $5B of tokenised assets on platform by end-2026.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Nigeria's eNaira Relaunch Under New CBN Strategy</div>
+            <div class="detail">CBN v2.0 rollout incentivises merchant adoption via zero-fee settlement. 12-month milestone: 500K active wallets target.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Saudi Tadawul Moves to T+1 Settlement</div>
+            <div class="detail">Aligns with U.S. and EU migration timelines. CCP risk model changes implementing May 2026. Foreign investor access implications assessed.</div>
+          </div>
+        </div>
+        <div class="world-col">
+          <div class="region">Central Banks</div>
+          <div class="world-item">
+            <div class="headline">Reserve Bank of Australia Completes CBDC Pilot Report</div>
+            <div class="detail">Project Acacia concludes. RBA recommends "enhanced settlement" model over full retail CBDC. Wholesale tokenised money preferred path.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Bank of Korea Advances Retail CBDC to Phase 2</div>
+            <div class="detail">100,000 participant trial expanded. Focus on programmable payments and government transfer use cases.</div>
+          </div>
+          <div class="world-item">
+            <div class="headline">Norges Bank CBDC Architecture Decision Pending</div>
+            <div class="detail">Second consultation paper compares account-based vs. token-based design. Decision expected Q3 2026.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MAIN CONTENT CONTINUES ─── -->
+    <div class="container">
+
+      <!-- ─── SECTION: GLOBAL MACRO + TRADE ─── -->
+      <div class="section-header">
+        <div class="rule"></div>
+        <h2>Global Macro &amp; Trade</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="digest-row digest-row-3">
+        <div class="digest-col">
+          <h3>Global Growth</h3>
+          <div class="digest-item">
+            <div class="headline">IMF Revises 2026 Global Growth to 2.8% — Third Downgrade</div>
+            <div class="summary">Tariff uncertainty, China property drag, and fragmented monetary policy cited. Emerging markets remain the only bright spot at 4.1%.</div>
+            <span class="score-badge score-high">Signal 82</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">U.S. Q1 GDP Advance Estimate: +1.2% Annualised</div>
+            <div class="summary">Below consensus of +1.8%. Consumer spending slowing; business investment holding. Labour market still solid but cooling.</div>
+            <span class="score-badge score-mid">Signal 74</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Euro Area GDP Surprise: +0.4% — Germany Stabilising</div>
+            <div class="summary">Germany returned to growth marginally. Services sector offsetting industrial weakness. ECB hawks cite data as reason to hold.</div>
+            <span class="score-badge score-mid">Signal 67</span>
+          </div>
+        </div>
+        <div class="digest-col">
+          <h3>Trade &amp; Commodities</h3>
+          <div class="digest-item">
+            <div class="headline">WTO Flags "Unprecedented" Trade Fragmentation in Annual Report</div>
+            <div class="summary">Global goods trade volume growth cut to 1.3% for 2026. Industrial policy subsidies and export restrictions cited as structural headwinds.</div>
+            <span class="score-badge score-high">Signal 77</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Oil Producers Hold Output as Demand Signals Weaken</div>
+            <div class="summary">OPEC+ defers previously planned Q3 output hike. Brent anchored near $71. IEA lowers 2026 demand growth forecast to 900kbd.</div>
+            <span class="score-badge score-mid">Signal 63</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Copper at 14-Month High on Data-Centre &amp; Grid Demand</div>
+            <div class="summary">AI infrastructure buildout driving structural demand uplift. Mining supply gap widens. LME copper breaches $10,200/t.</div>
+            <span class="score-badge score-high">Signal 80</span>
+          </div>
+        </div>
+        <div class="digest-col">
+          <h3>Technology &amp; Finance</h3>
+          <div class="digest-item">
+            <div class="headline">AI in Finance: Fed Issues Supervisory Guidance Framework</div>
+            <div class="summary">First formal Fed guidance on AI model risk in banking. Focuses on explainability, data governance, and third-party model concentration risk.</div>
+            <span class="score-badge score-high">Signal 85</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">NVIDIA H200 Chips Cleared for Export to Gulf Sovereign Funds</div>
+            <div class="summary">BIS export licence granted for Saudi Aramco and ADIA AI compute programmes. Signals U.S. technology diplomacy shifting in the Gulf.</div>
+            <span class="score-badge score-mid">Signal 70</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Global Core Banking Upgrade Cycle Accelerates</div>
+            <div class="summary">Temenos reports record pipeline. $40B+ in legacy migration contracts in flight globally. Cloud-native settlement architectures now preferred.</div>
+            <span class="score-badge score-mid">Signal 66</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECTION: EMERGING MARKETS ─── -->
+      <div class="section-header">
+        <div class="rule"></div>
+        <h2>Emerging Markets</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="digest-row digest-row-4">
+        <div class="digest-col">
+          <h3>South &amp; Southeast Asia</h3>
+          <div class="digest-item">
+            <div class="headline">India Overtakes UK as 5th Largest Economy</div>
+            <div class="summary">IMF purchasing-power parity data confirms India now above UK in nominal GDP. Capital market implications: MSCI weight increase review begins.</div>
+            <span class="score-badge score-high">Signal 78</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Vietnam's Bond Market Opens to Foreign Settlement</div>
+            <div class="summary">State Securities Commission allows direct foreign custody. Aims to secure EM index inclusion by 2027. Euroclear negotiations advanced.</div>
+            <span class="score-badge score-mid">Signal 69</span>
+          </div>
+        </div>
+        <div class="digest-col">
+          <h3>Africa</h3>
+          <div class="digest-item">
+            <div class="headline">AfCFTA Digital Trade Protocol Enters Ratification</div>
+            <div class="summary">African Continental Free Trade Area adds digital payments annex. 18 nations must ratify to activate cross-border fintech passporting.</div>
+            <span class="score-badge score-mid">Signal 64</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Kenya's Capital Market Authority Green-Lights Crypto Licences</div>
+            <div class="summary">First VASP licences in East Africa issued. Binance, Yellow Card among applicants. Nairobi positioning as African crypto hub.</div>
+            <span class="score-badge score-mid">Signal 66</span>
+          </div>
+        </div>
+        <div class="digest-col">
+          <h3>Latin America</h3>
+          <div class="digest-item">
+            <div class="headline">Argentina Dollarisation Stalls Despite Milei Push</div>
+            <div class="summary">IMF programme review extends peso phase-out timeline. ARS/USD swap line discussions ongoing. External debt restructuring risk elevated.</div>
+            <span class="score-badge score-mid">Signal 73</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Brazil Hosts G20 Digital Economy Working Group</div>
+            <div class="summary">DREX highlighted as model for G20 CBDC interoperability agenda. Brazilian Finance Ministry leading digital public infrastructure framework.</div>
+            <span class="score-badge score-mid">Signal 68</span>
+          </div>
+        </div>
+        <div class="digest-col">
+          <h3>Eastern Europe &amp; CIS</h3>
+          <div class="digest-item">
+            <div class="headline">Poland Accelerates NATO Defence Infrastructure Bonds</div>
+            <div class="summary">Warsaw issues €3B in dual-use infrastructure bonds. First EU nation to link defence spending directly to capital markets via sovereign issuance.</div>
+            <span class="score-badge score-high">Signal 75</span>
+          </div>
+          <div class="digest-item">
+            <div class="headline">Kazakhstan Crypto Mining Hub Attracts $800M Investment</div>
+            <div class="summary">Regulated mining zone in Almaty reports surge in applications post-China ban anniversary. Power grid constraints remain a ceiling on growth.</div>
+            <span class="score-badge score-low">Signal 52</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .container -->
+
+    <!-- WHAT TO WATCH -->
+    <div class="watch-bar">
+      <div class="ww-label">What to Watch</div>
+      <div class="watch-items">
+        <div class="watch-item">Senate stablecoin markup vote — week of April 7</div>
+        <div class="watch-item">ECB rates decision — April 17</div>
+        <div class="watch-item">U.S. Q1 GDP advance estimate — April 30</div>
+        <div class="watch-item">BIS FSB report on AI in financial stability</div>
+        <div class="watch-item">Project Agorá Phase 2 announcement</div>
+        <div class="watch-item">OCC bank charter for crypto applicants — ruling pending</div>
+        <div class="watch-item">U.S.–China trade negotiations — Geneva round</div>
+        <div class="watch-item">MSCI EM review — India weight update</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SUBSCRIBE -->
+  <section class="subscribe-band" id="subscribe">
+    <div class="subscribe-inner">
+      <div class="subscribe-copy">
+        <div class="sub-badge">Free Daily Edition</div>
+        <h3>Get Pulse in Your Inbox</h3>
+        <p>Monetary policy, markets, geopolitics, and global capital flows — delivered before markets open. No filler. No noise. Just the intelligence that moves capital.</p>
+      </div>
+      <form class="subscribe-form" id="sub-form" onsubmit="handleSubscribe(event)">
+        <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" />
+        <button type="submit">Subscribe Free</button>
+      </form>
+      <div class="subscribe-ok" id="sub-ok">✓ You're in. Next Pulse lands tomorrow.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">GMIIE Pulse · news.unykorn.org</div>
+    <p>Published by the GMIIE Intelligence Engine · <a href="https://xxxiii.io" target="_blank">xxxiii.io</a></p>
+    <p style="margin-top:8px;">
+      <a href="https://xxxiii.io/briefs/" target="_blank">Full Intelligence Briefs</a> ·
+      <a href="https://xxxiii.io/signals" target="_blank">Signals</a> ·
+      <a href="https://xxxiii.io/methodology" target="_blank">Methodology</a> ·
+      <a href="#subscribe">Subscribe</a>
+    </p>
+    <p style="margin-top:12px;font-size:9px;color:rgba(255,255,255,0.25);">
+      This briefing is for informational purposes only and does not constitute investment advice.
+      Content compiled from publicly available sources and GMIIE proprietary analysis.
+    </p>
+  </footer>
+
+  <script>
+    // Set live date
+    const now = new Date();
+    document.getElementById('pub-date').textContent = now.toLocaleDateString('en-US',
+      { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    document.getElementById('lead-time').textContent = now.toLocaleDateString('en-US',
+      { month:'short', day:'numeric', year:'numeric' });
+    document.getElementById('edition-today').textContent =
+      now.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+    // Try to pull live headline from GMIIE API (non-blocking, silent fail)
+    fetch('https://xxxiii.io/api/articles?limit=1', { signal: AbortSignal.timeout(4000) })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const top = data && data.articles && data.articles[0];
+        if (!top) return;
+        if (top.headline) document.getElementById('lead-headline').textContent = top.headline;
+        if (top.executiveSummary || top.summary)
+          document.getElementById('lead-deck').textContent = top.executiveSummary || top.summary;
+      })
+      .catch(() => {});
+
+    // Subscribe handler
+    function handleSubscribe(e) {
+      e.preventDefault();
+      const email = e.currentTarget.querySelector('input[name="email"]').value.trim();
+      if (!email) return;
+      fetch('https://xxxiii.io/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, cadence: 'daily', site: 'pulse' }),
+      })
+      .then(r => {
+        if (r.ok) {
+          document.getElementById('sub-form').style.display = 'none';
+          document.getElementById('sub-ok').style.display = 'block';
+        } else {
+          alert('There was a problem subscribing. Please try again.');
+        }
+      })
+      .catch(() => alert('There was a problem subscribing. Please try again.'));
+    }
+  </script>
+
+</body>
+</html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GMIIE Pulse — Daily Intelligence Briefing</title>
   <meta name="description" content="GMIIE Pulse — The Cliff Notes on global monetary markets. Short, sharp, daily." />
   <meta property="og:title" content="GMIIE Pulse" />
