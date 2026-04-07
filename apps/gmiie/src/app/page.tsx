@@ -104,6 +104,12 @@ export default async function GmiieHomePage() {
               Get Daily Intelligence →
             </Link>
             <Link
+              href="/mail"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white/70 border border-white/15 hover:border-[#D4AF37]/40 hover:text-white transition-colors"
+            >
+              ✉ Mail Command Center
+            </Link>
+            <Link
               href="/methodology"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white/70 border border-white/15 hover:border-[#D4AF37]/40 hover:text-white transition-colors"
             >
