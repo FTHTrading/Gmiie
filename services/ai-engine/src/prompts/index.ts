@@ -34,3 +34,4 @@ export {
   detect_and_normalize,
   SUPPORTED_LANGUAGES,
 } from './translate';
+export { extract_entities } from './extract-entities';

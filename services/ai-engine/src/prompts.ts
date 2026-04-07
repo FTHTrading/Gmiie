@@ -40,6 +40,11 @@ import {
   write_quick_facts,
   write_explained,
 } from './prompts/intake-analyzer';
+import {
+  translate_article,
+  detect_and_normalize,
+} from './prompts/translate';
+import { extract_entities } from './prompts/extract-entities';
 
 // ─── PROMPT LIBRARY ──────────────────────────────────────────────
 
@@ -61,6 +66,9 @@ export const PROMPT_LIBRARY: Record<string, PromptTemplate> = {
   intake_analyze,
   write_quick_facts,
   write_explained,
+  translate_article,
+  detect_and_normalize,
+  extract_entities,
 };
 
 

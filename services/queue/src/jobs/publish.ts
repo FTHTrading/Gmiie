@@ -184,7 +184,23 @@ export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
           backoff: { type: 'exponential', delay: 30_000 },
         },
       );
-    }
+      // Dispatch entity extraction (gpt-4o-mini, cost-efficient)
+      const extractQueue = getQueue(QUEUE_NAMES.EXTRACT_ENTITIES);
+      await extractQueue.add(
+        'extract-entities',
+        {
+          articleId,
+          title: article.headline || article.title || '',
+          summary: article.executiveSummary || '',
+          body: article.content || '',
+          language: 'en',
+        },
+        {
+          delay: 30_000,
+          attempts: 2,
+          backoff: { type: 'exponential', delay: 15_000 },
+        },
+      );    }
   }
 
   job.updateProgress(100);

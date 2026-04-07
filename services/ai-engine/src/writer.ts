@@ -195,6 +195,42 @@ export class Writer {
   }
 
   /**
+   * Extract known financial entities mentioned in a published article.
+   * Uses gpt-4o-mini for cost efficiency — runs once per published article.
+   */
+  async extractEntities(params: {
+    title: string;
+    summary: string;
+    body: string;
+    knownEntities: Array<{ slug: string; name: string; shortName?: string | null; entityType: string }>;
+  }): Promise<{ entities: Array<{ slug: string; role: string }>; tokensUsed: number; durationMs: number }> {
+    const systemPrompt = this.prompts.getSystemPrompt('extract_entities');
+    const entityList = params.knownEntities
+      .map(e => `${e.slug} | ${e.name}${e.shortName ? ` (${e.shortName})` : ''} | ${e.entityType}`)
+      .join('\n');
+    const userPrompt = this.prompts.renderUserPrompt('extract_entities', {
+      title: params.title,
+      summary: params.summary || '',
+      body: (params.body || '').substring(0, 4000),
+      entityList,
+    });
+
+    const { data, meta } = await this.engine.generateJSON<Array<{ slug: string; role: string }>>({
+      systemPrompt,
+      userPrompt,
+      model: 'gpt-4o-mini',
+      temperature: 0.1,
+      maxTokens: 800,
+    });
+
+    return {
+      entities: Array.isArray(data) ? data : [],
+      tokensUsed: meta.totalTokens,
+      durationMs: meta.durationMs,
+    };
+  }
+
+  /**
    * Enrich a draft with derived fields.
    */
   private enrichDraft(draft: ArticleDraft, classification: ClassificationResult): ArticleDraft {

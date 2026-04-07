@@ -24,7 +24,8 @@ import { handleNewsletter } from './jobs/newsletter';
 import { handleSitemap } from './jobs/sitemap-regen';
 import { handleIngestion } from './jobs/ingestion';
 import { handleMaintenance } from './jobs/maintenance';
-import { handleTranslate } from './jobs/translate';
+import { handleTranslate } from './jobs/translate';     
+import { handleExtractEntities } from './jobs/extract-entities';
 
 import type {
   ClassifyJobData,
@@ -38,16 +39,7 @@ import type {
   SitemapJobData,
   IngestionJobData,
   MaintenanceJobData,
-} from './index';
-
-// ─── Logger ──────────────────────────────────────────────────────
-
-const log = {
-  info: (msg: string, data?: any) =>
-    console.log(JSON.stringify({ level: 'info', msg, ...data, ts: new Date().toISOString() })),
-  error: (msg: string, data?: any) =>
-    console.error(JSON.stringify({ level: 'error', msg, ...data, ts: new Date().toISOString() })),
-  warn: (msg: string, data?: any) =>
+  ExtractEntitiesJobData,
     console.warn(JSON.stringify({ level: 'warn', msg, ...data, ts: new Date().toISOString() })),
 };
 
@@ -198,13 +190,14 @@ async function startWorkers(): Promise<void> {
     ),
   );
 
-  // Set up scheduled jobs
-  await setupScheduledJobs();
-
-  log.info(`${workers.length} workers started across ${Object.keys(QUEUE_NAMES).length} queues`);
-
-  // Start health check HTTP server on port 8200
-  startHealthServer();
+  // Entity extraction worker (gpt-4o-mini per article, low concurrency)
+  workers.push(
+    createWorker<ExtractEntitiesJobData>(
+      QUEUE_NAMES.EXTRACT_ENTITIES,
+      handleExtractEntities,
+      3,
+    ),
+  );
 }
 
 // ─── Health Check Server ──────────────────────────────────────────

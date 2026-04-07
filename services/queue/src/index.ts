@@ -44,10 +44,7 @@ export const QUEUE_NAMES = {
   NEWSLETTER: 'xxxiii-newsletter',
   SITEMAP: 'xxxiii-sitemap',
   MAINTENANCE: 'xxxiii-maintenance',
-} as const;
-
-export type QueueName = typeof QUEUE_NAMES[keyof typeof QUEUE_NAMES];
-
+  EXTRACT_ENTITIES: 'xxxiii-extract-entities',
 // ─── Default Job Options ─────────────────────────────────────────
 
 const DEFAULT_JOB_OPTIONS: JobsOptions = {
@@ -164,6 +161,14 @@ export interface SitemapJobData {
 
 export interface MaintenanceJobData {
   type: 'cleanup' | 'stats' | 'health_check' | 'reindex';
+}
+
+export interface ExtractEntitiesJobData {
+  articleId: string;
+  title: string;
+  summary: string;
+  body: string;
+  language?: string;
 }
 
 // ─── Flow Producer ───────────────────────────────────────────────
