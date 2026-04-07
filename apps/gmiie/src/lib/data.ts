@@ -22,6 +22,9 @@ import type {
   DashboardCounts,
   StateTrackerListItem,
   StateTrackerDetail,
+  GraphNode,
+  GraphEdge,
+  EntityGraphData,
 } from "./models";
 import {
   ArticleListItemSchema,
@@ -906,4 +909,52 @@ export async function getTrackedStateBySlug(slug: string): Promise<StateTrackerD
   };
 
   return validateOne(StateTrackerDetailSchema, detail, "getTrackedStateBySlug");
+}
+
+// ─── Entity Graph / Financial System Map ─────────────────────────────────────
+export async function getEntityGraph(): Promise<EntityGraphData> {
+  const entities = await prisma.entity.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      shortName: true,
+      slug: true,
+      entityType: true,
+      country: true,
+      region: true,
+      topics: { select: { topicId: true } },
+      _count: { select: { articles: true } },
+    },
+    orderBy: { name: "asc" },
+  });
+
+  const nodes: GraphNode[] = entities.map((e) => ({
+    id: e.id,
+    name: e.name,
+    shortName: e.shortName,
+    slug: e.slug,
+    entityType: e.entityType as string,
+    country: e.country,
+    region: e.region,
+    articleCount: e._count.articles,
+    topicIds: e.topics.map((t) => t.topicId),
+  }));
+
+  // Build edges from shared topics (entities that share ≥1 topic are connected)
+  const edges: GraphEdge[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i];
+      const b = nodes[j];
+      if (a.topicIds.length === 0 || b.topicIds.length === 0) continue;
+      const setB = new Set(b.topicIds);
+      const sharedTopics = a.topicIds.filter((id) => setB.has(id)).length;
+      if (sharedTopics > 0) {
+        edges.push({ source: a.id, target: b.id, sharedTopics });
+      }
+    }
+  }
+
+  return { nodes, edges };
 }

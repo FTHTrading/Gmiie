@@ -301,3 +301,26 @@ export interface StateUpdateItem {
   date: string; // ISO
   sourceUrl: string | null;
 }
+
+// ─── Entity Graph / Financial System Map ─────────────────────────────────────
+export interface GraphNode {
+  id: string;
+  name: string;
+  shortName: string | null;
+  slug: string;
+  entityType: string;
+  country: string | null;
+  region: string | null;
+  articleCount: number;
+  topicIds: string[];
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  sharedTopics: number;
+}
+
+export interface EntityGraphData {
+  nodes: GraphNode[];
+  edges: GraphEdge[];

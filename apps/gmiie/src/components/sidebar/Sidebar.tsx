@@ -28,6 +28,7 @@ const SIDEBAR_SECTIONS = [
     title: "Explore",
     items: [
       { label: "Search", href: "/search", icon: "◎" },
+      { label: "System Map", href: "/map", icon: "◈" },
       { label: "Topics", href: "/topics", icon: "▣" },
       { label: "Entities", href: "/entities", icon: "◎" },
       { label: "Regulators", href: "/regulators", icon: "⬡" },
