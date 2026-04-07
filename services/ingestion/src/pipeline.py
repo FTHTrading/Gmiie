@@ -32,6 +32,7 @@ from .normalizer import normalizer
 from .rss import rss_poller
 from .scraper import scraper
 from .sitemap import sitemap_crawler
+from .stablecoin_monitor import stablecoin_monitor
 
 
 class IngestionPipeline:
@@ -49,6 +50,7 @@ class IngestionPipeline:
         await api_client.start()
         await sec_client.start()
         await sitemap_crawler.start()
+        await stablecoin_monitor.start()
 
         logger.info("pipeline_ready")
 
@@ -56,6 +58,7 @@ class IngestionPipeline:
         """Gracefully shutdown all components."""
         logger.info("pipeline_shutting_down")
 
+        await stablecoin_monitor.stop()
         await sitemap_crawler.stop()
         await sec_client.stop()
         await api_client.stop()
@@ -208,6 +211,48 @@ class IngestionPipeline:
         logger.info("api_cycle_complete", **stats)
         return stats
 
+    async def run_stablecoin_cycle(self) -> dict[str, Any]:
+        """Run the US state stablecoin & digital currency monitoring cycle."""
+        start = time.monotonic()
+        logger.info("stablecoin_cycle_start")
+
+        signals = await stablecoin_monitor.run_cycle()
+        dispatched = 0
+
+        for signal in signals:
+            try:
+                item = signal.to_ingested_item()
+                # Boost importance score for high-value signals
+                if signal.raw_score >= 8.5:
+                    item.metadata["importance_override"] = signal.raw_score
+                    item.metadata["alert_severity"] = "high"
+                elif signal.raw_score >= 7.0:
+                    item.metadata["importance_override"] = signal.raw_score
+                    item.metadata["alert_severity"] = "medium"
+
+                await db.insert_raw_article(item)
+                await dispatcher.dispatch(item)
+                dispatched += 1
+            except Exception as e:
+                logger.error("stablecoin_dispatch_failed", title=signal.title[:50], error=str(e))
+
+        elapsed = int((time.monotonic() - start) * 1000)
+        stats = {
+            "cycle": "stablecoin",
+            "signals_detected": len(signals),
+            "dispatched": dispatched,
+            "duration_ms": elapsed,
+            "top_states": list({
+                code
+                for sig in signals[:10]
+                for code in sig.state_codes
+            }),
+        }
+
+        await db.log_job("stablecoin_monitor", "COMPLETED", items_processed=dispatched, duration_ms=elapsed)
+        logger.info("stablecoin_cycle_complete", **stats)
+        return stats
+
     async def run_full_cycle(self) -> dict[str, Any]:
         """Run all ingestion cycles."""
         logger.info("full_cycle_start")
@@ -216,6 +261,7 @@ class IngestionPipeline:
         rss_stats = await self.run_rss_cycle()
         scrape_stats = await self.run_scrape_cycle()
         api_stats = await self.run_api_cycle()
+        stablecoin_stats = await self.run_stablecoin_cycle()
 
         elapsed = int((time.monotonic() - start) * 1000)
 
@@ -223,11 +269,13 @@ class IngestionPipeline:
             "rss": rss_stats,
             "scrape": scrape_stats,
             "api": api_stats,
+            "stablecoin": stablecoin_stats,
             "total_duration_ms": elapsed,
             "total_dispatched": (
                 rss_stats["dispatched"]
                 + scrape_stats["dispatched"]
                 + api_stats["dispatched"]
+                + stablecoin_stats["dispatched"]
             ),
         }
 
@@ -244,6 +292,7 @@ class IngestionPipeline:
             rss_last = 0.0
             scrape_last = 0.0
             api_last = 0.0
+            stablecoin_last = 0.0
 
             while True:
                 now = time.monotonic()
@@ -271,6 +320,14 @@ class IngestionPipeline:
                     except Exception as e:
                         logger.error("api_cycle_error", error=str(e))
                     api_last = time.monotonic()
+
+                # Stablecoin monitor — every 30 minutes
+                if now - stablecoin_last >= 1800:
+                    try:
+                        await self.run_stablecoin_cycle()
+                    except Exception as e:
+                        logger.error("stablecoin_cycle_error", error=str(e))
+                    stablecoin_last = time.monotonic()
 
                 await asyncio.sleep(30)  # Check every 30 seconds
 

@@ -1,0 +1,27 @@
+[package]
+name = "gmiie-mailer"
+version = "0.1.0"
+edition = "2021"
+description = "GMIIE AI Mailer — autonomous email dispatch for institutional intelligence alerts"
+
+[[bin]]
+name = "gmiie-mailer"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7", features = ["tokio"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+lettre = { version = "0.11", features = ["tokio1", "tokio1-native-tls", "builder"] }
+minijinja = { version = "2", features = ["loader"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+dotenvy = "0.15"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+anyhow = "1"
+thiserror = "1"
