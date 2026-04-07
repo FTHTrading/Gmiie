@@ -11,10 +11,10 @@ import { usePathname } from "next/navigation";
 
 const MOBILE_NAV_ITEMS = [
   { label: "Feed", href: "/", icon: "◉" },
+  { label: "Alerts", href: "/alerts", icon: "◎" },
   { label: "Signals", href: "/signals", icon: "◈" },
-  { label: "Tracker", href: "/tracker", icon: "⬡" },
-  { label: "Reports", href: "/reports", icon: "◇" },
-  { label: "More", href: "/methodology", icon: "◆" },
+  { label: "Backtest", href: "/backtest", icon: "◆" },
+  { label: "More", href: "/methodology", icon: "◇" },
 ] as const;
 
 export function MobileNav() {
