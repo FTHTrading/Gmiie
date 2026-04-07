@@ -52,8 +52,8 @@ type SignalRow = {
   } | null;
 };
 
-function getDimScore(s: SignalRow, dim: SignalDim): number {
-  return s[dim] ?? 0;
+function getDimScore(s: Record<string, unknown>, dim: SignalDim): number {
+  return (s[dim] as number) ?? 0;
 }
 
 export async function POST(req: NextRequest) {
@@ -70,12 +70,12 @@ export async function POST(req: NextRequest) {
   since.setDate(since.getDate() - daysBack);
 
   try {
-    const signals: SignalRow[] = await prisma.signal.findMany({
+    const signals = await prisma.signal.findMany({
       where: {
         generatedAt: { gte: since },
         article: {
           status: "PUBLISHED",
-          ...(articleType && articleType !== "all" ? { articleType } : {}),
+          ...(articleType && articleType !== "all" ? { articleType: articleType as any } : {}),
         },
       },
       select: {

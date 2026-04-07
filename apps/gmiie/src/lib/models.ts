@@ -324,3 +324,4 @@ export interface GraphEdge {
 export interface EntityGraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
+}

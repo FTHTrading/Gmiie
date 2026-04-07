@@ -14,7 +14,7 @@ import Link from "next/link";
 import { generateMetadata as genMeta } from "@xxxiii/seo";
 import { prisma } from "@xxxiii/db";
 
-export const revalidate = 180; // 3-minute cache
+export const revalidate = 180;
 
 export const metadata: Metadata = genMeta({
   title: "US Stablecoin Intelligence — Live Signals",
@@ -138,7 +138,7 @@ async function getStablecoinSignals(): Promise<ArticleSignal[]> {
         importanceScore: { gte: 6.5 },
         topics: {
           some: {
-            slug: { in: STABLECOIN_TOPICS },
+            topic: { slug: { in: STABLECOIN_TOPICS } },
           },
         },
       },
@@ -150,12 +150,15 @@ async function getStablecoinSignals(): Promise<ArticleSignal[]> {
         importanceScore: true,
         publishedAt: true,
         source: { select: { name: true } },
-        topics: { select: { slug: true, name: true } },
+        topics: { select: { topic: { select: { slug: true, name: true } } } },
       },
       orderBy: [{ importanceScore: "desc" }, { publishedAt: "desc" }],
       take: 24,
     });
-    return rows as ArticleSignal[];
+    return rows.map((r: any) => ({
+      ...r,
+      topics: r.topics.map((t: any) => t.topic),
+    })) as ArticleSignal[];
   } catch {
     return [];
   }

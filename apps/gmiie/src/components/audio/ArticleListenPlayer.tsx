@@ -11,15 +11,15 @@ interface ArticleListenPlayerProps {
 export function ArticleListenPlayer({ article }: ArticleListenPlayerProps) {
   const { playTrack, currentTrack, isPlaying, isLoading, togglePlay, progress } = useAudio();
 
-  const isActive = currentTrack?.articleId === article.id;
+  const isActive = currentTrack?.articleId === article.slug;
   const showLoading = isActive && isLoading;
   const showPlaying = isActive && isPlaying;
 
   const handleListen = useCallback(() => {
     playTrack({
-      url: `/api/narration/${article.id}?voice=shimmer`,
+      url: `/api/narration/${article.slug}?voice=shimmer`,
       title: article.headline ?? article.title,
-      articleId: article.id,
+      articleId: article.slug,
       durationEstimate: 165,
     });
   }, [article, playTrack]);

@@ -186,7 +186,7 @@ export default async function MailCommandCenterPage() {
                   >
                     <ActionBadge action={log.action} />
                     <span className="text-body-sm text-text-secondary flex-1 min-w-0 truncate">
-                      {log.details ?? log.action}
+                      {(log as any).details ?? log.action}
                     </span>
                     <span className="text-caption text-text-muted shrink-0">
                       {formatTimeAgo(log.createdAt)}
