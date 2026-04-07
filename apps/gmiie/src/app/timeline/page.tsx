@@ -69,6 +69,36 @@ export default async function TimelinePage() {
     ? grouped
     : [
         {
+          key: "2026-04",
+          label: "April 2026",
+          events: [
+            {
+              id: "ph-a1",
+              title: "Kraken Financial secures Federal Reserve master account",
+              description: "First digital-asset bank to gain direct access to US payment infrastructure, giving Kraken direct Fedwire settlement without intermediary banks.",
+              date: new Date("2026-04-04"),
+              sourceUrl: null,
+              entity: { name: "Kraken", slug: "kraken", shortName: "Kraken", entityType: "EXCHANGE" },
+            },
+            {
+              id: "ph-a2",
+              title: "US Senate GENIUS Act advances with bipartisan support",
+              description: "Payment Stablecoin Act clears Senate Banking Committee, establishing first federal licensing framework for stablecoin issuers above $10B circulation.",
+              date: new Date("2026-04-03"),
+              sourceUrl: null,
+              entity: { name: "Federal Reserve System", slug: "federal-reserve-system", shortName: "Fed", entityType: "CENTRAL_BANK" },
+            },
+            {
+              id: "ph-a3",
+              title: "SEC Crypto Task Force releases tokenized securities framework",
+              description: "Comprehensive guidance addresses registration, custody requirements, and transfer agent obligations for blockchain-based securities issuance.",
+              date: new Date("2026-04-01"),
+              sourceUrl: null,
+              entity: { name: "US Securities and Exchange Commission", slug: "us-securities-and-exchange-commission", shortName: "SEC", entityType: "REGULATOR" },
+            },
+          ],
+        },
+        {
           key: "2026-03",
           label: "March 2026",
           events: [

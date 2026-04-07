@@ -14,7 +14,7 @@ const MOBILE_NAV_ITEMS = [
   { label: "Alerts", href: "/alerts", icon: "◎" },
   { label: "Signals", href: "/signals", icon: "◈" },
   { label: "Backtest", href: "/backtest", icon: "◆" },
-  { label: "More", href: "/methodology", icon: "◇" },
+  { label: "Search", href: "/search", icon: "◎" },
 ] as const;
 
 export function MobileNav() {
