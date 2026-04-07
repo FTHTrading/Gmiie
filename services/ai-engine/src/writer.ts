@@ -139,6 +139,62 @@ export class Writer {
   }
 
   /**
+   * Translate a published article into a target language.
+   * Returns a new ArticleDraft with all text fields translated.
+   */
+  async translateArticle(params: {
+    articleId: string;
+    title: string;
+    subtitle: string;
+    summary: string;
+    body: string;
+    keyPoints: string[];
+    gmiieSignal: string;
+    targetCode: string;
+    targetLanguage: string;
+  }): Promise<{ draft: Partial<ArticleDraft>; tokensUsed: number; durationMs: number }> {
+    const systemPrompt = this.prompts.getSystemPrompt('translate_article');
+    const userPrompt = this.prompts.renderUserPrompt('translate_article', {
+      targetLanguage: params.targetLanguage,
+      targetCode: params.targetCode,
+      title: params.title,
+      subtitle: params.subtitle || '',
+      summary: params.summary || '',
+      body: params.body.substring(0, 12000),
+      keyPoints: params.keyPoints.join('\n'),
+      gmiieSignal: params.gmiieSignal || '',
+    });
+
+    const { data, meta } = await this.engine.generateJSON<{
+      title: string;
+      subtitle: string;
+      summary: string;
+      body: string;
+      keyPoints: string[];
+      gmiieSignal: string;
+    }>({
+      systemPrompt,
+      userPrompt,
+      temperature: 0.2,
+      maxTokens: 6000,
+    });
+
+    // Build translated draft — slug gets a language suffix appended by the job handler
+    return {
+      draft: {
+        title: data.title,
+        subtitle: data.subtitle,
+        summary: data.summary,
+        body: data.body,
+        keyPoints: data.keyPoints,
+        gmiieSignal: data.gmiieSignal,
+      },
+      tokensUsed: meta.totalTokens,
+      durationMs: meta.durationMs,
+    };
+  }
+
+  /**
    * Enrich a draft with derived fields.
    */
   private enrichDraft(draft: ArticleDraft, classification: ClassificationResult): ArticleDraft {

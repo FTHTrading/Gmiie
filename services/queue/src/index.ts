@@ -39,6 +39,7 @@ export const QUEUE_NAMES = {
   SEO: 'xxxiii-seo',
   REVIEW: 'xxxiii-review',
   PUBLISH: 'xxxiii-publish',
+  TRANSLATE: 'xxxiii-translate',
   ENTITY: 'xxxiii-entity',
   NEWSLETTER: 'xxxiii-newsletter',
   SITEMAP: 'xxxiii-sitemap',
@@ -129,6 +130,20 @@ export interface SEOJobData {
 export interface PublishJobData {
   articleId: string;
   autoPublish: boolean;
+}
+
+export interface TranslateJobData {
+  /** Source article that was just published (English) */
+  articleId: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  body: string;
+  keyPoints: string[];
+  gmiieSignal: string;
+  slug: string;
+  /** ISO 639-1 target codes — defaults to all supported if omitted */
+  targetLanguages?: string[];
 }
 
 export interface EntityJobData {

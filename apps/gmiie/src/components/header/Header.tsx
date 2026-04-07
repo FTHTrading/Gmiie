@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { SearchBar } from "@/components/search/SearchBar";
 import { ThemeToggle } from "@xxxiii/ui/src/components/ThemeProvider";
+import { LanguageSelector } from "@/components/language/LanguageSelector";
 
 /* ═══════════════════════════════════════════════════════════════
    PLATFORM HEADER — Design Doctrine
@@ -46,6 +47,9 @@ export function PlatformHeader() {
             </span>
           </div>
           <div className="flex items-center gap-4">
+            <Suspense fallback={null}>
+              <LanguageSelector />
+            </Suspense>
             <Link
               href="/methodology"
               className="text-text-muted hover:text-text-secondary transition-colors uppercase"

@@ -29,3 +29,8 @@ export {
   write_quick_facts,
   write_explained,
 } from './intake-analyzer';
+export {
+  translate_article,
+  detect_and_normalize,
+  SUPPORTED_LANGUAGES,
+} from './translate';

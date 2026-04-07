@@ -160,6 +160,31 @@ export async function handlePublish(job: Job<PublishJobData>): Promise<any> {
     });
 
     await triggerRevalidation();
+
+    // Dispatch translation job for all supported languages
+    // Only translate English-language articles (avoid re-translating translations)
+    if (article.language === 'en' || !article.language) {
+      const translateQueue = getQueue(QUEUE_NAMES.TRANSLATE);
+      await translateQueue.add(
+        'translate-article',
+        {
+          articleId,
+          title: article.headline || article.title || '',
+          subtitle: article.dek || '',
+          summary: article.executiveSummary || '',
+          body: article.content || '',
+          keyPoints: [],
+          gmiieSignal: '',
+          slug: slug || article.slug || '',
+        },
+        {
+          // Delay 60s to avoid hammering AI right after draft/seo jobs
+          delay: 60_000,
+          attempts: 2,
+          backoff: { type: 'exponential', delay: 30_000 },
+        },
+      );
+    }
   }
 
   job.updateProgress(100);

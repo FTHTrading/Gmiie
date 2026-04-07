@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type");
   const topic = searchParams.get("topic");
   const entity = searchParams.get("entity");
+  const lang = searchParams.get("lang");
   const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 50);
   const offset = parseInt(searchParams.get("offset") || "0");
 
@@ -30,6 +31,11 @@ export async function GET(request: NextRequest) {
       };
     }
 
+    // Filter by language — "en" also matches rows with no language set (legacy)
+    if (lang && lang !== "all") {
+      where.language = lang;
+    }
+
     const [articles, total] = await Promise.all([
       prisma.article.findMany({
         where,
@@ -41,6 +47,7 @@ export async function GET(request: NextRequest) {
           articleType: true,
           importanceScore: true,
           publishedAt: true,
+          language: true,
           source: { select: { name: true } },
           topics: {
             select: {

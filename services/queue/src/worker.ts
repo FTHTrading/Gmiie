@@ -24,6 +24,7 @@ import { handleNewsletter } from './jobs/newsletter';
 import { handleSitemap } from './jobs/sitemap-regen';
 import { handleIngestion } from './jobs/ingestion';
 import { handleMaintenance } from './jobs/maintenance';
+import { handleTranslate } from './jobs/translate';
 
 import type {
   ClassifyJobData,
@@ -31,6 +32,7 @@ import type {
   DraftJobData,
   SEOJobData,
   PublishJobData,
+  TranslateJobData,
   EntityJobData,
   NewsletterJobData,
   SitemapJobData,
@@ -175,6 +177,15 @@ async function startWorkers(): Promise<void> {
       QUEUE_NAMES.SITEMAP,
       handleSitemap,
       1,
+    ),
+  );
+
+  // Translation worker (low concurrency — GPT-4o costs; fans out per language)
+  workers.push(
+    createWorker<TranslateJobData>(
+      QUEUE_NAMES.TRANSLATE,
+      handleTranslate,
+      2,
     ),
   );
 

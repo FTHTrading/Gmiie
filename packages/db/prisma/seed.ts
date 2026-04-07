@@ -142,7 +142,62 @@ async function main() {
     { name: 'Latin Finance', url: 'https://latinfinance.com/feed/', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'South America' },
     { name: 'Global Finance Magazine', url: 'https://gfmag.com/feed/', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'US', region: 'Global' },
     { name: 'Korea Herald Business', url: 'https://www.koreaherald.com/rss/020100000000.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'KR', region: 'Asia-Pacific' },
+    // ── GLOBAL NON-ENGLISH SOURCES — native-language financial intelligence ──
+    // Japanese
+    { name: 'Nikkei Asia', url: 'https://asia.nikkei.com/rss/feed/nar', feedUrl: 'https://asia.nikkei.com/rss/feed/nar', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'JP', region: 'Asia-Pacific', language: 'en' },
+    { name: 'Nikkei Shimbun (日経新聞)', url: 'https://www.nikkei.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'JP', region: 'Asia-Pacific', language: 'ja' },
+    { name: 'CoinPost Japan (コインポスト)', url: 'https://coinpost.jp', feedUrl: 'https://coinpost.jp/?feed=rss2', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'JP', region: 'Asia-Pacific', language: 'ja' },
+    { name: 'Minkabu Finance', url: 'https://minkabu.jp', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'JP', region: 'Asia-Pacific', language: 'ja' },
+    // Chinese
+    { name: 'Caixin Global', url: 'https://www.caixinglobal.com', feedUrl: 'https://www.caixinglobal.com/rss/finance.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'CN', region: 'Asia-Pacific', language: 'en' },
+    { name: 'Caixin (财新)', url: 'https://www.caixin.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'CN', region: 'Asia-Pacific', language: 'zh' },
+    { name: '21st Century Business Herald (21世纪经济报道)', url: 'https://www.21jingji.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'CN', region: 'Asia-Pacific', language: 'zh' },
+    { name: 'PANews (链得得)', url: 'https://www.panewslab.com', feedUrl: 'https://www.panewslab.com/zh/rss.xml', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'CN', region: 'Asia-Pacific', language: 'zh' },
+    { name: 'Wu Blockchain (吴说区块链)', url: 'https://wublock.substack.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'CN', region: 'Asia-Pacific', language: 'zh' },
+    // Korean
+    { name: 'Hankyung Economy (한국경제)', url: 'https://www.hankyung.com', feedUrl: 'https://www.hankyung.com/feed/finance', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'KR', region: 'Asia-Pacific', language: 'ko' },
+    { name: 'Decenter Korea (디센터)', url: 'https://decenter.kr', feedUrl: 'https://decenter.kr/rss', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'KR', region: 'Asia-Pacific', language: 'ko' },
+    // German
+    { name: 'Handelsblatt', url: 'https://www.handelsblatt.com', feedUrl: 'https://www.handelsblatt.com/contentexport/feed/schlagzeilen', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'DE', region: 'Europe', language: 'de' },
+    { name: 'BTC Echo (Deutschland)', url: 'https://www.btc-echo.de', feedUrl: 'https://www.btc-echo.de/feed/', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'DE', region: 'Europe', language: 'de' },
+    { name: 'Wirtschaftswoche Digital Assets', url: 'https://www.wiwo.de/finanzen/boerse', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'DE', region: 'Europe', language: 'de' },
+    // French
+    { name: 'Les Echos Finance', url: 'https://www.lesechos.fr', feedUrl: 'https://feeds.lesechos.fr/rss/rss_finance.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'FR', region: 'Europe', language: 'fr' },
+    { name: 'Journal du Coin', url: 'https://journalducoin.com', feedUrl: 'https://journalducoin.com/feed/', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'FR', region: 'Europe', language: 'fr' },
+    { name: 'Le Monde Économie', url: 'https://www.lemonde.fr/economie/', feedUrl: 'https://www.lemonde.fr/economie/rss_full.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'FR', region: 'Europe', language: 'fr' },
+    // Spanish
+    { name: 'El Confidencial Mercados', url: 'https://www.elconfidencial.com/mercados/', feedUrl: 'https://rss.elconfidencial.com/mercados/', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'ES', region: 'Europe', language: 'es' },
+    { name: 'Criptonoticias', url: 'https://www.criptonoticias.com', feedUrl: 'https://www.criptonoticias.com/feed/', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'VE', region: 'South America', language: 'es' },
+    { name: 'Expansión (España)', url: 'https://www.expansion.com', feedUrl: 'https://www.expansion.com/rss/mercados.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'ES', region: 'Europe', language: 'es' },
+    // Portuguese
+    { name: 'Valor Econômico (Brazil)', url: 'https://valor.globo.com', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'BR', region: 'South America', language: 'pt' },
+    { name: 'Portal do Bitcoin', url: 'https://portaldobitcoin.uol.com.br', feedUrl: 'https://portaldobitcoin.uol.com.br/feed/', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'BR', region: 'South America', language: 'pt' },
+    // Arabic
+    { name: 'CNBC Arabia', url: 'https://www.cnbcarabia.com', feedUrl: 'https://www.cnbcarabia.com/feed', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'AE', region: 'Middle East', language: 'ar' },
+    { name: 'Mubasher Finance (مباشر)', url: 'https://mubasher.info', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'AE', region: 'Middle East', language: 'ar' },
+    { name: 'Al Jazeera Economy (الاقتصاد)', url: 'https://www.aljazeera.net/economy/', feedUrl: 'https://www.aljazeera.net/xml/rss/all.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_2' as const, country: 'QA', region: 'Middle East', language: 'ar' },
+    // Italian
+    { name: 'Il Sole 24 Ore Finanza', url: 'https://www.ilsole24ore.com', feedUrl: 'https://www.ilsole24ore.com/rss/finanza-e-mercati.xml', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'IT', region: 'Europe', language: 'it' },
+    { name: 'Criptovalute.it', url: 'https://criptovalute.it', feedUrl: 'https://criptovalute.it/feed/', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_2' as const, country: 'IT', region: 'Europe', language: 'it' },
+    // Dutch
+    { name: 'Het Financieele Dagblad', url: 'https://fd.nl', feedUrl: 'https://fd.nl/rss', sourceType: 'FINANCIAL_PRESS' as const, credibilityTier: 'TIER_1' as const, country: 'NL', region: 'Europe', language: 'nl' },
     // TIER_3 — Industry (15)
+    { name: 'CoinDesk', url: 'https://coindesk.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Cointelegraph', url: 'https://cointelegraph.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'DL News', url: 'https://dlnews.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Blockworks', url: 'https://blockworks.co', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Unchained', url: 'https://unchainedcrypto.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Decrypt', url: 'https://decrypt.co', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Token Terminal', url: 'https://tokenterminal.com', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'FI', region: 'Europe' },
+    { name: 'DefiLlama', url: 'https://defillama.com', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'RWA.xyz', url: 'https://rwa.xyz', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+    { name: 'Galaxy Research', url: 'https://galaxy.com/research', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'North America' },
+    { name: 'Messari', url: 'https://messari.io', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'North America' },
+    { name: 'Chainalysis', url: 'https://chainalysis.com', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'North America' },
+    { name: 'Dune Analytics', url: 'https://dune.com', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'NO', region: 'Europe' },
+    { name: 'Artemis', url: 'https://artemis.xyz', sourceType: 'RESEARCH_FIRM' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'North America' },
+    { name: 'Securities.io', url: 'https://securities.io', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
+  ];
     { name: 'CoinDesk', url: 'https://coindesk.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
     { name: 'Cointelegraph', url: 'https://cointelegraph.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
     { name: 'DL News', url: 'https://dlnews.com', sourceType: 'CRYPTO_PUBLICATION' as const, credibilityTier: 'TIER_3' as const, country: 'US', region: 'Global' },
